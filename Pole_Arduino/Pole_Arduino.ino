@@ -9,8 +9,8 @@
 #define wireAddress 1 
 
 
-unsigned long currentTime = 0;
-unsigned long loopTime = 0;
+// unsigned long currentTime = 0;
+// unsigned long loopTime = 0;
 
 //#ifndef _SERIAL
 //#define _SERIAL Uart
@@ -37,6 +37,11 @@ unsigned int incomingBrightness=0;
 unsigned int incomingRate=0;
 unsigned int rate = 9;
 unsigned int patternByte = NULL_PATTERN;
+
+// unix timestamp that the sketch starts at
+unsigned long startedAt = 0;
+unsigned long lastTime = -1;
+unsigned long internalTimeSmoother = 0;
 
 float brightness = 1.0;
 int r1 = 127, g1 = 127, b1 = 127, r2 = 0, g2 = 0, b2 = 0, r3 = 0, g3 = 0, b3 = 0;
@@ -110,6 +115,8 @@ void setup() {
   patterns[78] = &colorWipeMeter;
   patterns[79] = &colorWipeMeterGradient;
   patterns[80] = &pulseOnce;
+
+  startedAt = RTC.now().unixtime();
 
 }
 
