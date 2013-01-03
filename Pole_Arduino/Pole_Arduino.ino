@@ -183,7 +183,7 @@ void receiveEvent(int howMany) {
     } 
     else if (patternByte == ADV_PATTERN) {
       Serial.println("FRAME == " + frame);
-      _loop();
+      // _loop();
     } 
     else if (patternByte != NULL_PATTERN && patterns[patternByte] != NULL) {
       isOff = false;
@@ -211,68 +211,66 @@ void setBrightnRate() {
 
 }
 
-void _loop() {
+void loop() {
 
   if (isOff)
     return;
-  
-    
-  currentTime = millis();
+      
+  frame = millis() / (rate+1);
 
-  if (currentTime >= loopTime + rate) { 
+  // if (currentTime >= loopTime + rate) { 
 
-    pattern(-1, 0); // Per frame initialization
+  pattern(-1, 0); // Per frame initialization
 
-    for (int i = 0; i < strip.numPixels(); i++) {
+  for (int i = 0; i < strip.numPixels(); i++) {
 
-      int j = mapping(frame, i);
-      uint32_t color = pattern(frame, j);
-
-
-      uint8_t r = red(color), g = green(color), b = blue(color);
+    int j = mapping(frame, i);
+    uint32_t color = pattern(frame, j);
 
 
-      if (brightness < 1) {
-        r = lerp(0, gamma(r), brightness);
-        g = lerp(0, gamma(g), brightness);
-        b = lerp(0, gamma(b), brightness);
-      }
-
-      strip.setPixelColor(i, r, g, b);
+    uint8_t r = red(color), g = green(color), b = blue(color);
 
 
-      //      if (i == 0) {
-      //        Serial.println("color ");
-      //        Serial.println(r);
-      //        Serial.println(g);
-      //        Serial.println(b);
-      //        Serial.println("frame ");
-      //        Serial.println(frame);
-      //        
-      //        Serial.println("===================== ");
-      //      }
-
+    if (brightness < 1) {
+      r = lerp(0, gamma(r), brightness);
+      g = lerp(0, gamma(g), brightness);
+      b = lerp(0, gamma(b), brightness);
     }
 
-    showAll();  
-
-    if (frame >= MAX_FRAME) { 
-      frame = 0;
-    } 
-
-    frame++;
+    strip.setPixelColor(i, r, g, b);
 
 
-    loopTime = currentTime;  // Updates loopTime
+    //      if (i == 0) {
+    //        Serial.println("color ");
+    //        Serial.println(r);
+    //        Serial.println(g);
+    //        Serial.println(b);
+    //        Serial.println("frame ");
+    //        Serial.println(frame);
+    //        
+    //        Serial.println("===================== ");
+    //      }
 
   }
+
+  showAll();  
+
+  if (frame >= MAX_FRAME) { 
+    frame = 0;
+  } 
+
+    // frame++;
+
+    // loopTime = currentTime;  // Updates loopTime
+
+  // }
 //advance = false;
 
 }
 
 
-void loop(){
-}
+// void loop(){
+// }
 /* Helper functions */
 
 //Input a rateue 0 to 384 to get a color rateue.
