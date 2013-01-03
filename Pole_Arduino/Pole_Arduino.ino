@@ -1,6 +1,8 @@
 // make an empty tab called ignore.h and this will run.
 #include "ignore.h" 
 #include "LPD8806.h"
+
+#include "RTClib.h"
 #include <SPI.h>
 #include <Wire.h>
 
@@ -21,6 +23,8 @@ unsigned long loopTime = 0;
 
 LPD8806 strip = LPD8806(40);
 
+RTC_DS1307 RTC;
+
 #define NULL_PATTERN 0
 #define OFF_PATTERN 68
 #define PAUSE_PATTERN 67
@@ -33,6 +37,7 @@ unsigned int incomingBrightness=0;
 unsigned int incomingRate=0;
 unsigned int rate = 9;
 unsigned int patternByte = NULL_PATTERN;
+
 float brightness = 1.0;
 int r1 = 127, g1 = 127, b1 = 127, r2 = 0, g2 = 0, b2 = 0, r3 = 0, g3 = 0, b3 = 0;
 
@@ -67,9 +72,18 @@ Mapping mapping = &forward;
 //lightPoles pole[NUM_POLES];
 
 void setup() {  
+
   Wire.begin(wireAddress);
   Wire.onReceive(receiveEvent);
   Serial.begin(9600); 
+
+  RTC.begin();
+  if (! RTC.isrunning()) {
+    Serial.println("RTC is NOT running!");
+    // following line sets the RTC to the date & time this sketch was compiled
+    RTC.adjust(DateTime(__DATE__, __TIME__));
+  }
+  
   strip.begin();
 
   hideAll();
@@ -205,60 +219,63 @@ void loop() {
 
   if (isOff)
     return;
-  
-    
-  currentTime = millis();
 
-  if (currentTime >= loopTime + rate) { 
+  frame = RTC.now().unixtime() / (rate+1);
 
-    pattern(-1, 0); // Per frame initialization
+  // if (currentTime >= loopTime + rate) { 
 
-    for (int i = 0; i < strip.numPixels(); i++) {
+  pattern(-1, 0); // Per frame initialization
 
-      int j = mapping(frame, i);
-      uint32_t color = pattern(frame, j);
+  for (int i = 0; i < strip.numPixels(); i++) {
 
-
-      uint8_t r = red(color), g = green(color), b = blue(color);
+    int j = mapping(frame, i);
+    uint32_t color = pattern(frame, j);
 
 
-      if (brightness < 1) {
-        r = lerp(0, gamma(r), brightness);
-        g = lerp(0, gamma(g), brightness);
-        b = lerp(0, gamma(b), brightness);
-      }
-
-      strip.setPixelColor(i, r, g, b);
+    uint8_t r = red(color), g = green(color), b = blue(color);
 
 
-      //      if (i == 0) {
-      //        Serial.println("color ");
-      //        Serial.println(r);
-      //        Serial.println(g);
-      //        Serial.println(b);
-      //        Serial.println("frame ");
-      //        Serial.println(frame);
-      //        
-      //        Serial.println("===================== ");
-      //      }
-
+    if (brightness < 1) {
+      r = lerp(0, gamma(r), brightness);
+      g = lerp(0, gamma(g), brightness);
+      b = lerp(0, gamma(b), brightness);
     }
 
-    showAll();  
-
-    if (frame >= MAX_FRAME) { 
-      frame = 0;
-    } 
-
-    frame++;
+    strip.setPixelColor(i, r, g, b);
 
 
-    loopTime = currentTime;  // Updates loopTime
+    //      if (i == 0) {
+    //        Serial.println("color ");
+    //        Serial.println(r);
+    //        Serial.println(g);
+    //        Serial.println(b);
+    //        Serial.println("frame ");
+    //        Serial.println(frame);
+    //        
+    //        Serial.println("===================== ");
+    //      }
 
   }
 
+  showAll();  
+
+  if (frame >= MAX_FRAME) { 
+    frame = 0;
+  } 
+
+    // frame++;
+
+    // loopTime = currentTime;  // Updates loopTime
+
+
+  // }
+//advance = false;
 
 }
+
+
+// void loop(){
+// }
 
 /* Helper functions */
 
