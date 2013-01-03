@@ -7,7 +7,7 @@
 #include <Wire.h>
 
 #define wireAddress 1 
-
+boolean light = false;
 
 // unsigned long currentTime = 0;
 // unsigned long loopTime = 0;
@@ -41,6 +41,8 @@ unsigned int patternByte = NULL_PATTERN;
 // unix timestamp that the sketch starts at
 unsigned long startedAt = 0;
 unsigned long lastTime = -1;
+
+unsigned long lastMillis = 0;
 unsigned long internalTimeSmoother = 0;
 
 float brightness = 1.0;
@@ -77,6 +79,7 @@ Mapping mapping = &forward;
 //lightPoles pole[NUM_POLES];
 
 void setup() {  
+    pinMode(13, OUTPUT); 
 
   Wire.begin(wireAddress);
   Wire.onReceive(receiveEvent);
@@ -122,7 +125,6 @@ void setup() {
 
 void receiveEvent(int howMany) {
   //wait for 12 incoming bytes
-  Serial.println("RECEIVED EVENT");
   if (Wire.available() > 11) {
 
     incomingRate = Wire.read();
@@ -172,10 +174,9 @@ void receiveEvent(int howMany) {
     //    Serial.println(isOff);
     //    Serial.println("=========================");
 
-    if(patternByte != RESET_FRAME && patternByte != ADV_PATTERN){
       setBrightnRate();
       setColors();
-    }
+
 
 
     if (patternByte == 1) {
@@ -197,14 +198,6 @@ void receiveEvent(int howMany) {
       hideAll();
       showAll();
       isOff = true;
-    } 
-    else if (patternByte == RESET_FRAME) {
-      Serial.println("RESET FRAME");
-      frame = 0;
-    } 
-    else if (patternByte == ADV_PATTERN) {
-      Serial.println("FRAME == " + frame);
-      // _loop();
     } 
     else if (patternByte != NULL_PATTERN && patterns[patternByte] != NULL) {
       isOff = false;
@@ -237,7 +230,18 @@ void loop() {
   if (isOff)
     return;
 
-  frame = RTC.now().unixtime() / (rate+1);
+  unsigned long t = RTC.now().unixtime();// * 50 / (rate+1);
+  unsigned long m = millis()
+
+  if (t != lastTime) {
+    internalTimeSmoother = 0;
+  }
+
+  internalTimeSmoother += m - lastMillis;
+
+  lastMillis = m;
+
+  frame = (t * 1000 + internalTimeSmoother) / rate;
 
   // if (currentTime >= loopTime + rate) { 
 
@@ -284,14 +288,23 @@ void loop() {
 
     // loopTime = currentTime;  // Updates loopTime
 
+
   // }
 //advance = false;
+
+  if (light)
+    digitalWrite(13, HIGH);
+  else
+    digitalWrite(13, LOW);
+    
+  light = !light;
 
 }
 
 
 // void loop(){
 // }
+
 /* Helper functions */
 
 //Input a rateue 0 to 384 to get a color rateue.
