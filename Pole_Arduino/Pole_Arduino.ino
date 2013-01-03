@@ -1,6 +1,8 @@
 // make an empty tab called ignore.h and this will run.
 #include "ignore.h" 
 #include "LPD8806.h"
+
+#include "RTClib.h"
 #include <SPI.h>
 #include <Wire.h>
 
@@ -21,6 +23,8 @@ unsigned long loopTime = 0;
 
 LPD8806 strip = LPD8806(40);
 
+RTC_DS1307 RTC;
+
 #define NULL_PATTERN 0
 #define OFF_PATTERN 68
 #define PAUSE_PATTERN 67
@@ -33,6 +37,7 @@ unsigned int incomingBrightness=0;
 unsigned int incomingRate=0;
 unsigned int rate = 9;
 unsigned int patternByte = NULL_PATTERN;
+
 float brightness = 1.0;
 int r1 = 127, g1 = 127, b1 = 127, r2 = 0, g2 = 0, b2 = 0, r3 = 0, g3 = 0, b3 = 0;
 
@@ -67,9 +72,18 @@ Mapping mapping = &forward;
 //lightPoles pole[NUM_POLES];
 
 void setup() {  
+
   Wire.begin(wireAddress);
   Wire.onReceive(receiveEvent);
   Serial.begin(9600); 
+
+  RTC.begin();
+  if (! RTC.isrunning()) {
+    Serial.println("RTC is NOT running!");
+    // following line sets the RTC to the date & time this sketch was compiled
+    RTC.adjust(DateTime(__DATE__, __TIME__));
+  }
+  
   strip.begin();
 
   hideAll();
@@ -215,8 +229,8 @@ void loop() {
 
   if (isOff)
     return;
-      
-  frame = millis() / (rate+1);
+
+  frame = RTC.now().unixtime() / (rate+1);
 
   // if (currentTime >= loopTime + rate) { 
 
