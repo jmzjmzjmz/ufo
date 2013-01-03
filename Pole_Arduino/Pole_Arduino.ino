@@ -101,7 +101,6 @@ void setup() {
 
 void receiveEvent(int howMany) {
   //wait for 12 incoming bytes
-  Serial.println("RECEIVED EVENT");
   if (Wire.available() > 11) {
 
     incomingRate = Wire.read();
@@ -151,10 +150,9 @@ void receiveEvent(int howMany) {
     //    Serial.println(isOff);
     //    Serial.println("=========================");
 
-    if(patternByte != RESET_FRAME && patternByte != ADV_PATTERN){
       setBrightnRate();
       setColors();
-    }
+
 
 
     if (patternByte == 1) {
@@ -176,14 +174,6 @@ void receiveEvent(int howMany) {
       hideAll();
       showAll();
       isOff = true;
-    } 
-    else if (patternByte == RESET_FRAME) {
-      Serial.println("RESET FRAME");
-      frame = 0;
-    } 
-    else if (patternByte == ADV_PATTERN) {
-      Serial.println("FRAME == " + frame);
-      _loop();
     } 
     else if (patternByte != NULL_PATTERN && patterns[patternByte] != NULL) {
       isOff = false;
@@ -211,7 +201,7 @@ void setBrightnRate() {
 
 }
 
-void _loop() {
+void loop() {
 
   if (isOff)
     return;
@@ -266,13 +256,10 @@ void _loop() {
     loopTime = currentTime;  // Updates loopTime
 
   }
-//advance = false;
+
 
 }
 
-
-void loop(){
-}
 /* Helper functions */
 
 //Input a rateue 0 to 384 to get a color rateue.
