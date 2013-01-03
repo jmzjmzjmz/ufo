@@ -7,7 +7,7 @@
 #include <Wire.h>
 
 #define wireAddress 1 
-
+boolean light = false;
 
 unsigned long currentTime = 0;
 unsigned long loopTime = 0;
@@ -72,6 +72,7 @@ Mapping mapping = &forward;
 //lightPoles pole[NUM_POLES];
 
 void setup() {  
+    pinMode(13, OUTPUT); 
 
   Wire.begin(wireAddress);
   Wire.onReceive(receiveEvent);
@@ -220,7 +221,7 @@ void loop() {
   if (isOff)
     return;
 
-  frame = RTC.now().unixtime() / (rate+1);
+  frame = RTC.now().unixtime();// * 50 / (rate+1);
 
   // if (currentTime >= loopTime + rate) { 
 
@@ -270,6 +271,13 @@ void loop() {
 
   // }
 //advance = false;
+
+  if (light)
+    digitalWrite(13, HIGH);
+  else
+    digitalWrite(13, LOW);
+    
+  light = !light;
 
 }
 
