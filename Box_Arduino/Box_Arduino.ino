@@ -20,8 +20,10 @@ boolean light = false;
 // Access to the pixel strip
 
 #define NUM_POLES 6
+#define NUM_ROWS 64
+#define NUM_COLS 9
 
-LPD8806 strip = LPD8806(40);
+LPD8806 strip = LPD8806(NUM_ROWS * NUM_COLS);
 
 RTC_DS1307 RTC;
 
@@ -79,8 +81,7 @@ Mapping mapping = &forward;
 //lightPoles pole[NUM_POLES];
 
 void setup() {  
-  
-  pinMode(13, OUTPUT); 
+    pinMode(13, OUTPUT); 
 
   Wire.begin(wireAddress);
   Wire.onReceive(receiveEvent);
@@ -97,6 +98,7 @@ void setup() {
 
   hideAll();
   showAll();
+
 
   patterns[62] = &flickerStrobeTwo;
   patterns[63] = &flickerStrobeFour;
@@ -141,37 +143,35 @@ void receiveEvent(int howMany) {
 
     incomingBrightness = Wire.read()/127.0;
 
-    //    Serial.print("rate: ");
-    //    Serial.println(rate);
-    //    Serial.print("pattern: ");
-    //    Serial.println(patternByte);
-    //    Serial.print("r1: ");
-    //    Serial.println(r1);
-    //    Serial.print("g1: ");
-    //    Serial.println(g1);
-    //    Serial.print("b1: ");
-    //    Serial.println(b1);
-    //    Serial.print("r2: ");
-    //    Serial.println(r2);
-    //    Serial.print("g2: ");
-    //    Serial.println(g2);
-    //    Serial.print("b2: ");
-    //    Serial.println(b2);
-    //    Serial.print("r3: ");
-    //    Serial.println(r3);
-    //    Serial.print("g3: ");
-    //    Serial.println(g3);
-    //    Serial.print("b3: ");
-    //    Serial.println(b3);
-    //    Serial.print("brightness: ");
-    //    Serial.println(brightness);
-    //    Serial.print("frame: ");
-    //    Serial.println(frame);
-    //    Serial.println("time: ");
-    //    Serial.println(currentTime);
-    //    Serial.println("isOff: ");
-    //    Serial.println(isOff);
-    //    Serial.println("=========================");
+       Serial.print("rate: ");
+       Serial.println(rate);
+       Serial.print("pattern: ");
+       Serial.println(patternByte);
+       Serial.print("r1: ");
+       Serial.println(r1);
+       Serial.print("g1: ");
+       Serial.println(g1);
+       Serial.print("b1: ");
+       Serial.println(b1);
+       Serial.print("r2: ");
+       Serial.println(r2);
+       Serial.print("g2: ");
+       Serial.println(g2);
+       Serial.print("b2: ");
+       Serial.println(b2);
+       Serial.print("r3: ");
+       Serial.println(r3);
+       Serial.print("g3: ");
+       Serial.println(g3);
+       Serial.print("b3: ");
+       Serial.println(b3);
+       Serial.print("brightness: ");
+       Serial.println(brightness);
+       Serial.print("frame: ");
+       Serial.println(frame);
+       Serial.println("isOff: ");
+       Serial.println(isOff);
+       Serial.println("=========================");
 
       setBrightnRate();
       setColors();
@@ -253,7 +253,7 @@ void loop() {
 
   for (int i = 0; i < strip.numPixels(); i++) {
 
-    int j = mapping(frame, i);
+    int j = mapping(frame, snake64(frame, i));
     uint32_t color = pattern(frame, j);
 
 

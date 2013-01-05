@@ -29,3 +29,24 @@ int dither(long frame, int i) {
     return i;
   }
 }
+
+int snake64(long frame, int i) {
+  
+  int len = 64;
+
+  // Is this an odd column?
+  if (i % (len*2) >= len) {
+
+    // How many odd colums so far?
+    int o = i / (len*2);
+
+    // Fake index and real index add up to this number
+    int s = (len*3-1) + o*(len*4);
+
+    return s - i;
+
+  }
+
+  return i;
+
+}
