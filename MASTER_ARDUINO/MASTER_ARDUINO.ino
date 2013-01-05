@@ -34,7 +34,8 @@ void loop()
 
 void serialEvent() {
   Serial.readBytes(outData,12);
-    Wire.beginTransmission(1);
+  for(int i = 1; i <=2; i++){
+    Wire.beginTransmission(i);
   Wire.write(outData[0]);       
   Wire.write(outData[1]);
   Wire.write(outData[2]);
@@ -48,6 +49,7 @@ void serialEvent() {
   Wire.write(outData[10]);
   Wire.write(outData[11]);  
   Wire.endTransmission();
+  }
   
   //for(int i = 1; i <=numPoles; i++){
 // for(int i = 0; i<12; i++){
