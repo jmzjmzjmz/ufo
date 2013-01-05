@@ -31,10 +31,7 @@ int dither(long frame, int i) {
 }
 
 
-
-
-
-int box(long frame, int i) {
+int snake64(long frame, int i) {
   
   int len = 64;
 
