@@ -32,24 +32,24 @@ void loop()
 }
 
 void serialEvent() {
-    Serial.readBytes(outData,12);
+  Serial.readBytes(outData,12);
   for(int i = 1; i <=2; i++){
     Wire.beginTransmission(i);
-  Wire.write(outData[0]);       
-  Wire.write(outData[1]);
-  Wire.write(outData[2]);
-  Wire.write(outData[3]);
-  Wire.write(outData[4]);
-  Wire.write(outData[5]);
-  Wire.write(outData[6]);
-  Wire.write(outData[7]);
-  Wire.write(outData[8]);
-  Wire.write(outData[9]);
-  Wire.write(outData[10]);
-  Wire.write(outData[11]);  
-  Wire.endTransmission();
+    Wire.write(outData[0]);       
+    Wire.write(outData[1]);
+    Wire.write(outData[2]);
+    Wire.write(outData[3]);
+    Wire.write(outData[4]);
+    Wire.write(outData[5]);
+    Wire.write(outData[6]);
+    Wire.write(outData[7]);
+    Wire.write(outData[8]);
+    Wire.write(outData[9]);
+    Wire.write(outData[10]);
+    Wire.write(outData[11]);  
+    Wire.endTransmission();
   }
-  delay(10);
+  
   //for(int i = 1; i <=numPoles; i++){
 // for(int i = 0; i<12; i++){
 //   outData[i] = inData[i];

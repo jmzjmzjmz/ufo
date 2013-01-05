@@ -35,7 +35,7 @@ RTC_DS1307 RTC;
 
 unsigned int incomingBrightness=0;
 unsigned int incomingRate=0;
-unsigned int rate = 9;
+unsigned int rate = 0;
 unsigned int patternByte = NULL_PATTERN;
 
 // unix timestamp that the sketch starts at
@@ -97,7 +97,6 @@ void setup() {
   hideAll();
   showAll();
 
-  loopTime = millis();
 
   patterns[62] = &flickerStrobeTwo;
   patterns[63] = &flickerStrobeFour;
@@ -227,11 +226,14 @@ void setBrightnRate() {
 
 void loop() {
 
-  if (isOff)
+  if (isOff){
+    hideAll();
+    showAll();
     return;
-
+  }
+  
   unsigned long t = RTC.now().unixtime();// * 50 / (rate+1);
-  unsigned long m = millis()
+  unsigned long m = millis();
 
   if (t != lastTime) {
     internalTimeSmoother = 0;
@@ -240,6 +242,8 @@ void loop() {
   internalTimeSmoother += m - lastMillis;
 
   lastMillis = m;
+  
+  lastTime = t;
 
   frame = (t * 1000 + internalTimeSmoother) / rate;
 
@@ -283,7 +287,7 @@ void loop() {
   if (frame >= MAX_FRAME) { 
     frame = 0;
   } 
-
+Serial.println("frame is " + frame);
     // frame++;
 
     // loopTime = currentTime;  // Updates loopTime

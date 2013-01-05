@@ -28,9 +28,7 @@ void setup() {
   size(400, 400);
   background(0);
   println(Serial.list());
-  port = new Serial(this, Serial.list()[0], 9600); 
-
-
+  port = new Serial(this, "/dev/tty.usbmodem1d11", 9600);//Serial.list()[2], 9600); 
 
   controlP5 = new ControlP5(this);
 
@@ -114,7 +112,7 @@ void setup() {
   headbands[1] = new Headband(0xFFFF);
 
   headbands[headbandSelect].pattern = 80;
-  headbands[headbandSelect].rate = 255;
+  headbands[headbandSelect].rate = 127;
   headbands[headbandSelect].send();
 }
 
