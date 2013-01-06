@@ -132,9 +132,9 @@ uint32_t flickerStrobeTwo(long f, int pixelIndex) {
     return -1;
   }
   
-  if (pixelIndex == (int)params[0]) {
+  if (pixelIndex % NUM_ROWS == (int)params[0]) {
     return color1;
-  } else if (pixelIndex == (int)params[1]) {
+  } else if (pixelIndex % NUM_ROWS == (int)params[1]) {
     return color2;
   } else {
     return color3;
@@ -155,11 +155,11 @@ uint32_t flickerStrobeFour(long f, int pixelIndex) {
     return -1;
   }
   
-  if (pixelIndex == (int)params[0] || 
-      pixelIndex == (int)params[1]) {
+  if (pixelIndex % NUM_ROWS == (int)params[0] || 
+      pixelIndex % NUM_ROWS == (int)params[1]) {
     return color1;
-  } else if (pixelIndex == (int)params[2] || 
-             pixelIndex == (int)params[3]) {
+  } else if (pixelIndex % NUM_ROWS == (int)params[2] || 
+             pixelIndex % NUM_ROWS == (int)params[3]) {
     return color2;
   } else {
     return color3;
