@@ -30,20 +30,22 @@ int dither(long frame, int i) {
   }
 }
 
-int snake64(long frame, int i) {
+int snake(long frame, int i) {
   
-  int len = 64;
+  
 
   // Is this an odd column?
-  if (i % (len*2) >= len) {
+  if (i % (NUM_ROWS*2) >= NUM_ROWS) {
 
-    // How many odd colums so far?
-    int o = i / (len*2);
+    // // How many odd colums so far?
+    // int o = i / (NUM_ROWS*2);
 
-    // Fake index and real index add up to this number
-    int s = (len*3-1) + o*(len*4);
+    // // Fake index and real index add up to this number
+    // int s = (NUM_ROWS*3-1) + o*(NUM_ROWS*4);
 
-    return s - i;
+    // return s - i;
+
+    return (NUM_ROWS*3-1) + (i / (NUM_ROWS*2))*(NUM_ROWS*4) - i;
 
   }
 

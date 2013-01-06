@@ -6,6 +6,20 @@
 #include <SPI.h>
 #include <Wire.h>
 
+// this doesn't work as define?
+unsigned int NUM_ROWS = 64; 
+
+
+// variables i took out of the loop.
+// _i is because it was yelling at me otherwise?
+unsigned long t = 0;
+unsigned long m = 0;
+int _i = 0, j = 0, k = 0;
+uint8_t r = 0, g = 0, b = 0;
+uint32_t color = 0;
+
+#define NUM_PIXELS 400
+
 #define wireAddress 1 
 boolean light = false;
 
@@ -20,10 +34,8 @@ boolean light = false;
 // Access to the pixel strip
 
 #define NUM_POLES 6
-#define NUM_ROWS 64
-#define NUM_COLS 9
 
-LPD8806 strip = LPD8806(NUM_ROWS * NUM_COLS);
+LPD8806 strip = LPD8806(NUM_PIXELS);
 
 RTC_DS1307 RTC;
 
@@ -81,7 +93,8 @@ Mapping mapping = &forward;
 //lightPoles pole[NUM_POLES];
 
 void setup() {  
-    pinMode(13, OUTPUT); 
+  
+  pinMode(13, OUTPUT); 
 
   Wire.begin(wireAddress);
   Wire.onReceive(receiveEvent);
@@ -98,7 +111,6 @@ void setup() {
 
   hideAll();
   showAll();
-
 
   patterns[62] = &flickerStrobeTwo;
   patterns[63] = &flickerStrobeFour;
@@ -143,35 +155,37 @@ void receiveEvent(int howMany) {
 
     incomingBrightness = Wire.read()/127.0;
 
-       Serial.print("rate: ");
-       Serial.println(rate);
-       Serial.print("pattern: ");
-       Serial.println(patternByte);
-       Serial.print("r1: ");
-       Serial.println(r1);
-       Serial.print("g1: ");
-       Serial.println(g1);
-       Serial.print("b1: ");
-       Serial.println(b1);
-       Serial.print("r2: ");
-       Serial.println(r2);
-       Serial.print("g2: ");
-       Serial.println(g2);
-       Serial.print("b2: ");
-       Serial.println(b2);
-       Serial.print("r3: ");
-       Serial.println(r3);
-       Serial.print("g3: ");
-       Serial.println(g3);
-       Serial.print("b3: ");
-       Serial.println(b3);
-       Serial.print("brightness: ");
-       Serial.println(brightness);
-       Serial.print("frame: ");
-       Serial.println(frame);
-       Serial.println("isOff: ");
-       Serial.println(isOff);
-       Serial.println("=========================");
+    //    Serial.print("rate: ");
+    //    Serial.println(rate);
+    //    Serial.print("pattern: ");
+    //    Serial.println(patternByte);
+    //    Serial.print("r1: ");
+    //    Serial.println(r1);
+    //    Serial.print("g1: ");
+    //    Serial.println(g1);
+    //    Serial.print("b1: ");
+    //    Serial.println(b1);
+    //    Serial.print("r2: ");
+    //    Serial.println(r2);
+    //    Serial.print("g2: ");
+    //    Serial.println(g2);
+    //    Serial.print("b2: ");
+    //    Serial.println(b2);
+    //    Serial.print("r3: ");
+    //    Serial.println(r3);
+    //    Serial.print("g3: ");
+    //    Serial.println(g3);
+    //    Serial.print("b3: ");
+    //    Serial.println(b3);
+    //    Serial.print("brightness: ");
+    //    Serial.println(brightness);
+    //    Serial.print("frame: ");
+    //    Serial.println(frame);
+    //    Serial.println("time: ");
+    //    Serial.println(currentTime);
+    //    Serial.println("isOff: ");
+    //    Serial.println(isOff);
+    //    Serial.println("=========================");
 
       setBrightnRate();
       setColors();
@@ -232,8 +246,8 @@ void loop() {
     return;
   }
   
-  unsigned long t = RTC.now().unixtime();// * 50 / (rate+1);
-  unsigned long m = millis();
+  t = RTC.now().unixtime();// * 50 / (rate+1);
+  m = millis();
 
   if (t != lastTime) {
     internalTimeSmoother = 0;
@@ -251,22 +265,24 @@ void loop() {
 
   pattern(-1, 0); // Per frame initialization
 
-  for (int i = 0; i < strip.numPixels(); i++) {
+  for (_i = 0; _i < NUM_PIXELS; _i++) {
 
-    int j = mapping(frame, snake64(frame, i));
-    uint32_t color = pattern(frame, j);
-
-
-    uint8_t r = red(color), g = green(color), b = blue(color);
+    k = snake(frame, _i);
+    j = mapping(frame, k);
+    color = pattern(frame, j);
 
 
     if (brightness < 1) {
+      r = red(color), g = green(color), b = blue(color);
       r = lerp(0, gamma(r), brightness);
       g = lerp(0, gamma(g), brightness);
       b = lerp(0, gamma(b), brightness);
+      strip.setPixelColor(_i, r, g, b);
+
+    } else { 
+      strip.setPixelColor(_i, color);
     }
 
-    strip.setPixelColor(i, r, g, b);
 
 
     //      if (i == 0) {
@@ -287,7 +303,7 @@ void loop() {
   if (frame >= MAX_FRAME) { 
     frame = 0;
   } 
-Serial.println("frame is " + frame);
+// Serial.println("frame is " + frame);
     // frame++;
 
     // loopTime = currentTime;  // Updates loopTime
