@@ -93,7 +93,7 @@ Mapping mapping = &forward;
 //lightPoles pole[NUM_POLES];
 
 void setup() {  
-  
+
   pinMode(13, OUTPUT); 
 
   Wire.begin(wireAddress);
@@ -106,7 +106,7 @@ void setup() {
     // following line sets the RTC to the date & time this sketch was compiled
     RTC.adjust(DateTime(__DATE__, __TIME__));
   }
-  
+
   strip.begin();
 
   hideAll();
@@ -155,41 +155,8 @@ void receiveEvent(int howMany) {
 
     incomingBrightness = Wire.read()/127.0;
 
-    //    Serial.print("rate: ");
-    //    Serial.println(rate);
-    //    Serial.print("pattern: ");
-    //    Serial.println(patternByte);
-    //    Serial.print("r1: ");
-    //    Serial.println(r1);
-    //    Serial.print("g1: ");
-    //    Serial.println(g1);
-    //    Serial.print("b1: ");
-    //    Serial.println(b1);
-    //    Serial.print("r2: ");
-    //    Serial.println(r2);
-    //    Serial.print("g2: ");
-    //    Serial.println(g2);
-    //    Serial.print("b2: ");
-    //    Serial.println(b2);
-    //    Serial.print("r3: ");
-    //    Serial.println(r3);
-    //    Serial.print("g3: ");
-    //    Serial.println(g3);
-    //    Serial.print("b3: ");
-    //    Serial.println(b3);
-    //    Serial.print("brightness: ");
-    //    Serial.println(brightness);
-    //    Serial.print("frame: ");
-    //    Serial.println(frame);
-    //    Serial.println("time: ");
-    //    Serial.println(currentTime);
-    //    Serial.println("isOff: ");
-    //    Serial.println(isOff);
-    //    Serial.println("=========================");
-
-      setBrightnRate();
-      setColors();
-
+    setBrightnRate();
+    setColors();
 
 
     if (patternByte == 1) {
@@ -245,7 +212,7 @@ void loop() {
     showAll();
     return;
   }
-  
+
   t = RTC.now().unixtime();// * 50 / (rate+1);
   m = millis();
 
@@ -254,9 +221,7 @@ void loop() {
   }
 
   internalTimeSmoother += m - lastMillis;
-
   lastMillis = m;
-  
   lastTime = t;
 
   frame = (t * 1000 + internalTimeSmoother) / rate;
@@ -279,7 +244,8 @@ void loop() {
       b = lerp(0, gamma(b), brightness);
       strip.setPixelColor(_i, r, g, b);
 
-    } else { 
+    } 
+    else { 
       strip.setPixelColor(_i, color);
     }
 
@@ -303,20 +269,20 @@ void loop() {
   if (frame >= MAX_FRAME) { 
     frame = 0;
   } 
-// Serial.println("frame is " + frame);
-    // frame++;
+  // Serial.println("frame is " + frame);
+  // frame++;
 
-    // loopTime = currentTime;  // Updates loopTime
+  // loopTime = currentTime;  // Updates loopTime
 
 
   // }
-//advance = false;
+  //advance = false;
 
   if (light)
     digitalWrite(13, HIGH);
   else
     digitalWrite(13, LOW);
-    
+
   light = !light;
 
 }
@@ -339,6 +305,7 @@ void hideAll() {
 void showAll(){
   strip.show(1);    
 }
+
 
 
 

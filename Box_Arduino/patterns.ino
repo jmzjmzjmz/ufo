@@ -5,22 +5,32 @@ uint32_t solidColor(long f, int pixelIndex) {
 
 uint32_t colorWipe(long f, int pixelIndex) {
   if (f < 0) return -1;
-  if (pixelIndex < f % NUM_ROWS)
+  if (pixelIndex % NUM_ROWS < f % NUM_ROWS)
     return color1;
   return color2;
 }
+//
+//uint32_t rainbowClassic(long f, int pixelIndex) {
+//  if (f < 0) return -1;
+//  return Wheel((pixelIndex + f % 384));
+//}
+//
+//// up/down variants to be replaced by mapping
+//uint32_t rainbowCycleClassic(long f, int pixelIndex) {
+//  if (f < 0) return -1;
+//  int j = f % 384 * 5;			
+//  return Wheel((pixelIndex * 384 / NUM_ROWS + j));
+//}
 
 uint32_t rainbow(long f, int pixelIndex) {
-
   if (f < 0) return -1;
-  return Wheel((pixelIndex + f % 384));
+  return Wheel(f % 384);
 }
 
 // up/down variants to be replaced by mapping
 uint32_t rainbowCycle(long f, int pixelIndex) {
   if (f < 0) return -1;
-  int j = f % 384 * 5;			
-  return Wheel((pixelIndex * 384 / NUM_ROWS + j));
+  return Wheel((f + (pixelIndex % NUM_ROWS)*5) % 384);
 }
 
 uint32_t colorAlternator(long f, int pixelIndex) {
@@ -51,7 +61,7 @@ uint32_t bounce(long f, int pixelIndex) {
 uint32_t colorChase(long f, int pixelIndex) {
   if (f < 0) return -1;
   int j = 9;
-  if (pixelIndex >= f%NUM_ROWS && pixelIndex <= f%NUM_ROWS+j)
+  if (pixelIndex%NUM_ROWS >= f%NUM_ROWS && pixelIndex%NUM_ROWS <= f%NUM_ROWS+j)
     return color1;
   return color2;
 }
@@ -65,7 +75,7 @@ uint32_t totesRandom(long f, int pixelIndex) {
 
 uint32_t gradient(long f, int pixelIndex) {
   if (f < 0) return -1;
-  float r = 25;
+  float r = NUM_ROWS;
   return lerpColor(color1, color2, ((pixelIndex + f) % (int)r) / r);
 }
 
@@ -90,7 +100,7 @@ uint32_t colorWipeMeter(long f, int pixelIndex) {
     return -1;
   }
   
-  if (pixelIndex < params[0]) 
+  if (pixelIndex % NUM_ROWS < params[0]) 
     return color1;
   return color2;
   
@@ -105,7 +115,7 @@ uint32_t colorWipeMeterGradient(long f, int pixelIndex) {
     return -1;
   }
 
-  if (pixelIndex < params[0]) 
+  if (pixelIndex % NUM_ROWS < params[0]) 
     return lerpColor(color1, color2, (sin(f/25.0)+1)/2);
   return color3;
 
