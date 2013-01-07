@@ -14,11 +14,13 @@ unsigned int NUM_ROWS = 64;
 // _i is because it was yelling at me otherwise?
 unsigned long t = 0;
 unsigned long m = 0;
+
+
 int _i = 0, j = 0, k = 0;
 uint8_t r = 0, g = 0, b = 0;
 uint32_t color = 0;
 
-#define NUM_PIXELS 400
+#define NUM_PIXELS 526                   
 
 #define wireAddress 1 
 boolean light = false;
@@ -62,7 +64,7 @@ unsigned long internalTimeSmoother = 0;
 float brightness = 1.0;
 int r1 = 127, g1 = 127, b1 = 127, r2 = 0, g2 = 0, b2 = 0, r3 = 0, g3 = 0, b3 = 0;
 
-float params[20];
+float params[30];
 uint32_t color1, color2, color3;
 
 boolean isOff = false;
@@ -157,7 +159,6 @@ void receiveEvent(int howMany) {
 
     setBrightnRate();
     setColors();
-
 
     if (patternByte == 1) {
       mapping = &forward;
