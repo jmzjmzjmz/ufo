@@ -29,8 +29,10 @@ unsigned int NUM_PIXELS = 576;
 unsigned long t = 0;
 unsigned long m = 0;
 int _i = 0, j = 0, k = 0;
-uint8_t r = 0, g = 0, b = 0;
-uint32_t color = 0;
+unsigned char r = 0, g = 0, b = 0;
+struct CRGB color;
+
+struct CRGB NULL_COLOR;
 
 boolean light = false;
 
@@ -65,13 +67,13 @@ float brightness = 1.0;
 int r1 = 127, g1 = 127, b1 = 127, r2 = 0, g2 = 0, b2 = 0, r3 = 0, g3 = 0, b3 = 0;
 
 float params[20];
-uint32_t color1, color2, color3;
+struct CRGB color1, color2, color3;
 
 boolean isOff = false;
 
 long frame = 0;
 
-typedef uint32_t (*Pattern)(long, int);
+typedef CRGB (*Pattern)(long, int);
 Pattern patterns[128];
 Pattern pattern;
 
@@ -94,28 +96,38 @@ void setup() {
   leds = (struct CRGB*)FastSPI_LED.getRGBData(); 
 
   RTC.begin();
-  if (! RTC.isrunning()) {
+  if (!RTC.isrunning()) {
 //    Serial.println("RTC is NOT running!"); /* TUESDAY Specifically upset with this. */
     RTC.adjust(DateTime(__DATE__, __TIME__));
   }
 
-  //  setColors(); 
+  
+  for (int i = 0; i < NUM_PIXELS; i++) {
+    leds[i].r = 255;
+    leds[i].g = 0;
+    leds[i].b = 0;
+  }
+  
+  showAll();
+  delay(500);
+
+  
 
   //  patterns[62] = &flickerStrobeTwo;
 //  patterns[63] = &flickerStrobeFour;
-  patterns[64] = &totesRandom;
+//  patterns[64] = &totesRandom;
   patterns[65] = &rainbowCycle;
-  patterns[66] = &rainbow;
+//  patterns[66] = &rainbow;
   //  // 67 = pause
   //  // 68 = off
-  //  patterns[69] = &solidColor;
+//  patterns[69] = &solidColor;
 //  patterns[70] = &gradient;
   //  patterns[71] = &pulseSine;
   //  patterns[72] = &pulseSaw;
   //  patterns[73] = &bounce;
-  //  patterns[74] = &colorWipe;
-  //  patterns[75] = &colorAlternator;
-  //  patterns[76] = &stripe;
+//  patterns[74] = &colorWipe;
+//  patterns[75] = &colorAlternator;
+  patterns[76] = &stripe;
   //  patterns[77] = &colorChase;
   //  patterns[78] = &colorWipeMeter;
   //  patterns[79] = &colorWipeMeterGradient;
@@ -191,9 +203,17 @@ void receiveEvent(int howMany) {
 
 void setColors() {
 
-  color1 = Color(r1, g1, b1);
-  color2 = Color(r2, g2, b2);
-  color3 = Color(r3, g3, b3);
+  color1.r = r1;
+  color1.g = g1;
+  color1.b = b1;
+  
+  color2.r = r2;
+  color2.g = g2;
+  color2.b = b2;
+  
+  color3.r = r3;
+  color3.g = g3;
+  color3.b = b3;
 
 }
 
@@ -239,18 +259,18 @@ void loop() {
     j = mapping(frame, k);
     color = pattern(frame, j);
 
-    r = red(color), g = green(color), b = blue(color);
+//    r = red(color), g = green(color), b = blue(color);
 
     if (brightness < 1) {
-      r = lerp(0, gamma(r), brightness);
-      g = lerp(0, gamma(g), brightness);
-      b = lerp(0, gamma(b), brightness);
+      color.r = lerp(0, gamma(r), brightness);
+      color.g = lerp(0, gamma(g), brightness);
+      color.b = lerp(0, gamma(b), brightness);
     }
 
     //      strip.setPixelColor(_i, r, g, b);
-    leds[_i].r = r * 2;
-    leds[_i].g = g * 2;
-    leds[_i].b = b * 2;
+    leds[_i].r = color.r;
+    leds[_i].g = color.g;
+    leds[_i].b = color.b;
 
 
     //      if (i == 0) {

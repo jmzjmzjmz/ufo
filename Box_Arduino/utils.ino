@@ -27,7 +27,7 @@ uint32_t lerpColor(uint32_t a, uint32_t b, float t) {
   lerp(blue(a), blue(b), t));
 }
 
-uint32_t Wheel(uint16_t WheelPos) {
+struct CRGB Wheel(uint16_t WheelPos) {
 
   WheelPos %= 384;
   byte r, g, b;
@@ -48,7 +48,7 @@ uint32_t Wheel(uint16_t WheelPos) {
     g = 0;									//green off
     break; 
   }
-  return(Color(r,g,b));
+  return (CRGB){ r, g, b };
 }
 
 PROGMEM prog_uchar gammaTable[]  = {
