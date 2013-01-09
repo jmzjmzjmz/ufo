@@ -127,7 +127,7 @@ void setup() {
   //  patterns[73] = &bounce;
 //  patterns[74] = &colorWipe;
 //  patterns[75] = &colorAlternator;
-  patterns[76] = &stripe;
+//  patterns[76] = &stripe;
   //  patterns[77] = &colorChase;
   //  patterns[78] = &colorWipeMeter;
   //  patterns[79] = &colorWipeMeterGradient;

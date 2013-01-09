@@ -1,3 +1,4 @@
+
 //uint32_t solidColor(long f, int pixelIndex) {
 //  if (f < 0) return NULL_COLOR;
 //  return color1;
