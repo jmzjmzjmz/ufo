@@ -18,7 +18,7 @@ int _i = 0, j = 0, k = 0;
 uint8_t r = 0, g = 0, b = 0;
 uint32_t color = 0;
 
-#define NUM_PIXELS 400
+#define NUM_PIXELS 530
 
 #define wireAddress 1 
 boolean light = false;

@@ -127,14 +127,14 @@ uint32_t flickerStrobeTwo(long f, int pixelIndex) {
   
   if (f == -1) {
     // Select two random pixels.
-    params[0] = random(NUM_ROWS);
-    params[1] = random(NUM_ROWS);
+    params[0] = random(strip.numPixels());
+    params[1] = random(strip.numPixels());
     return -1;
   }
   
-  if (pixelIndex % NUM_ROWS == (int)params[0]) {
+  if (pixelIndex == (int)params[0]) {
     return color1;
-  } else if (pixelIndex % NUM_ROWS == (int)params[1]) {
+  } else if (pixelIndex == (int)params[1]) {
     return color2;
   } else {
     return color3;
@@ -148,18 +148,42 @@ uint32_t flickerStrobeFour(long f, int pixelIndex) {
   
   if (f == -1) {
     // Select four random pixels.
-    params[0] = random(NUM_ROWS);
-    params[1] = random(NUM_ROWS);
-    params[2] = random(NUM_ROWS);
-    params[3] = random(NUM_ROWS);
+    params[0] = random(strip.numPixels());
+    params[1] = random(strip.numPixels());
+    params[2] = random(strip.numPixels());
+    params[3] = random(strip.numPixels());
+    params[4] = random(strip.numPixels());
+    params[5] = random(strip.numPixels());
+    params[6] = random(strip.numPixels());
+    params[7] = random(strip.numPixels());
+    params[8] = random(strip.numPixels());
+    params[9] = random(strip.numPixels());
+    params[10] = random(strip.numPixels());
+    params[11] = random(strip.numPixels());
+    params[12] = random(strip.numPixels());
+    params[13] = random(strip.numPixels());
+    params[14] = random(strip.numPixels());
+    params[15] = random(strip.numPixels());
     return -1;
   }
   
-  if (pixelIndex % NUM_ROWS == (int)params[0] || 
-      pixelIndex % NUM_ROWS == (int)params[1]) {
+  if (pixelIndex == (int)params[0] || 
+      pixelIndex == (int)params[1] || 
+      pixelIndex == (int)params[2] || 
+      pixelIndex == (int)params[3] || 
+      pixelIndex == (int)params[4] || 
+      pixelIndex == (int)params[5] || 
+      pixelIndex == (int)params[6] || 
+      pixelIndex == (int)params[7]) {
     return color1;
-  } else if (pixelIndex % NUM_ROWS == (int)params[2] || 
-             pixelIndex % NUM_ROWS == (int)params[3]) {
+  } else if (pixelIndex == (int)params[8] || 
+      pixelIndex == (int)params[9] || 
+      pixelIndex == (int)params[10] || 
+      pixelIndex == (int)params[11] || 
+      pixelIndex == (int)params[12] || 
+      pixelIndex == (int)params[13] || 
+      pixelIndex == (int)params[14] || 
+      pixelIndex == (int)params[15]) {
     return color2;
   } else {
     return color3;
