@@ -69,8 +69,8 @@ uint32_t colorChase(long f, int pixelIndex) {
 uint32_t totesRandom(long f, int pixelIndex) {
   if (f < 0) return -1;
   if ((pixelIndex + f/10) % 2 == 0) 
-    return strip.Color(random(127), random(127), random(127));
-  return strip.Color(0, 0, 0);
+    return Color(random(127), random(127), random(127));
+  return Color(0, 0, 0);
 }
 
 uint32_t gradient(long f, int pixelIndex) {
@@ -127,8 +127,8 @@ uint32_t flickerStrobeTwo(long f, int pixelIndex) {
   
   if (f == -1) {
     // Select two random pixels.
-    params[0] = random(strip.numPixels());
-    params[1] = random(strip.numPixels());
+    params[0] = random(NUM_PIXELS);
+    params[1] = random(NUM_PIXELS);
     return -1;
   }
   
@@ -148,22 +148,22 @@ uint32_t flickerStrobeFour(long f, int pixelIndex) {
   
   if (f == -1) {
     // Select four random pixels.
-    params[0] = random(strip.numPixels());
-    params[1] = random(strip.numPixels());
-    params[2] = random(strip.numPixels());
-    params[3] = random(strip.numPixels());
-    params[4] = random(strip.numPixels());
-    params[5] = random(strip.numPixels());
-    params[6] = random(strip.numPixels());
-    params[7] = random(strip.numPixels());
-    params[8] = random(strip.numPixels());
-    params[9] = random(strip.numPixels());
-    params[10] = random(strip.numPixels());
-    params[11] = random(strip.numPixels());
-    params[12] = random(strip.numPixels());
-    params[13] = random(strip.numPixels());
-    params[14] = random(strip.numPixels());
-    params[15] = random(strip.numPixels());
+    params[0] = random(NUM_PIXELS);
+    params[1] = random(NUM_PIXELS);
+    params[2] = random(NUM_PIXELS);
+    params[3] = random(NUM_PIXELS);
+    params[4] = random(NUM_PIXELS);
+    params[5] = random(NUM_PIXELS);
+    params[6] = random(NUM_PIXELS);
+    params[7] = random(NUM_PIXELS);
+    params[8] = random(NUM_PIXELS);
+    params[9] = random(NUM_PIXELS);
+    params[10] = random(NUM_PIXELS);
+    params[11] = random(NUM_PIXELS);
+    params[12] = random(NUM_PIXELS);
+    params[13] = random(NUM_PIXELS);
+    params[14] = random(NUM_PIXELS);
+    params[15] = random(NUM_PIXELS);
     return -1;
   }
   
