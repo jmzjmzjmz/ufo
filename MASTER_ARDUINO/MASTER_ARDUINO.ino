@@ -32,9 +32,9 @@ void loop()
 }
 
 void serialEvent() {
-  Serial.readBytes(outData,12);
-  for(int i = 1; i <=2; i++){
-    Wire.beginTransmission(i);
+  Serial.readBytes(outData,13);
+//  for(int i = 1; i <=2; i++){
+    Wire.beginTransmission(outData[12]);
     Wire.write(outData[0]);       
     Wire.write(outData[1]);
     Wire.write(outData[2]);
@@ -48,13 +48,15 @@ void serialEvent() {
     Wire.write(outData[10]);
     Wire.write(outData[11]);  
     Wire.endTransmission();
-  }
+    delay(10); // how come james?
+//  }
   
   //for(int i = 1; i <=numPoles; i++){
 // for(int i = 0; i<12; i++){
 //   outData[i] = inData[i];
 // }
   // }
+
 }
 
 
