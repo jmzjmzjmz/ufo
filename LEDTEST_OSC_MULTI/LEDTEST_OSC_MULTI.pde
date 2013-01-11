@@ -23,20 +23,17 @@ String[] myPatterns = new String[81];
 import controlP5.*;
 ControlP5 controlP5;
 
+Radio r2;
+
 Headband[] headbands = new Headband[3];
 
 void setup() {
   size(400, 650);
   background(0);
   println(Serial.list());
+  
   port = new Serial(this, Serial.list()[0], 9600); 
-
-
-
   controlP5 = new ControlP5(this);
-
-
-
 
   /* start oscP5, listening for incoming messages at port 12005 */
   oscP5 = new OscP5(this, compPort);
@@ -51,7 +48,7 @@ void setup() {
   myRemoteLocation = new NetAddress(iPadIP, iPadPort);
   myCompLocation = new NetAddress(compIP, compPort);
 
-  Radio r2 = controlP5.addRadio("whichLights", 5, 270);
+  r2 = controlP5.addRadio("whichLights", 5, 270);
   r2.add("vertical1", 0);
   r2.add("vertical2", 1);
   r2.add("vertical3", 2);
@@ -67,6 +64,7 @@ void setup() {
   r2.add("box1", 12);
   r2.add("box2", 13);
   r2.add("box3", 14);
+  r2.add("dmx", 14);
 
   Radio r = controlP5.addRadio("radio", 270, 5);
   r.deactivateAll(); // use deactiveAll to not make the first radio button active.
@@ -75,19 +73,19 @@ void setup() {
   r.add("colorWipeMeter", 78);
   r.add("colorChase", 77);
   r.add("stripe", 76);
-  r.add("colorAlternator", 75);
+  r.add("colorAlternator   & DMX", 75);
   r.add("colorWipe", 74);
   r.add("bounce", 73);
   r.add("pulseSaw", 72);
-  r.add("pulseSine", 71);
+  r.add("pulseSine         & DMX", 71);
   r.add("gradient", 70);
-  r.add("solidColor", 69);
+  r.add("solidColor        & DMX", 69);
   r.add("** OFF", 68);
-  r.add("rainbow", 66);
-  r.add("rainbowCycle", 65);
+  r.add("rainbow          & DMX", 66);
+  r.add("rainbowCycle     & DMX", 65);
   r.add("totesRandom", 64);
   r.add("flickerStrobeFour", 63);
-  r.add("flickerStrobeTwo", 62);
+  r.add("flickerStrobeTwo & DMX", 62);
   r.add("** FORWARD", 1);
   r.add("** BACKWARD", 2);
   r.add("** PEAK", 3);
@@ -150,10 +148,17 @@ void keyPressed() {
 }
 
 void radio(int theId) {
+
   if (theId < 0) return;
   headbands[headbandSelect].pattern = (byte)theId;
   headbands[headbandSelect].send();
+  
 }  
+
+void whichLights(int theId) {
+  WHICH_LIGHTS = theId;
+}  
+
 
 /* incoming osc message are forwarded to the oscEvent method. */
 void oscEvent(OscMessage theOscMessage) {
