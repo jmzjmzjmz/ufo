@@ -17,7 +17,7 @@ typedef struct Color (*Pattern)(long, int);
 Pattern patterns[6];
 Pattern pattern;
 
-struct Color color1 = (Color){ 255, 0, 0, 0, 0 };
+struct Color color1 = (Color){ 0, 255, 0, 0, 0 };
 struct Color color2 = (Color){ 0, 0, 255, 0, 0 };
 
 
@@ -25,7 +25,7 @@ void setup() {
   DmxSimple.usePin(3);
   DmxSimple.maxChannel(4);  
   sanityCheck();
-  pattern = &rainbowCycle;
+  pattern = &crossfade;
 }
 
 void loop() {
@@ -34,7 +34,7 @@ void loop() {
 
   for (int i = 0; i < NUM_DMX; i++) {
 
-    int f = frame / 10; // in lieu of rate
+    int f = frame / 50; // in lieu of rate
 
     struct Color c = pattern(f, i);
 
@@ -62,10 +62,6 @@ struct Color colorAlternator(long f, int dmxIndex) {
   return color2;
 }
 
-struct Color totesRandom(long f, int dmxIndex) {
-  return (Color){ random()*255, random()*255, random()*255, random()*255, random()*255 };
-}
-
 struct Color rainbow(long f, int dmxIndex) {
   return wheel(f);
 }
@@ -75,13 +71,13 @@ struct Color rainbowCycle(long f, int dmxIndex) {
 }
 
 struct Color crossfade(long f, int dmxIndex) {
-  float r = 2500;
+  float r = 100;
   return lerpColor(color1, color2, (sin(f/r)+1)/2);
 }
 
 
 // Utilities
-struct Color wheel(int WheelPos) {
+struct Color wheel(uint16_t WheelPos) {
   WheelPos %= 384;
   int r, g, b;
   switch(WheelPos / 128) {
