@@ -21,10 +21,8 @@ float triangleWave(int frame, float rate) {
 }
 
 
-uint32_t lerpColor(uint32_t a, uint32_t b, float t) {
-  return Color(lerp(red(a), red(b), t), 
-  lerp(green(a), green(b), t), 
-  lerp(blue(a), blue(b), t));
+struct CRGB lerpColor(struct CRGB a, struct CRGB b, float t) {
+  return (CRGB){ lerp(a.r, b.r, t), lerp(a.g, b.g, t), lerp(b.b, b.b, t) };
 }
 
 struct CRGB Wheel(uint16_t WheelPos) {

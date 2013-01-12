@@ -57,39 +57,39 @@ struct CRGB stripe(long f, int pixelIndex) {
 //  return lerpColor(color1, color2, b);
 //}
 //
-//// this guy's not quite the same.
-//uint32_t colorChase(long f, int pixelIndex) {
-//  if (f < 0) return NULL_COLOR;
-//  int j = 9;
-//  if (pixelIndex%NUM_ROWS >= f%NUM_ROWS && pixelIndex%NUM_ROWS <= f%NUM_ROWS+j)
-//    return color1;
-//  return color2;
-//}
+// this guy's not quite the same.
+struct CRGB colorChase(long f, int pixelIndex) {
+ if (f < 0) return NULL_COLOR;
+ int j = 9;
+ if (pixelIndex%NUM_ROWS >= f%NUM_ROWS && pixelIndex%NUM_ROWS <= f%NUM_ROWS+j)
+   return color1;
+ return color2;
+}
 //
-// struct CRGB totesRandom(long f, int pixelIndex) {
-//  if (f < 0) return NULL_COLOR;
-//  if ((pixelIndex + f/10) % 2 == 0) 
-//    return (CRGB){(int)random(127), (int)random(127), (int)random(127)};
-//  return (CRGB){0, 0, 0}
-// }
+struct CRGB totesRandom(long f, int pixelIndex) {
+ if (f < 0) return NULL_COLOR;
+ if ((pixelIndex + f/10) % 2 == 0) 
+   return (CRGB){(unsigned char)random(127), (unsigned char)random(127), (unsigned char)random(127)};
+ return (CRGB){0, 0, 0};
+}
 
-// uint32_t gradient(long f, int pixelIndex) {
-//  if (f < 0) return NULL_COLOR;
-//  float r = NUM_ROWS;
-//  return lerpColor(color1, color2, ((pixelIndex + f) % (int)r) / r);
-// }
-//
-//uint32_t pulseSine(long f, int pixelIndex) {
-//  if (f < 0) return NULL_COLOR;
-//  float r = 25;
-//  return lerpColor(color1, color2, (sin(f/r)+1)/2);
-//}
-//
-//uint32_t pulseSaw(long f, int pixelIndex) {
-//  if (f < 0) return NULL_COLOR;
-//  float r = 25;
-//  return lerpColor(color1, color2, (f % (int)r / r));
-//}
+struct CRGB gradient(long f, int pixelIndex) {
+ if (f < 0) return NULL_COLOR;
+ float r = NUM_ROWS;
+ return lerpColor(color1, color2, ((pixelIndex + f) % (int)r) / r);
+}
+
+struct CRGB pulseSine(long f, int pixelIndex) {
+ if (f < 0) return NULL_COLOR;
+ float r = 25;
+ return lerpColor(color1, color2, (sin(f/r)+1)/2);
+}
+
+struct CRGB pulseSaw(long f, int pixelIndex) {
+ if (f < 0) return NULL_COLOR;
+ float r = 25;
+ return lerpColor(color1, color2, (f % (int)r / r));
+}
 //
 //uint32_t colorWipeMeter(long f, int pixelIndex) {
 //  
@@ -120,28 +120,28 @@ struct CRGB stripe(long f, int pixelIndex) {
 //  return color3;
 //
 //}
-//
-//uint32_t flickerStrobeTwo(long f, int pixelIndex) {
-//  
-//  if (f == -2) return NULL_COLOR;
-//  
-//  if (f == CRGB) {
-//    // Select two random pixels.
-//    params[0] = random(NUM_PIXELS);
-//    params[1] = random(NUM_PIXELS);
-//    return NULL_COLOR;
-//  }
-//  
-//  if (pixelIndex == (int)params[0]) {
-//    return color1;
-//  } else if (pixelIndex == (int)params[1]) {
-//    return color2;
-//  } else {
-//    return color3;
-//  }
-//  
-//}
-//
+
+struct CRGB flickerStrobeTwo(long f, int pixelIndex) {
+ 
+ if (f == -2) return NULL_COLOR;
+ 
+ if (f == -1) {
+   // Select two random pixels.
+   params[0] = random(NUM_PIXELS);
+   params[1] = random(NUM_PIXELS);
+   return NULL_COLOR;
+ }
+ 
+ if (pixelIndex == (int)params[0]) {
+   return color1;
+ } else if (pixelIndex == (int)params[1]) {
+   return color2;
+ } else {
+   return color3;
+ }
+ 
+}
+
 struct CRGB flickerStrobeFour(long f, int pixelIndex) {
  
  if (f == -2) return NULL_COLOR;
@@ -190,19 +190,19 @@ struct CRGB flickerStrobeFour(long f, int pixelIndex) {
  }
  
 }
-//
-//uint32_t pulseOnce(long f, int pixelIndex) {
-//  
-//  if (f == -2) {
-//    params[0] = 1.0;
-//    return NULL_COLOR;
-//  }
-//  
-//  if (f == -1) {
-//    params[0] *= 0.9;
-//    return NULL_COLOR;
-//  }
-//  
-//  return lerpColor(color2, color1, params[0]);
-//  
-//}
+
+struct CRGB pulseOnce(long f, int pixelIndex) {
+ 
+ if (f == -2) {
+   params[0] = 1.0;
+   return NULL_COLOR;
+ }
+ 
+ if (f == -1) {
+   params[0] *= 0.9;
+   return NULL_COLOR;
+ }
+ 
+ return lerpColor(color2, color1, params[0]);
+ 
+}

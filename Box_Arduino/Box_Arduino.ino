@@ -10,9 +10,11 @@
 #include <FastSPI_LED.h>
 
 struct CRGB { 
-  unsigned char b; 
-  unsigned char r; 
+
   unsigned char g; 
+  unsigned char r; 
+  unsigned char b; 
+
 };
 
 struct CRGB *leds;
@@ -53,7 +55,7 @@ RTC_DS1307 RTC;
 
 unsigned int incomingBrightness = 0;
 unsigned int incomingRate = 0;
-unsigned int rate = 2;
+unsigned int rate = 60;
 unsigned int patternByte = NULL_PATTERN;
 
 // unix timestamp that the sketch starts at
@@ -64,7 +66,9 @@ unsigned long lastMillis = 0;
 unsigned long internalTimeSmoother = 0;
 
 float brightness = 1.0;
-int r1 = 127, g1 = 127, b1 = 127, r2 = 0, g2 = 0, b2 = 0, r3 = 0, g3 = 0, b3 = 0;
+int r1 = 127, g1 = 0,   b1 = 0, 
+    r2 = 0,   g2 = 127,   b2 = 0, 
+    r3 = 0,   g3 = 0,   b3 = 0;
 
 float params[20];
 struct CRGB color1, color2, color3;
@@ -72,6 +76,7 @@ struct CRGB color1, color2, color3;
 boolean isOff = false;
 
 long frame = 0;
+long lastFrame = -1;
 
 typedef CRGB (*Pattern)(long, int);
 Pattern patterns[128];
@@ -102,31 +107,33 @@ void setup() {
 //   }
 
   
-    setColors();
+  setColors();
 
   
 
-  //  patterns[62] = &flickerStrobeTwo;
- patterns[63] = &flickerStrobeFour;
-  // patterns[64] = &totesRandom;
+   patterns[62] = &flickerStrobeTwo;
+  patterns[63] = &flickerStrobeFour;
+  patterns[64] = &totesRandom;
   patterns[65] = &rainbowCycle;
   patterns[66] = &rainbow;
   //  // 67 = pause
   //  // 68 = off
- patterns[69] = &solidColor;
- // patterns[70] = &gradient;
-  //  patterns[71] = &pulseSine;
-  //  patterns[72] = &pulseSaw;
+  patterns[69] = &solidColor;
+  patterns[70] = &gradient;
+  patterns[71] = &pulseSine;
+  patterns[72] = &pulseSaw;
   //  patterns[73] = &bounce;
- patterns[74] = &colorWipe;
-//  patterns[75] = &colorAlternator;
- patterns[76] = &stripe;
-  //  patterns[77] = &colorChase;
-  //  patterns[78] = &colorWipeMeter;
+  patterns[74] = &colorWipe;
+  patterns[75] = &colorAlternator;
+  patterns[76] = &stripe;
+   patterns[77] = &colorChase;
+   // patterns[78] = &colorWipeMeter;
   //  patterns[79] = &colorWipeMeterGradient;
-//  patterns[80] = &pulseOnce;
+  patterns[80] = &pulseOnce;
+
 
   pattern = &flickerStrobeFour;
+  // pattern(-2, 0);
 
   // showAll();
 
@@ -238,7 +245,14 @@ void loop() {
 
   // if (currentTime >= loopTime + rate) { 
 
-  pattern(-1, 0); // Per frame initialization
+  Serial.println(frame);
+  Serial.println(lastFrame);
+  Serial.println("------");
+
+  if (frame != lastFrame)
+    pattern(-1, 0); // Per frame initialization
+
+  lastFrame = frame;
 
   for (_i = 0; _i < NUM_PIXELS; _i++) {
 
