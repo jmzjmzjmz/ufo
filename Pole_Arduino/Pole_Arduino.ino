@@ -321,7 +321,7 @@ void hideAll() {
 }
 
 void showAll(){
-  strip.show(1);    
+  strip.show();    
 }
 
 

@@ -20,7 +20,7 @@ int _i = 0, j = 0, k = 0;
 uint8_t r = 0, g = 0, b = 0;
 uint32_t color = 0;
 
-#define NUM_PIXELS 526                   
+#define NUM_PIXELS 520                   
 
 #define wireAddress 1 
 boolean light = false;
@@ -304,7 +304,7 @@ void hideAll() {
 }
 
 void showAll(){
-  strip.show(1);    
+  strip.show();    
 }
 
 

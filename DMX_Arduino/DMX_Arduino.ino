@@ -1,6 +1,8 @@
 #include <DmxSimple.h>
 #include <Wire.h>
 
+#define OFF_PATTERN 68
+
 unsigned int NUM_DMX = 4;
 unsigned int rate = 127;
 
@@ -40,12 +42,12 @@ void setup() {
      // sanityCheck();
 
 
-  patterns[69] = &solidColor;
-  patterns[75] = &colorAlternator;
-  patterns[66] = &rainbow;
-  patterns[65] = &rainbowCycle;
-  patterns[71] = &crossfade;
   patterns[62] = &flickerStrobe;
+  patterns[65] = &rainbowCycle;
+  patterns[66] = &rainbow;
+  patterns[69] = &solidColor;
+  patterns[71] = &crossfade;
+  patterns[75] = &colorAlternator;
 
   pattern = &flickerStrobe;
 
@@ -105,8 +107,14 @@ void serialEvent() {
     
     Serial.read();
 
+    if (patternByte == OFF_PATTERN) {
+      isOff = true;
+    } else if (patterns[patternByte] != NULL) {
+      isOff = false;
+      pattern = patterns[patternByte];
+    }
 
-    pattern = patterns[patternByte];
+
 
   }
 
@@ -135,7 +143,7 @@ struct Color rainbow(long f, int dmxIndex) {
 }
 
 struct Color rainbowCycle(long f, int dmxIndex) {
-  return wheel(f + dmxIndex * 20);
+  return wheel(f + dmxIndex * 40);
 }
 
 struct Color crossfade(long f, int dmxIndex) {
@@ -161,6 +169,11 @@ struct Color flickerStrobe(long f, int dmxIndex) {
   
 }
 
+void hideAll() {
+  for (int i = 0; i < NUM_DMX; i++) {
+    setDMXColor(i, 0, 0, 0, 0, 0);
+  }
+}
 
 // Utilities
 struct Color wheel(uint16_t WheelPos) {
