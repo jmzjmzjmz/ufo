@@ -92,7 +92,8 @@ void setup() {
 
   // Wire.begin(wireAddress);
 //  Wire.onReceive(receiveEvent); /* TUESDAY Specifically upset with this. */
-  Serial.begin(115200); 
+ // Serial.begin(38400);
+  Serial1.begin(9600); 
 
   FastSPI_LED.setLeds(NUM_PIXELS);
   FastSPI_LED.setChipset(CFastSPI_LED::SPI_LPD8806);
@@ -103,7 +104,7 @@ void setup() {
 
 //   RTC.begin();
 //   if (!RTC.isrunning()) {
-// //    Serial.println("RTC is NOT running!"); /* TUESDAY Specifically upset with this. */
+// //    Serial1.println("RTC is NOT running!"); /* TUESDAY Specifically upset with this. */
 //     RTC.adjust(DateTime(__DATE__, __TIME__));
 //   }
 
@@ -123,7 +124,7 @@ void setup() {
   patterns[70] = &gradient;
   patterns[71] = &pulseSine;
   patterns[72] = &pulseSaw;
-  //  patterns[73] = &bounce;
+  patterns[73] = &bounce;
   patterns[74] = &colorWipe;
   patterns[75] = &colorAlternator;
   patterns[76] = &stripe;
@@ -146,29 +147,27 @@ void read() {
 
   int len = 12;
   char inData[len];
-  bool read = false;
 
-  if (Serial.available() > len - 1) {
-    Serial.readBytes(inData, len);
-    read = true;
-  }
+  if (Serial1.available() > len - 1) {
+    // Serial1.readBytes(inData, len);
 
-  if (read) {
+  
+  
 
-    rate = inData[0];
-    patternByte = inData[1];
+    rate = Serial1.read();
+    patternByte = Serial1.read();
 
-    r1 = inData[2];
-    g1 = inData[3];
-    b1 = inData[4];
-    r2 = inData[5];
-    g2 = inData[6];
-    b2 = inData[7];
-    r3 = inData[8];
-    g3 = inData[9];
-    b3 = inData[10];
+    r1 = Serial1.read();
+    g1 = Serial1.read();
+    b1 = Serial1.read();
+    r2 = Serial1.read();
+    g2 = Serial1.read();
+    b2 = Serial1.read();
+    r3 = Serial1.read();
+    g3 = Serial1.read();
+    b3 = Serial1.read();
 
-    brightness = inData[11]/127.0;
+    brightness = Serial1.read()/127.0;
 
     // setBrightnRate();
     setColors();
@@ -257,9 +256,6 @@ void loop() {
 
   // if (currentTime >= loopTime + rate) { 
 
-  Serial.println(frame);
-  Serial.println(lastFrame);
-  Serial.println("------");
 
   if (frame != lastFrame)
     pattern(-1, 0); // Per frame initialization
@@ -287,14 +283,14 @@ void loop() {
 
 
     //      if (i == 0) {
-    //        Serial.println("color ");
-    //        Serial.println(r);
-    //        Serial.println(g);
-    //        Serial.println(b);
-    //        Serial.println("frame ");
-    //        Serial.println(frame);
+    //        Serial1.println("color ");
+    //        Serial1.println(r);
+    //        Serial1.println(g);
+    //        Serial1.println(b);
+    //        Serial1.println("frame ");
+    //        Serial1.println(frame);
     //        
-    //        Serial.println("===================== ");
+    //        Serial1.println("===================== ");
     //      }
 
   }
@@ -304,7 +300,7 @@ void loop() {
   if (frame >= MAX_FRAME) { 
     frame = 0;
   } 
-  // Serial.println("frame is " + frame);
+  // Serial1.println("frame is " + frame);
   // frame++;
 
   // loopTime = currentTime;  // Updates loopTime

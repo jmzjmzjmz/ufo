@@ -36,15 +36,15 @@ struct CRGB stripe(long f, int pixelIndex) {
     return color1;
   return color2;
 }
-//
-//uint32_t bounce(long f, int pixelIndex) {
-//  if (f < 0) return NULL_COLOR;
-//  int r = 5;
-//  float b = triangleWave(f, r) + (pixelIndex+f)/(r*2);
-//  b = b - floor(b);
-//  return lerpColor(color1, color2, b);
-//}
-//
+
+struct CRGB bounce(long f, int pixelIndex) {
+ if (f < 0) return NULL_COLOR;
+ int r = 5;
+ float b = triangleWave(f, r) + (pixelIndex+f)/(r*2);
+ b = b - floor(b);
+ return lerpColor(color1, color2, b);
+}
+
 // this guy's not quite the same.
 struct CRGB colorChase(long f, int pixelIndex) {
  if (f < 0) return NULL_COLOR;

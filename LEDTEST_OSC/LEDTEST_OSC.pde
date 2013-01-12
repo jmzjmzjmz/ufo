@@ -28,7 +28,7 @@ void setup() {
   size(400, 400);
   background(0);
   println(Serial.list());
-  port = new Serial(this, Serial.list()[4], 115200); 
+  port = new Serial(this, Serial.list()[4], 9600); 
 
 
 
