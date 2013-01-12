@@ -9,19 +9,7 @@ struct CRGB colorWipe(long f, int pixelIndex) {
     return color1;
   return color2;
 }
-//
-//uint32_t rainbowClassic(long f, int pixelIndex) {
-//  if (f < 0) return NULL_COLOR;
-//  return Wheel((pixelIndex + f % 384));
-//}
-//
-//// up/down variants to be replaced by mapping
-//uint32_t rainbowCycleClassic(long f, int pixelIndex) {
-//  if (f < 0) return NULL_COLOR;
-//  int j = f % 384 * 5;			
-//  return Wheel((pixelIndex * 384 / NUM_ROWS + j));
-//}
-//
+
 struct CRGB rainbow(long f, int pixelIndex) {
  if (f < 0) return NULL_COLOR;
  return Wheel(f % 384);
@@ -65,7 +53,7 @@ struct CRGB colorChase(long f, int pixelIndex) {
    return color1;
  return color2;
 }
-//
+
 struct CRGB totesRandom(long f, int pixelIndex) {
  if (f < 0) return NULL_COLOR;
  if ((pixelIndex + f/10) % 2 == 0) 
@@ -89,9 +77,8 @@ struct CRGB pulseSaw(long f, int pixelIndex) {
  if (f < 0) return NULL_COLOR;
  float r = 25;
  return lerpColor(color1, color2, (f % (int)r / r));
-
 }
-//
+
 //uint32_t colorWipeMeter(long f, int pixelIndex) {
 //  
 //  if (f == -2) return NULL_COLOR;

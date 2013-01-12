@@ -92,7 +92,7 @@ void setup() {
 
   // Wire.begin(wireAddress);
 //  Wire.onReceive(receiveEvent); /* TUESDAY Specifically upset with this. */
-  Serial.begin(9600); 
+  Serial.begin(115200); 
 
   FastSPI_LED.setLeds(NUM_PIXELS);
   FastSPI_LED.setChipset(CFastSPI_LED::SPI_LPD8806);
@@ -112,7 +112,7 @@ void setup() {
 
   
 
-   patterns[62] = &flickerStrobeTwo;
+  patterns[62] = &flickerStrobeTwo;
   patterns[63] = &flickerStrobeFour;
   patterns[64] = &totesRandom;
   patterns[65] = &rainbowCycle;
@@ -142,26 +142,35 @@ void setup() {
 
 }
 
-void receiveEvent(int howMany) {
-  //wait for 12 incoming bytes
-  if (Wire.available() > 11) {
+void read() {
 
-    incomingRate = Wire.read();
-    patternByte = Wire.read();
+  int len = 12;
+  unsigned char inData[len];
+  unsigned char byteCount = 0;
 
-    r1 = Wire.read();
-    g1 = Wire.read();
-    b1 = Wire.read();
-    r2 = Wire.read();
-    g2 = Wire.read();
-    b2 = Wire.read();
-    r3 = Wire.read();
-    g3 = Wire.read();
-    b3 = Wire.read();
+  while (Serial.available() && byteCount < len) {
+    inData[byteCount] = Serial.read();
+    byteCount++;
+  }
 
-    incomingBrightness = Wire.read()/127.0;
+  if (byteCount == len) {
 
-    setBrightnRate();
+    rate = inData[0];
+    patternByte = inData[1];
+
+    r1 = inData[2];
+    g1 = inData[3];
+    b1 = inData[4];
+    r2 = inData[5];
+    g2 = inData[6];
+    b2 = inData[7];
+    r3 = inData[8];
+    g3 = inData[9];
+    b3 = inData[10];
+
+    brightness = inData[11]/127.0;
+
+    // setBrightnRate();
     setColors();
 
     if (patternByte == 1) {
@@ -190,8 +199,9 @@ void receiveEvent(int howMany) {
       pattern(-2, 0); // On select initialization
     }
 
-
   }
+
+
 
 }
 
@@ -223,6 +233,8 @@ void setBrightnRate() {
 }
 
 void loop() {
+
+  read();
 
   if (isOff){
     hideAll();
