@@ -32,9 +32,12 @@ float params[20];
 bool isOff = false;
 
 void setup() {
+
+  Serial.begin(9600); 
+
   DmxSimple.usePin(3);
   DmxSimple.maxChannel(4);  
-  sanityCheck();
+     // sanityCheck();
 
 
   patterns[69] = &solidColor;
@@ -50,21 +53,24 @@ void setup() {
 
 void loop() {
   
-  frame++;
 
   if (isOff)
     return;
 
   currentTime = millis();
 
+
+
   if (currentTime >= loopTime + rate) { 
+
+
+    frame++;
 
     pattern(-1, 0); // per frame init
 
     for (int i = 0; i < NUM_DMX; i++) {
 
-      int f = frame;
-      struct Color c = pattern(f, i);
+      struct Color c = pattern(frame, i);
 
       setDMXColor(i, c.r, c.g, c.b, c.a, c.w);
 
@@ -77,21 +83,28 @@ void loop() {
 }
 
 
-void receiveEvent(int howMany) {
+void serialEvent() {
 
   // wait for 12 incoming bytes
-  if (Wire.available() > 11) {
+  if (Serial.available() > 11) {
 
-    rate = Wire.read();
-    byte patternByte = Wire.read();
+    rate = Serial.read();
+    byte patternByte = Serial.read();
 
-    color1.r = Wire.read();
-    color1.g = Wire.read();
-    color1.b = Wire.read();
+    color1.r = Serial.read();
+    color1.g = Serial.read();
+    color1.b = Serial.read();
 
-    color2.r = Wire.read();
-    color2.g = Wire.read();
-    color2.b = Wire.read();
+    color2.r = Serial.read();
+    color2.g = Serial.read();
+    color2.b = Serial.read();
+
+    Serial.read();
+    Serial.read();
+    Serial.read();
+    
+    Serial.read();
+
 
     pattern = patterns[patternByte];
 
@@ -187,8 +200,8 @@ int lerp(int a, int b, float t) {
 }
 
 void sanityCheck() {
-
-  int d = 100;
+  return;
+  int d = 10;
 
   for (int i = 0; i < NUM_DMX; i++) {
     setDMXColor(i, 255, 0, 0, 0, 0);

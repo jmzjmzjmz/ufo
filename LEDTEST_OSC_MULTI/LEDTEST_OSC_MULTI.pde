@@ -32,7 +32,7 @@ void setup() {
   background(0);
   println(Serial.list());
   
-  port = new Serial(this, Serial.list()[0], 9600); 
+  port = new Serial(this, Serial.list()[4], 9600); 
   controlP5 = new ControlP5(this);
 
   /* start oscP5, listening for incoming messages at port 12005 */
@@ -64,7 +64,7 @@ void setup() {
   r2.add("box1", 12);
   r2.add("box2", 13);
   r2.add("box3", 14);
-  r2.add("dmx", 14);
+  r2.add("dmx", 15);
 
   Radio r = controlP5.addRadio("radio", 270, 5);
   r.deactivateAll(); // use deactiveAll to not make the first radio button active.

@@ -2,7 +2,7 @@ int WHICH_LIGHTS = 0;
 
 class Headband {
 
-  private int serialData[] = new int[13];
+  private int serialData[] = new int[12];
 
   public ColorPicker[] colors = new ColorPicker[3];
   public int pattern = 0;
@@ -66,9 +66,9 @@ class Headband {
     serialData[9] = (byte)(green(colors[2].getColorValue())/2*a);
     serialData[10] = (byte) (blue(colors[2].getColorValue())/2*a);
     serialData[11] = (byte)dim;
-    serialData[12] = (byte)WHICH_LIGHTS;
+//    serialData[12] = (byte)WHICH_LIGHTS;
 
-    
+    println(serialData);
 
     //    xbee.sendDataString16(address, serialData);
     for (int i = 0; i<serialData.length;i++) { 
