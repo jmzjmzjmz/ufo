@@ -145,15 +145,15 @@ void setup() {
 void read() {
 
   int len = 12;
-  unsigned char inData[len];
-  unsigned char byteCount = 0;
+  char inData[len];
+  bool read = false;
 
-  while (Serial.available() && byteCount < len) {
-    inData[byteCount] = Serial.read();
-    byteCount++;
+  if (Serial.available() > len - 1) {
+    Serial.readBytes(inData, len);
+    read = true;
   }
 
-  if (byteCount == len) {
+  if (read) {
 
     rate = inData[0];
     patternByte = inData[1];
