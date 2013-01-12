@@ -271,9 +271,9 @@ void loop() {
 //    r = red(color), g = green(color), b = blue(color);
 
     if (brightness < 1) {
-      color.r = lerp(0, gamma(r), brightness);
-      color.g = lerp(0, gamma(g), brightness);
-      color.b = lerp(0, gamma(b), brightness);
+      color.r = lerp(0, gamma(color.r), brightness);
+      color.g = lerp(0, gamma(color.g), brightness);
+      color.b = lerp(0, gamma(color.b), brightness);
     }
 
     //      strip.setPixelColor(_i, r, g, b);

@@ -124,6 +124,7 @@ void draw() {
 
 void mouseMoved() {
   headbands[headbandSelect].rate = int(map(mouseX, 0, width, 0, 255));
+//  headbands[headbandSelect].dim = int(map(mouseY, 0, height, 0, 255));
 //  headbands[headbandSelect].send();
 }
 
