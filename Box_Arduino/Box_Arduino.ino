@@ -84,7 +84,7 @@ void setup() {
 
   //  pinMode(13, OUTPUT); 
 
-  Wire.begin(wireAddress);
+  // Wire.begin(wireAddress);
 //  Wire.onReceive(receiveEvent); /* TUESDAY Specifically upset with this. */
   Serial.begin(9600); 
 
@@ -95,55 +95,42 @@ void setup() {
   FastSPI_LED.start();
   leds = (struct CRGB*)FastSPI_LED.getRGBData(); 
 
-  RTC.begin();
-  if (!RTC.isrunning()) {
-//    Serial.println("RTC is NOT running!"); /* TUESDAY Specifically upset with this. */
-    RTC.adjust(DateTime(__DATE__, __TIME__));
-  }
+//   RTC.begin();
+//   if (!RTC.isrunning()) {
+// //    Serial.println("RTC is NOT running!"); /* TUESDAY Specifically upset with this. */
+//     RTC.adjust(DateTime(__DATE__, __TIME__));
+//   }
 
   
-  for (int i = 0; i < NUM_PIXELS; i++) {
-    leds[i].r = 255;
-    leds[i].g = 0;
-    leds[i].b = 0;
-  }
-  
-  showAll();
-  delay(500);
+    setColors();
 
   
 
   //  patterns[62] = &flickerStrobeTwo;
-//  patterns[63] = &flickerStrobeFour;
-//  patterns[64] = &totesRandom;
+ patterns[63] = &flickerStrobeFour;
+  // patterns[64] = &totesRandom;
   patterns[65] = &rainbowCycle;
-//  patterns[66] = &rainbow;
+  patterns[66] = &rainbow;
   //  // 67 = pause
   //  // 68 = off
-//  patterns[69] = &solidColor;
-//  patterns[70] = &gradient;
+ patterns[69] = &solidColor;
+ // patterns[70] = &gradient;
   //  patterns[71] = &pulseSine;
   //  patterns[72] = &pulseSaw;
   //  patterns[73] = &bounce;
-//  patterns[74] = &colorWipe;
+ patterns[74] = &colorWipe;
 //  patterns[75] = &colorAlternator;
-//  patterns[76] = &stripe;
+ patterns[76] = &stripe;
   //  patterns[77] = &colorChase;
   //  patterns[78] = &colorWipeMeter;
   //  patterns[79] = &colorWipeMeterGradient;
 //  patterns[80] = &pulseOnce;
 
-  pattern = &rainbowCycle;
+  pattern = &flickerStrobeFour;
 
-  for (int i = 0; i < NUM_PIXELS; i++) {
-    leds[i].r = 255;
-    leds[i].g = 255;
-    leds[i].b = 255;
-  }
+  // showAll();
 
-  showAll();
-
-  startedAt = RTC.now().unixtime();
+  startedAt = 0;//RTC.now().unixtime();
 
 }
 
@@ -236,7 +223,7 @@ void loop() {
     return;
   }
 
-  t = RTC.now().unixtime();// * 50 / (rate+1);
+  t = 0;//RTC.now().unixtime();// * 50 / (rate+1);
   m = millis();
 
   if (t != lastTime) {

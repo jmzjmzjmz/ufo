@@ -1,9 +1,8 @@
+struct CRGB solidColor(long f, int pixelIndex) {
+ if (f < 0) return NULL_COLOR;
+ return color1;
+}
 
-//uint32_t solidColor(long f, int pixelIndex) {
-//  if (f < 0) return NULL_COLOR;
-//  return color1;
-//}
-//
 struct CRGB colorWipe(long f, int pixelIndex) {
   if (f < 0) return NULL_COLOR;
   if (pixelIndex % NUM_ROWS < f % NUM_ROWS)
@@ -23,11 +22,11 @@ struct CRGB colorWipe(long f, int pixelIndex) {
 //  return Wheel((pixelIndex * 384 / NUM_ROWS + j));
 //}
 //
-//uint32_t rainbow(long f, int pixelIndex) {
-//  if (f < 0) return NULL_COLOR;
-//  return Wheel(f % 384);
-//}
-//
+struct CRGB rainbow(long f, int pixelIndex) {
+ if (f < 0) return NULL_COLOR;
+ return Wheel(f % 384);
+}
+
 //// up/down variants to be replaced by mapping
 struct CRGB rainbowCycle(long f, int pixelIndex) {
   if (f < 0) return NULL_COLOR;
@@ -67,18 +66,18 @@ struct CRGB stripe(long f, int pixelIndex) {
 //  return color2;
 //}
 //
-//uint32_t totesRandom(long f, int pixelIndex) {
+// struct CRGB totesRandom(long f, int pixelIndex) {
 //  if (f < 0) return NULL_COLOR;
 //  if ((pixelIndex + f/10) % 2 == 0) 
-//    return Color(random(127), random(127), random(127));
-//  return Color(0, 0, 0);
-//}
-//
-//uint32_t gradient(long f, int pixelIndex) {
+//    return (CRGB){(int)random(127), (int)random(127), (int)random(127)};
+//  return (CRGB){0, 0, 0}
+// }
+
+// uint32_t gradient(long f, int pixelIndex) {
 //  if (f < 0) return NULL_COLOR;
 //  float r = NUM_ROWS;
 //  return lerpColor(color1, color2, ((pixelIndex + f) % (int)r) / r);
-//}
+// }
 //
 //uint32_t pulseSine(long f, int pixelIndex) {
 //  if (f < 0) return NULL_COLOR;
@@ -143,54 +142,54 @@ struct CRGB stripe(long f, int pixelIndex) {
 //  
 //}
 //
-//uint32_t flickerStrobeFour(long f, int pixelIndex) {
-//  
-//  if (f == -2) return NULL_COLOR;
-//  
-//  if (f == CRGB) {
-//    // Select four random pixels.
-//    params[0] = random(NUM_PIXELS);
-//    params[1] = random(NUM_PIXELS);
-//    params[2] = random(NUM_PIXELS);
-//    params[3] = random(NUM_PIXELS);
-//    params[4] = random(NUM_PIXELS);
-//    params[5] = random(NUM_PIXELS);
-//    params[6] = random(NUM_PIXELS);
-//    params[7] = random(NUM_PIXELS);
-//    params[8] = random(NUM_PIXELS);
-//    params[9] = random(NUM_PIXELS);
-//    params[10] = random(NUM_PIXELS);
-//    params[11] = random(NUM_PIXELS);
-//    params[12] = random(NUM_PIXELS);
-//    params[13] = random(NUM_PIXELS);
-//    params[14] = random(NUM_PIXELS);
-//    params[15] = random(NUM_PIXELS);
-//    return NULL_COLOR;
-//  }
-//  
-//  if (pixelIndex == (int)params[0] || 
-//      pixelIndex == (int)params[1] || 
-//      pixelIndex == (int)params[2] || 
-//      pixelIndex == (int)params[3] || 
-//      pixelIndex == (int)params[4] || 
-//      pixelIndex == (int)params[5] || 
-//      pixelIndex == (int)params[6] || 
-//      pixelIndex == (int)params[7]) {
-//    return color1;
-//  } else if (pixelIndex == (int)params[8] || 
-//      pixelIndex == (int)params[9] || 
-//      pixelIndex == (int)params[10] || 
-//      pixelIndex == (int)params[11] || 
-//      pixelIndex == (int)params[12] || 
-//      pixelIndex == (int)params[13] || 
-//      pixelIndex == (int)params[14] || 
-//      pixelIndex == (int)params[15]) {
-//    return color2;
-//  } else {
-//    return color3;
-//  }
-//  
-//}
+struct CRGB flickerStrobeFour(long f, int pixelIndex) {
+ 
+ if (f == -2) return NULL_COLOR;
+ 
+ if (f == -1) {
+   // Select four random pixels.
+   params[0] = random(NUM_PIXELS);
+   params[1] = random(NUM_PIXELS);
+   params[2] = random(NUM_PIXELS);
+   params[3] = random(NUM_PIXELS);
+   params[4] = random(NUM_PIXELS);
+   params[5] = random(NUM_PIXELS);
+   params[6] = random(NUM_PIXELS);
+   params[7] = random(NUM_PIXELS);
+   params[8] = random(NUM_PIXELS);
+   params[9] = random(NUM_PIXELS);
+   params[10] = random(NUM_PIXELS);
+   params[11] = random(NUM_PIXELS);
+   params[12] = random(NUM_PIXELS);
+   params[13] = random(NUM_PIXELS);
+   params[14] = random(NUM_PIXELS);
+   params[15] = random(NUM_PIXELS);
+   return NULL_COLOR;
+ }
+ 
+ if (pixelIndex == (int)params[0] || 
+     pixelIndex == (int)params[1] || 
+     pixelIndex == (int)params[2] || 
+     pixelIndex == (int)params[3] || 
+     pixelIndex == (int)params[4] || 
+     pixelIndex == (int)params[5] || 
+     pixelIndex == (int)params[6] || 
+     pixelIndex == (int)params[7]) {
+   return color1;
+ } else if (pixelIndex == (int)params[8] || 
+     pixelIndex == (int)params[9] || 
+     pixelIndex == (int)params[10] || 
+     pixelIndex == (int)params[11] || 
+     pixelIndex == (int)params[12] || 
+     pixelIndex == (int)params[13] || 
+     pixelIndex == (int)params[14] || 
+     pixelIndex == (int)params[15]) {
+   return color2;
+ } else {
+   return color3;
+ }
+ 
+}
 //
 //uint32_t pulseOnce(long f, int pixelIndex) {
 //  
@@ -199,7 +198,7 @@ struct CRGB stripe(long f, int pixelIndex) {
 //    return NULL_COLOR;
 //  }
 //  
-//  if (f == CRGB) {
+//  if (f == -1) {
 //    params[0] *= 0.9;
 //    return NULL_COLOR;
 //  }
