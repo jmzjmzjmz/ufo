@@ -1,14 +1,30 @@
 // make an empty tab called ignore.h and this will run.
 #include "ignore.h" 
+
+/* TUESDAY Commenting this out makes the RTClib unhappy */
 #include "LPD8806.h"
 
 #include "RTClib.h"
 #include <SPI.h>
 #include <Wire.h>
+#include <FastSPI_LED.h>
 
-// this doesn't work as define?
+struct CRGB { 
+
+  unsigned char g; 
+  unsigned char r; 
+  unsigned char b; 
+
+};
+
+struct CRGB *leds;
+
+#define PIN 4
+#define wireAddress 1 
+
+/* These don't seem to work as #define since they're used in other tabs ... */
 unsigned int NUM_ROWS = 64; 
-
+unsigned int NUM_PIXELS = 576;
 
 // variables i took out of the loop.
 // _i is because it was yelling at me otherwise?
@@ -17,27 +33,16 @@ unsigned long m = 0;
 
 
 int _i = 0, j = 0, k = 0;
-uint8_t r = 0, g = 0, b = 0;
-uint32_t color = 0;
+unsigned char r = 0, g = 0, b = 0;
+struct CRGB color;
+struct CRGB NULL_COLOR;
 
-#define NUM_PIXELS 520                   
-
-#define wireAddress 1 
 boolean light = false;
 
-// unsigned long currentTime = 0;
-// unsigned long loopTime = 0;
-
-//#ifndef _SERIAL
-//#define _SERIAL Uart
-//HardwareSerial Uart = HardwareSerial();
-//#endif
 
 // Access to the pixel strip
 
 #define NUM_POLES 6
-
-LPD8806 strip = LPD8806(NUM_PIXELS);
 
 RTC_DS1307 RTC;
 
@@ -49,9 +54,9 @@ RTC_DS1307 RTC;
 
 #define MAX_FRAME 100000
 
-unsigned int incomingBrightness=0;
-unsigned int incomingRate=0;
-unsigned int rate = 0;
+unsigned int incomingBrightness = 0;
+unsigned int incomingRate = 0;
+unsigned int rate = 2;
 unsigned int patternByte = NULL_PATTERN;
 
 // unix timestamp that the sketch starts at
@@ -62,79 +67,78 @@ unsigned long lastMillis = 0;
 unsigned long internalTimeSmoother = 0;
 
 float brightness = 1.0;
-int r1 = 127, g1 = 127, b1 = 127, r2 = 0, g2 = 0, b2 = 0, r3 = 0, g3 = 0, b3 = 0;
+int r1 = 127, g1 = 0,   b1 = 0, 
+    r2 = 0,   g2 = 127,   b2 = 0, 
+    r3 = 0,   g3 = 0,   b3 = 0;
 
-float params[30];
-uint32_t color1, color2, color3;
+float params[20];
+struct CRGB color1, color2, color3;
 
 boolean isOff = false;
-boolean advance = false;
 
 long frame = 0;
+long lastFrame = -1;
 
-typedef uint32_t (*Pattern)(long, int);
+typedef CRGB (*Pattern)(long, int);
 Pattern patterns[128];
 Pattern pattern;
 
 typedef int (*Mapping)(long, int);
 Mapping mapping = &forward;
 
-//typedef struct {
-//  int rate;
-//  int brightness;
-//  int red1;
-//  int green1;
-//  int blue1;
-//  int red2;
-//  int green2;
-//  int blue2;
-//  int pattern;
-//} 
-//lightPoles;
-//
-//lightPoles pole[NUM_POLES];
-
 void setup() {  
 
-  pinMode(13, OUTPUT); 
+  //  pinMode(13, OUTPUT); 
 
-  Wire.begin(wireAddress);
-  Wire.onReceive(receiveEvent);
+  // Wire.begin(wireAddress);
+//  Wire.onReceive(receiveEvent); /* TUESDAY Specifically upset with this. */
   Serial.begin(9600); 
 
-  RTC.begin();
-  if (! RTC.isrunning()) {
-    Serial.println("RTC is NOT running!");
-    // following line sets the RTC to the date & time this sketch was compiled
-    RTC.adjust(DateTime(__DATE__, __TIME__));
-  }
+  FastSPI_LED.setLeds(NUM_PIXELS);
+  FastSPI_LED.setChipset(CFastSPI_LED::SPI_LPD8806);
+  FastSPI_LED.setPin(PIN);
+  FastSPI_LED.init();
+  FastSPI_LED.start();
+  leds = (struct CRGB*)FastSPI_LED.getRGBData(); 
 
-  strip.begin();
+//   RTC.begin();
+//   if (!RTC.isrunning()) {
+// //    Serial.println("RTC is NOT running!"); /* TUESDAY Specifically upset with this. */
+//     RTC.adjust(DateTime(__DATE__, __TIME__));
+//   }
 
-  hideAll();
-  showAll();
+  
+  setColors();
 
-  patterns[62] = &flickerStrobeTwo;
+  
+
+   patterns[62] = &flickerStrobeTwo;
   patterns[63] = &flickerStrobeFour;
   patterns[64] = &totesRandom;
   patterns[65] = &rainbowCycle;
   patterns[66] = &rainbow;
-  // 67 = pause
-  // 68 = off
+  //  // 67 = pause
+  //  // 68 = off
   patterns[69] = &solidColor;
   patterns[70] = &gradient;
   patterns[71] = &pulseSine;
   patterns[72] = &pulseSaw;
-  patterns[73] = &bounce;
+  //  patterns[73] = &bounce;
   patterns[74] = &colorWipe;
   patterns[75] = &colorAlternator;
   patterns[76] = &stripe;
-  patterns[77] = &colorChase;
-  patterns[78] = &colorWipeMeter;
-  patterns[79] = &colorWipeMeterGradient;
+   patterns[77] = &colorChase;
+   // patterns[78] = &colorWipeMeter;
+  //  patterns[79] = &colorWipeMeterGradient;
   patterns[80] = &pulseOnce;
 
-  startedAt = RTC.now().unixtime();
+
+  pattern = &rainbowCycle;
+  // pattern(-2, 0);
+
+  // showAll();
+
+  startedAt = 0;//RTC.now().unixtime();
 
 }
 
@@ -193,10 +197,22 @@ void receiveEvent(int howMany) {
 
 void setColors() {
 
-  color1 = strip.Color(r1, g1, b1);
-  color2 = strip.Color(r2, g2, b2);
-  color3 = strip.Color(r3, g3, b3);
+  color1.r = r1;
+  color1.g = g1;
+  color1.b = b1;
+  
+  color2.r = r2;
+  color2.g = g2;
+  color2.b = b2;
+  
+  color3.r = r3;
+  color3.g = g3;
+  color3.b = b3;
 
+}
+
+uint32_t Color(byte r, byte g, byte b) {
+  return 0x808080 | ((uint32_t)g << 16) | ((uint32_t)r << 8) | (uint32_t)b;
 }
 
 void setBrightnRate() {
@@ -214,7 +230,7 @@ void loop() {
     return;
   }
 
-  t = RTC.now().unixtime();// * 50 / (rate+1);
+  t = 0;//RTC.now().unixtime();// * 50 / (rate+1);
   m = millis();
 
   if (t != lastTime) {
@@ -229,7 +245,14 @@ void loop() {
 
   // if (currentTime >= loopTime + rate) { 
 
-  pattern(-1, 0); // Per frame initialization
+  Serial.println(frame);
+  Serial.println(lastFrame);
+  Serial.println("------");
+
+  if (frame != lastFrame)
+    pattern(-1, 0); // Per frame initialization
+
+  lastFrame = frame;
 
   for (_i = 0; _i < NUM_PIXELS; _i++) {
 
@@ -237,19 +260,18 @@ void loop() {
     j = mapping(frame, k);
     color = pattern(frame, j);
 
+//    r = red(color), g = green(color), b = blue(color);
 
     if (brightness < 1) {
-      r = red(color), g = green(color), b = blue(color);
-      r = lerp(0, gamma(r), brightness);
-      g = lerp(0, gamma(g), brightness);
-      b = lerp(0, gamma(b), brightness);
-      strip.setPixelColor(_i, r, g, b);
-
-    } 
-    else { 
-      strip.setPixelColor(_i, color);
+      color.r = lerp(0, gamma(r), brightness);
+      color.g = lerp(0, gamma(g), brightness);
+      color.b = lerp(0, gamma(b), brightness);
     }
 
+    //      strip.setPixelColor(_i, r, g, b);
+    leds[_i].r = color.r;
+    leds[_i].g = color.g;
+    leds[_i].b = color.b;
 
 
     //      if (i == 0) {
@@ -279,6 +301,12 @@ void loop() {
   // }
   //advance = false;
 
+  //  delay(100);
+
+  //  hideAll();
+  //  showAll();
+
+
   if (light)
     digitalWrite(13, HIGH);
   else
@@ -298,14 +326,16 @@ void loop() {
 //The colours are a transition r - g -b - back to r
 
 void hideAll() {
-  for (int i = 0; i < strip.numPixels(); i++) {
-    strip.setPixelColor(i, 0); 
-  }
+  memset(leds, 0, NUM_PIXELS * 3);
+  //  for (int i = 0; i < strip.numPixels(); i++) {
+  //    strip.setPixelColor(i, 0); 
+  //  }
 }
 
-void showAll(){
-  strip.show();    
+void showAll() {
+  FastSPI_LED.show();
 }
+
 
 
 
