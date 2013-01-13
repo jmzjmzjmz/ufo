@@ -8,26 +8,26 @@ unsigned int NUM_DMX = 4;
 unsigned int rate = 127;
 
 unsigned long frame = 0;
+unsigned long lastFrame = 0;
+unsigned long lastTime = 0;
 
-unsigned long currentTime = 0;
-unsigned long loopTime = 0;
+unsigned long lastMillis = 0;
+unsigned long internalTimeSmoother = 0;
 
 struct Color { 
   int r;
   int g;
   int b;
-  int a;
-  int w;
 };
 
 typedef struct Color (*Pattern)(long, int);
 Pattern patterns[128];
 Pattern pattern;
 
-struct Color color1 = (Color){ 0, 0, 255, 0, 0 };
-struct Color color2 = (Color){ 255, 0, 255, 0, 0 };
+struct Color color1 = (Color){ 0, 0, 255 };
+struct Color color2 = (Color){ 255, 0, 255 };
 
-struct Color BLACK = (Color){ 0, 0, 0, 0, 0 };
+struct Color BLACK = (Color){ 0, 0, 0 };
 
 float params[20];
 
@@ -39,8 +39,7 @@ void setup() {
 
   DmxSimple.usePin(3);
   DmxSimple.maxChannel(4);  
-     // sanityCheck();
-
+     
 
   patterns[62] = &flickerStrobe;
   patterns[65] = &rainbowCycle;
@@ -48,6 +47,7 @@ void setup() {
   patterns[69] = &solidColor;
   patterns[71] = &crossfade;
   patterns[75] = &colorAlternator;
+  patterns[80] = &pulseOnce;
 
   pattern = &flickerStrobe;
 
@@ -59,25 +59,33 @@ void loop() {
   if (isOff)
     return;
 
-  currentTime = millis();
 
-  if (currentTime >= loopTime + rate) { 
+  unsigned long t = 0;//RTC.now().unixtime();// * 50 / (rate+1);
+  unsigned long m = millis();
 
-    frame++;
+  if (t != lastTime) {
+    internalTimeSmoother = 0;
+  }
 
-    pattern(-1, 0); // per frame init
+  internalTimeSmoother += m - lastMillis;
+  lastMillis = m;
+  lastTime = t;
 
-    for (int i = 0; i < NUM_DMX; i++) {
+  frame = (t * 1000 + internalTimeSmoother) / rate;
 
-      struct Color c = pattern(frame, i);
+  if (frame != lastFrame)
+    pattern(-1, 0); // Per frame initialization
 
-      setDMXColor(i, c.r, c.g, c.b, c.a, c.w);
+  lastFrame = frame;
 
-    }
+  for (int i = 0; i < NUM_DMX; i++) {
 
-    loopTime = currentTime; 
+    struct Color c = pattern(frame, i);
+
+    setDMXColor(i, c.r, c.g, c.b);
 
   }
+
 
 }
 
@@ -117,18 +125,23 @@ void serialEvent() {
     } else if (patterns[patternByte] != NULL) {
       isOff = false;
       pattern = patterns[patternByte];
+      pattern(-2, 0);
     }
 
   }
 
 }
 
-void setDMXColor(int dmxIndex, int r, int g, int b, int a, int w) {
+void setDMXColor(int dmxIndex, int r, int g, int b) {
+
+  int a = 0, w = 0;
+
   DmxSimple.write(dmxIndex * 5 + 1, r);
   DmxSimple.write(dmxIndex * 5 + 2, g);
   DmxSimple.write(dmxIndex * 5 + 3, b);
   DmxSimple.write(dmxIndex * 5 + 4, a);
   DmxSimple.write(dmxIndex * 5 + 5, w);
+
 }
 
 struct Color solidColor(long f, int dmxIndex) {
@@ -172,9 +185,25 @@ struct Color flickerStrobe(long f, int dmxIndex) {
   
 }
 
+struct Color pulseOnce(long f, int pixelIndex) {
+
+  if (f == -2) {
+    params[0] = 1.0;
+    return BLACK;
+  }
+
+  if (f == -1) {
+    params[0] *= 0.9;
+    return BLACK;
+  }
+
+  return lerpColor(color2, color1, params[0]);  
+
+}
+
 void hideAll() {
   for (int i = 0; i < NUM_DMX; i++) {
-    setDMXColor(i, 0, 0, 0, 0, 0);
+    setDMXColor(i, 0, 0, 0);
   }
 }
 
@@ -199,38 +228,16 @@ struct Color wheel(uint16_t WheelPos) {
     g = 0;                  //green off
     break; 
   }
-  return (Color){ r*2, g*2, b*2, 0, 0 };
+  return (Color){ r*2, g*2, b*2 };
 }
 
 struct Color lerpColor(struct Color a, struct Color b, float t) {
   int cr = lerp(a.r, b.r, t);
   int cg = lerp(a.g, b.g, t);
   int cb = lerp(a.b, b.b, t);
-  int ca = lerp(a.a, b.a, t);
-  int cw = lerp(a.w, b.w, t);
-  return (Color){ cr, cg, cb, ca, cw };
+  return (Color){ cr, cg, cb };
 }
 
 int lerp(int a, int b, float t) {
   return a + (b - a) *t;
-}
-
-void sanityCheck() {
-  return;
-  int d = 10;
-
-  for (int i = 0; i < NUM_DMX; i++) {
-    setDMXColor(i, 255, 0, 0, 0, 0);
-    delay(d);
-    setDMXColor(i, 0, 255, 0, 0, 0);
-    delay(d);
-    setDMXColor(i, 0, 0, 255, 0, 0);
-    delay(d);    
-    setDMXColor(i, 0, 0, 0, 255, 0);
-    delay(d);    
-    setDMXColor(i, 0, 0, 0, 0, 255);
-    delay(d);    
-    setDMXColor(i, 0, 0, 0, 0, 0);
-  }
-
 }
