@@ -2,11 +2,11 @@
 #include "ignore.h" 
 #include "LPD8806.h"
 
-#include "RTClib.h"
+// #include "RTClib.h"
 #include <SPI.h>
 #include <Wire.h>
 
-#define wireAddress 1 
+// #define wireAddress 1 
 boolean light = false;
 
 // unsigned long currentTime = 0;
@@ -14,16 +14,18 @@ boolean light = false;
 
 //#ifndef _SERIAL
 //#define _SERIAL Uart
-//HardwareSerial Uart = HardwareSerial();
+//HardwareSerial1 Uart = HardwareSerial1();
 //#endif
 
 // Access to the pixel strip
 
 #define NUM_POLES 6
 
+#define myADDRESS 2
+
 LPD8806 strip = LPD8806(40);
 
-RTC_DS1307 RTC;
+// RTC_DS1307 RTC;
 
 #define NULL_PATTERN 0
 #define OFF_PATTERN 68
@@ -35,7 +37,7 @@ RTC_DS1307 RTC;
 
 unsigned int incomingBrightness=0;
 unsigned int incomingRate=0;
-unsigned int rate = 0;
+unsigned int rate = 2;
 unsigned int patternByte = NULL_PATTERN;
 
 // unix timestamp that the sketch starts at
@@ -55,6 +57,7 @@ boolean isOff = false;
 boolean advance = false;
 
 long frame = 0;
+long lastFrame = -1;
 
 typedef uint32_t (*Pattern)(long, int);
 Pattern patterns[128];
@@ -82,16 +85,16 @@ void setup() {
   
   pinMode(13, OUTPUT); 
 
-  Wire.begin(wireAddress);
-  Wire.onReceive(receiveEvent);
-  Serial.begin(9600); 
+  // Wire.begin(wireAddress);
+  // Wire.onReceive(receiveEvent);
+  Serial1.begin(9600); 
 
-  RTC.begin();
-  if (! RTC.isrunning()) {
-    Serial.println("RTC is NOT running!");
-    // following line sets the RTC to the date & time this sketch was compiled
-    RTC.adjust(DateTime(__DATE__, __TIME__));
-  }
+  // RTC.begin();
+  // if (! RTC.isrunning()) {
+  //   Serial1.println("RTC is NOT running!");
+  //   // following line sets the RTC to the date & time this sketch was compiled
+  //   RTC.adjust(DateTime(__DATE__, __TIME__));
+  // }
   
   strip.begin();
 
@@ -118,65 +121,43 @@ void setup() {
   patterns[79] = &colorWipeMeterGradient;
   patterns[80] = &pulseOnce;
 
-  startedAt = RTC.now().unixtime();
+  pattern = &rainbow;
+
+  startedAt = 0;//RTC.now().unixtime();
 
 }
 
-void receiveEvent(int howMany) {
+void read() {
+
+  // return;
+
   //wait for 12 incoming bytes
-  if (Wire.available() > 11) {
+  if (Serial1.available() > 12) {
 
-    incomingRate = Wire.read();
-    patternByte = Wire.read();
+    // Serial1.readBytes(inData, len);
+    
+    if(Serial1.read() != myADDRESS){
+      Serial1.flush();
+      return;
+    }
 
-    r1 = Wire.read();
-    g1 = Wire.read();
-    b1 = Wire.read();
-    r2 = Wire.read();
-    g2 = Wire.read();
-    b2 = Wire.read();
-    r3 = Wire.read();
-    g3 = Wire.read();
-    b3 = Wire.read();
+    incomingRate = Serial1.read();
+    patternByte = Serial1.read();
 
-    incomingBrightness = Wire.read()/127.0;
+    r1 = Serial1.read();
+    g1 = Serial1.read();
+    b1 = Serial1.read();
+    r2 = Serial1.read();
+    g2 = Serial1.read();
+    b2 = Serial1.read();
+    r3 = Serial1.read();
+    g3 = Serial1.read();
+    b3 = Serial1.read();
 
-    //    Serial.print("rate: ");
-    //    Serial.println(rate);
-    //    Serial.print("pattern: ");
-    //    Serial.println(patternByte);
-    //    Serial.print("r1: ");
-    //    Serial.println(r1);
-    //    Serial.print("g1: ");
-    //    Serial.println(g1);
-    //    Serial.print("b1: ");
-    //    Serial.println(b1);
-    //    Serial.print("r2: ");
-    //    Serial.println(r2);
-    //    Serial.print("g2: ");
-    //    Serial.println(g2);
-    //    Serial.print("b2: ");
-    //    Serial.println(b2);
-    //    Serial.print("r3: ");
-    //    Serial.println(r3);
-    //    Serial.print("g3: ");
-    //    Serial.println(g3);
-    //    Serial.print("b3: ");
-    //    Serial.println(b3);
-    //    Serial.print("brightness: ");
-    //    Serial.println(brightness);
-    //    Serial.print("frame: ");
-    //    Serial.println(frame);
-    //    Serial.println("time: ");
-    //    Serial.println(currentTime);
-    //    Serial.println("isOff: ");
-    //    Serial.println(isOff);
-    //    Serial.println("=========================");
+    incomingBrightness = Serial1.read()/127.0;
 
-      setBrightnRate();
-      setColors();
-
-
+    setBrightnRate();
+    setColors();
 
     if (patternByte == 1) {
       mapping = &forward;
@@ -226,13 +207,15 @@ void setBrightnRate() {
 
 void loop() {
 
+  read();
+
   if (isOff){
     hideAll();
     showAll();
     return;
   }
   
-  unsigned long t = RTC.now().unixtime();// * 50 / (rate+1);
+  unsigned long t = 0;//RTC.now().unixtime();// * 50 / (rate+1);
   unsigned long m = millis();
 
   if (t != lastTime) {
@@ -249,7 +232,10 @@ void loop() {
 
   // if (currentTime >= loopTime + rate) { 
 
-  pattern(-1, 0); // Per frame initialization
+  if (frame != lastFrame)
+    pattern(-1, 0); // Per frame initialization
+
+  lastFrame = frame;
 
   for (int i = 0; i < strip.numPixels(); i++) {
 
@@ -270,14 +256,14 @@ void loop() {
 
 
     //      if (i == 0) {
-    //        Serial.println("color ");
-    //        Serial.println(r);
-    //        Serial.println(g);
-    //        Serial.println(b);
-    //        Serial.println("frame ");
-    //        Serial.println(frame);
+    //        Serial1.println("color ");
+    //        Serial1.println(r);
+    //        Serial1.println(g);
+    //        Serial1.println(b);
+    //        Serial1.println("frame ");
+    //        Serial1.println(frame);
     //        
-    //        Serial.println("===================== ");
+    //        Serial1.println("===================== ");
     //      }
 
   }
@@ -287,7 +273,6 @@ void loop() {
   if (frame >= MAX_FRAME) { 
     frame = 0;
   } 
-Serial.println("frame is " + frame);
     // frame++;
 
     // loopTime = currentTime;  // Updates loopTime
@@ -295,6 +280,7 @@ Serial.println("frame is " + frame);
 
   // }
 //advance = false;
+
 
   if (light)
     digitalWrite(13, HIGH);
