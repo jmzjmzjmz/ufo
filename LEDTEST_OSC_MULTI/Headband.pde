@@ -1,5 +1,5 @@
 int WHICH_LIGHTS = 1;
-
+int WHICH = 0;
 class Headband {
 
   private int serialData[] = new int[13];
@@ -50,7 +50,7 @@ class Headband {
   }
 
   public void send() {
-    serialData[0] = 2;
+    serialData[0] = WHICH++%3;
     serialData[1] = (byte)rate;
     serialData[2] = (byte)pattern;
     float a = alpha(colors[0].getColorValue())/255;

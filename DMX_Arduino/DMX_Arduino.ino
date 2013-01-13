@@ -12,7 +12,6 @@ unsigned long frame = 0;
 unsigned long currentTime = 0;
 unsigned long loopTime = 0;
 
-
 struct Color { 
   int r;
   int g;
@@ -62,10 +61,7 @@ void loop() {
 
   currentTime = millis();
 
-
-
   if (currentTime >= loopTime + rate) { 
-
 
     frame++;
 
@@ -91,10 +87,13 @@ void serialEvent() {
   // wait for 12 incoming bytes
   if (Serial.available() > 12) {
 
- if(Serial.read() != myADDRESS){
+    if (Serial.read() != myADDRESS){
+      
       Serial.flush();
       return;
+
     }
+
     rate = Serial.read();
     byte patternByte = Serial.read();
 
@@ -114,12 +113,11 @@ void serialEvent() {
 
     if (patternByte == OFF_PATTERN) {
       isOff = true;
+      hideAll();
     } else if (patterns[patternByte] != NULL) {
       isOff = false;
       pattern = patterns[patternByte];
     }
-
-
 
   }
 
