@@ -2,6 +2,7 @@
 #include <Wire.h>
 
 #define OFF_PATTERN 68
+#define myADDRESS 1
 
 unsigned int NUM_DMX = 4;
 unsigned int rate = 127;
@@ -88,8 +89,12 @@ void loop() {
 void serialEvent() {
 
   // wait for 12 incoming bytes
-  if (Serial.available() > 11) {
+  if (Serial.available() > 12) {
 
+ if(Serial.read() != myADDRESS){
+      Serial.flush();
+      return;
+    }
     rate = Serial.read();
     byte patternByte = Serial.read();
 

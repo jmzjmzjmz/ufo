@@ -1,8 +1,8 @@
-int WHICH_LIGHTS = 0;
+int WHICH_LIGHTS = 1;
 
 class Headband {
 
-  private int serialData[] = new int[12];
+  private int serialData[] = new int[13];
 
   public ColorPicker[] colors = new ColorPicker[3];
   public int pattern = 0;
@@ -50,23 +50,22 @@ class Headband {
   }
 
   public void send() {
-
-    serialData[0] = (byte)rate;
-    serialData[1] = (byte)pattern;
+    serialData[0] = (byte)random(2);
+    serialData[1] = (byte)rate;
+    serialData[2] = (byte)pattern;
     float a = alpha(colors[0].getColorValue())/255;
-    serialData[2] = (byte)(red(colors[0].getColorValue())/2*a);
-    serialData[3] = (byte)(green(colors[0].getColorValue())/2*a);
-    serialData[4] = (byte) (blue(colors[0].getColorValue())/2*a);
+    serialData[3] = (byte)(red(colors[0].getColorValue())/2*a);
+    serialData[4] = (byte)(green(colors[0].getColorValue())/2*a);
+    serialData[5] = (byte) (blue(colors[0].getColorValue())/2*a);
     a = alpha(colors[1].getColorValue())/255;
-    serialData[5] = (byte)(red(colors[1].getColorValue())/2*a);
-    serialData[6] = (byte)(green(colors[1].getColorValue())/2*a);
-    serialData[7] = (byte) (blue(colors[1].getColorValue())/2*a);
+    serialData[6] = (byte)(red(colors[1].getColorValue())/2*a);
+    serialData[7] = (byte)(green(colors[1].getColorValue())/2*a);
+    serialData[8] = (byte) (blue(colors[1].getColorValue())/2*a);
     a = alpha(colors[2].getColorValue())/255;
-    serialData[8] = (byte)(red(colors[2].getColorValue())/2*a);
-    serialData[9] = (byte)(green(colors[2].getColorValue())/2*a);
-    serialData[10] = (byte) (blue(colors[2].getColorValue())/2*a);
-    serialData[11] = (byte)dim;
-//    serialData[12] = (byte)WHICH_LIGHTS;
+    serialData[9] = (byte)(red(colors[2].getColorValue())/2*a);
+    serialData[10] = (byte)(green(colors[2].getColorValue())/2*a);
+    serialData[11] = (byte) (blue(colors[2].getColorValue())/2*a);
+    serialData[12] = (byte)dim;
 
     println(serialData);
 

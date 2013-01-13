@@ -20,7 +20,7 @@ struct CRGB {
 struct CRGB *leds;
 
 #define PIN 4
-#define wireAddress 1 
+#define myADDRESS 0 
 
 /* These don't seem to work as #define since they're used in other tabs ... */
 unsigned int NUM_ROWS = 64; 
@@ -144,13 +144,15 @@ void setup() {
 }
 
 void read() {
-
-  int len = 12;
+  int len = 13;
   char inData[len];
 
   if (Serial1.available() > len - 1) {
     // Serial1.readBytes(inData, len);
-
+    if(Serial1.read() != myADDRESS){
+      Serial1.clear();
+      return;
+    }
   
   
 
