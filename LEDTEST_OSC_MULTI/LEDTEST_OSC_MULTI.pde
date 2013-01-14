@@ -130,12 +130,33 @@ void setup() {
   headbands[2] = new Headband(0x6789);
   headbands[1] = new Headband(0xFFFF);
 
-  headbands[headbandSelect].pattern = 80;
-  headbands[headbandSelect].rate = 255;
+  headbands[headbandSelect].pattern = 65;
+  headbands[headbandSelect].rate = 20;
   headbands[headbandSelect].send();
 }
 
+
+int lastSend = -1;
+final int INTERVAL = 1;
+final int TIMING_ADDR = 100;
 void draw() {
+//  
+  int now = millis()/1000 + 300;
+  
+  if (now - lastSend >= INTERVAL) {
+    
+//    println("time " + now);
+    
+    port.write(TIMING_ADDR);
+    port.write(now);
+    for (int i = 0; i < MESSAGE_SIZE - 2; i++) {
+      port.write('.');
+    }
+    
+    lastSend = now;
+    
+  }
+  
 }
 
 void mouseMoved() {

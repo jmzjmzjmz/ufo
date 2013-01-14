@@ -33,6 +33,8 @@ LPD8806 strip = LPD8806(40);
 #define ADV_PATTERN 101
 #define RESET_FRAME 100
 
+#define TIMING_ADDR 100
+
 #define MAX_FRAME 100000
 
 unsigned int incomingBrightness=0;
@@ -44,6 +46,9 @@ unsigned int patternByte = NULL_PATTERN;
 unsigned long startedAt = 0;
 unsigned long lastTime = -1;
 
+int now = 0;
+
+unsigned long lastSync = 0;
 unsigned long lastMillis = 0;
 unsigned long internalTimeSmoother = 0;
 
@@ -88,6 +93,7 @@ void setup() {
   // Wire.begin(wireAddress);
   // Wire.onReceive(receiveEvent);
   Serial1.begin(9600); 
+  Serial.begin(9600);
 
   // RTC.begin();
   // if (! RTC.isrunning()) {
@@ -134,15 +140,25 @@ void read() {
   //wait for 12 incoming bytes
   if (Serial1.available() > 12) {
 
+    unsigned char address = Serial1.read();
+
     // Serial1.readBytes(inData, len);
-    
-    if(Serial1.read() != myADDRESS){
+    if (address == TIMING_ADDR) {
+      now++;
+      Serial.println(now);
+      Serial1.flush();
+      return;
+    } else if (address != myADDRESS){
       Serial1.flush();
       return;
     }
 
+
+
     incomingRate = Serial1.read();
     patternByte = Serial1.read();
+
+    Serial.println(patternByte);
 
     r1 = Serial1.read();
     g1 = Serial1.read();
@@ -158,6 +174,11 @@ void read() {
 
     setBrightnRate();
     setColors();
+
+    if (patternByte == 7) {
+      lastSync = millis();
+      patternByte = 80;
+    }
 
     if (patternByte == 1) {
       mapping = &forward;
@@ -182,6 +203,7 @@ void read() {
     else if (patternByte != NULL_PATTERN && patterns[patternByte] != NULL) {
       isOff = false;
       pattern = patterns[patternByte];
+      // now = 0;
       pattern(-2, 0); // On select initialization
     }
 
@@ -215,10 +237,9 @@ void loop() {
     return;
   }
   
-  unsigned long t = 0;//RTC.now().unixtime();// * 50 / (rate+1);
   unsigned long m = millis();
 
-  if (t != lastTime) {
+  if (now != lastTime) {
     internalTimeSmoother = 0;
   }
 
@@ -226,9 +247,11 @@ void loop() {
 
   lastMillis = m;
   
-  lastTime = t;
+  lastTime = now;
 
-  frame = (t * 1000 + internalTimeSmoother) / rate;
+  frame = millis() / rate;
+
+
 
   // if (currentTime >= loopTime + rate) { 
 
@@ -280,6 +303,7 @@ void loop() {
 
   // }
 //advance = false;
+
 
 
   if (light)

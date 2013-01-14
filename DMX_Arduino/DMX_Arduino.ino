@@ -2,7 +2,7 @@
 #include <Wire.h>
 
 #define OFF_PATTERN 68
-#define myADDRESS 1
+#define myADDRESS 2
 
 unsigned int NUM_DMX = 4;
 unsigned int rate = 127;
@@ -35,7 +35,7 @@ bool isOff = false;
 
 void setup() {
 
-  Serial.begin(9600); 
+  Serial1.begin(9600); 
 
   DmxSimple.usePin(3);
   DmxSimple.maxChannel(4);  
@@ -51,11 +51,13 @@ void setup() {
 
   pattern = &flickerStrobe;
 
+  sanityCheck();
+
 }
 
 void loop() {
   
-
+read();
   if (isOff)
     return;
 
@@ -71,7 +73,7 @@ void loop() {
   lastMillis = m;
   lastTime = t;
 
-  frame = (t * 1000 + internalTimeSmoother) / rate;
+  frame = millis() / rate;
 
   if (frame != lastFrame)
     pattern(-1, 0); // Per frame initialization
@@ -90,34 +92,34 @@ void loop() {
 }
 
 
-void serialEvent() {
+void read() {
 
   // wait for 12 incoming bytes
-  if (Serial.available() > 12) {
+  if (Serial1.available() > 12) {
 
-    if (Serial.read() != myADDRESS){
+    if (Serial1.read() != myADDRESS){
       
-      Serial.flush();
+      Serial1.flush();
       return;
 
     }
 
-    rate = Serial.read();
-    byte patternByte = Serial.read();
+    rate = Serial1.read();
+    byte patternByte = Serial1.read();
 
-    color1.r = Serial.read();
-    color1.g = Serial.read();
-    color1.b = Serial.read();
+    color1.r = Serial1.read();
+    color1.g = Serial1.read();
+    color1.b = Serial1.read();
 
-    color2.r = Serial.read();
-    color2.g = Serial.read();
-    color2.b = Serial.read();
+    color2.r = Serial1.read();
+    color2.g = Serial1.read();
+    color2.b = Serial1.read();
 
-    Serial.read();
-    Serial.read();
-    Serial.read();
+    Serial1.read();
+    Serial1.read();
+    Serial1.read();
     
-    Serial.read();
+    Serial1.read();
 
     if (patternByte == OFF_PATTERN) {
       isOff = true;
@@ -135,6 +137,13 @@ void serialEvent() {
 void setDMXColor(int dmxIndex, int r, int g, int b) {
 
   int a = 0, w = 0;
+
+  if (r == g && g == b) {
+    w = r;
+    r = 0;
+    g = 0;
+    b = 0;
+  }
 
   DmxSimple.write(dmxIndex * 5 + 1, r);
   DmxSimple.write(dmxIndex * 5 + 2, g);
@@ -163,7 +172,7 @@ struct Color rainbowCycle(long f, int dmxIndex) {
 }
 
 struct Color crossfade(long f, int dmxIndex) {
-  float r = 100;
+  float r = 25;
   return lerpColor(color1, color2, (sin(f/r)+1)/2);
 }
 
@@ -240,4 +249,24 @@ struct Color lerpColor(struct Color a, struct Color b, float t) {
 
 int lerp(int a, int b, float t) {
   return a + (b - a) *t;
+}
+
+void sanityCheck() {
+
+  int d = 10;
+
+  for (int i = 0; i < NUM_DMX; i++) {
+    setDMXColor(i, 255, 0, 0);
+    delay(d);
+    setDMXColor(i, 0, 255, 0);
+    delay(d);
+    setDMXColor(i, 0, 0, 255);
+    delay(d);    
+    setDMXColor(i, 0, 0, 0);
+    delay(d);    
+    setDMXColor(i, 0, 0, 0);
+    delay(d);    
+    setDMXColor(i, 0, 0, 0);
+  }
+
 }

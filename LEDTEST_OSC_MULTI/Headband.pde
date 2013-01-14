@@ -1,8 +1,10 @@
+final int MESSAGE_SIZE = 13;
+
 int WHICH_LIGHTS = 1;
 int WHICH = 0;
 class Headband {
 
-  private int serialData[] = new int[13];
+  private int serialData[] = new int[MESSAGE_SIZE];
 
   public ColorPicker[] colors = new ColorPicker[3];
   public int pattern = 0;
@@ -50,7 +52,7 @@ class Headband {
   }
 
   public void send() {
-    serialData[0] = WHICH++%3;
+    serialData[0] = 2;//  WHICH++%3;
     serialData[1] = (byte)rate;
     serialData[2] = (byte)pattern;
     float a = alpha(colors[0].getColorValue())/255;
@@ -69,7 +71,6 @@ class Headband {
 
     println(serialData);
 
-    //    xbee.sendDataString16(address, serialData);
     for (int i = 0; i<serialData.length;i++) { 
       port.write(serialData[i]);
     }

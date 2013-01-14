@@ -20,7 +20,7 @@ struct CRGB {
 struct CRGB *leds;
 
 #define PIN 4
-#define myADDRESS 0 
+#define myADDRESS 2 
 
 /* These don't seem to work as #define since they're used in other tabs ... */
 unsigned int NUM_ROWS = 64; 
@@ -254,7 +254,7 @@ void loop() {
   lastMillis = m;
   lastTime = t;
 
-  frame = (t * 1000 + internalTimeSmoother) / rate;
+  frame = millis() / rate;
 
   // if (currentTime >= loopTime + rate) { 
 

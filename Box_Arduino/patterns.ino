@@ -23,8 +23,7 @@ struct CRGB rainbowCycle(long f, int pixelIndex) {
 
 struct CRGB colorAlternator(long f, int pixelIndex) {
   if (f < 0) return NULL_COLOR;
-  int s = 5;
-  if (f/s % 2 == 0) 
+  if (f % 2 == 0) 
     return color1;
   return color2;
 }

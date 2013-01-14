@@ -13,7 +13,7 @@ uint32_t colorWipe(long f, int pixelIndex) {
 uint32_t rainbow(long f, int pixelIndex) {
 
   if (f < 0) return -1;
-  return Wheel((pixelIndex + f % 384));
+  return Wheel(f % 384);
 }
 
 // up/down variants to be replaced by mapping
@@ -26,7 +26,7 @@ uint32_t rainbowCycle(long f, int pixelIndex) {
 uint32_t colorAlternator(long f, int pixelIndex) {
   if (f < 0) return -1;
   int s = 5;
-  if (f/s % 2 == 0) 
+  if (f % 2 == 0) 
     return color1;
   return color2;
 }
