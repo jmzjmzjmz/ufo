@@ -46,8 +46,6 @@ unsigned int patternByte = NULL_PATTERN;
 unsigned long startedAt = 0;
 unsigned long lastTime = -1;
 
-int now = 0;
-
 float brightness = 1.0;
 int r1 = 127, g1 = 127, b1 = 127, r2 = 0, g2 = 0, b2 = 0, r3 = 0, g3 = 0, b3 = 0;
 
@@ -67,22 +65,6 @@ Pattern pattern;
 typedef int (*Mapping)(long, int);
 Mapping mapping = &forward;
 
-//typedef struct {
-//  int rate;
-//  int brightness;
-//  int red1;
-//  int green1;
-//  int blue1;
-//  int red2;
-//  int green2;
-//  int blue2;
-//  int pattern;
-//} 
-//lightPoles;
-//
-//lightPoles pole[NUM_POLES];
-
-
 unsigned long millisCounter = 0;
 unsigned long lastMillis = -1;
 
@@ -90,17 +72,8 @@ void setup() {
   
   pinMode(13, OUTPUT); 
 
-  // Wire.begin(wireAddress);
-  // Wire.onReceive(receiveEvent);
   Serial1.begin(9600); 
   Serial.begin(9600);
-
-  // RTC.begin();
-  // if (! RTC.isrunning()) {
-  //   Serial1.println("RTC is NOT running!");
-  //   // following line sets the RTC to the date & time this sketch was compiled
-  //   RTC.adjust(DateTime(__DATE__, __TIME__));
-  // }
   
   strip.begin();
 
@@ -143,6 +116,7 @@ void read() {
     unsigned char address = Serial1.read();
 
 
+
     if (address != myADDRESS){
       Serial1.flush();
       return;
@@ -170,9 +144,8 @@ void read() {
     setBrightnRate();
     setColors();
 
-    if (patternByte == 7) {
-      millisCounter = 0;
-    } else if (patternByte == 1) {
+    
+    if (patternByte == 1) {
       mapping = &forward;
     } 
     else if (patternByte == 2) {
