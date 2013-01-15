@@ -48,9 +48,10 @@ RTC_DS1307 RTC;
 
 #define NULL_PATTERN 0
 #define OFF_PATTERN 68
+#define TIMING_ADDR 100
 #define PAUSE_PATTERN 67
 #define ADV_PATTERN 101
-#define RESET_FRAME 100
+// #define RESET_FRAME 100
 
 #define MAX_FRAME 100000
 
@@ -59,8 +60,8 @@ unsigned int incomingRate = 0;
 unsigned int rate = 2;
 unsigned int patternByte = NULL_PATTERN;
 
-unsigned long millisCounter = 0;
-unsigned long lastMillis = -1;
+unsigned long lastTime = -1;
+
 
 float brightness = 1.0;
 int r1 = 127, g1 = 0,   b1 = 0, 
@@ -81,6 +82,12 @@ Pattern pattern;
 
 typedef int (*Mapping)(long, int);
 Mapping mapping = &forward;
+
+
+int currentTime;
+unsigned long lastMillis;
+unsigned long internalTimeSmoother;
+
 
 void setup() {  
 
@@ -140,13 +147,23 @@ void read() {
   char inData[len];
 
   if (Serial1.available() > len - 1) {
-    // Serial1.readBytes(inData, len);
-    if(Serial1.read() != myADDRESS){
+    
+    unsigned char address = Serial1.read();
+//Serial.println(address);
+
+    if (address == TIMING_ADDR) {
+      currentTime = Serial1.parseInt();
+      Serial.println(currentTime);
       Serial1.clear();
       return;
     }
-  
-  
+
+    if (address != myADDRESS){
+      Serial1.clear();
+      return;
+    }
+
+
 
     rate = Serial1.read();
     patternByte = Serial1.read();
@@ -166,9 +183,7 @@ void read() {
     // setBrightnRate();
     setColors();
 
-    if (patternByte == 7) {
-      millisCounter = 0;
-    } else if (patternByte == 1) {
+    if (patternByte == 1) {
       mapping = &forward;
     } 
     else if (patternByte == 2) {
@@ -237,10 +252,26 @@ void loop() {
     return;
   }
 
-  frame = resettableMillis() / rate;
+ 
+  unsigned long currentMillis = millis();
 
-  Serial.println(resettableMillis());
+  if (currentTime != lastTime) {
+    internalTimeSmoother = 0;
+  }
 
+  internalTimeSmoother += currentMillis - lastMillis;
+
+
+
+  lastMillis = currentMillis;
+  lastTime = currentTime;
+
+  // int t = (currentTime + timesCycled * 256);
+
+  frame = (currentTime * 1000 + internalTimeSmoother) / rate;
+
+
+  Serial.println(frame);
   // if (currentTime >= loopTime + rate) { 
 
 
@@ -329,21 +360,4 @@ void hideAll() {
 
 void showAll() {
   FastSPI_LED.show();
-}
-
-
-unsigned long resettableMillis() {
-
-  unsigned long now = millis();
-
-  if (now != lastMillis) {
-
-    millisCounter += now - lastMillis;
-
-  }
-
-  lastMillis = now;
-
-  return millisCounter;
-
 }

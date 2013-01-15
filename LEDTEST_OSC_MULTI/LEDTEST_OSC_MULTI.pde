@@ -143,7 +143,7 @@ final int INTERVAL = 1;
 final int TIMING_ADDR = 100;
 void draw() {
   
-  int now = millis()/1000;
+  int now = millis()/1000 + 370;
   
   if (now - lastSend >= INTERVAL) {
     
@@ -151,9 +151,9 @@ void draw() {
     
     port.write(TIMING_ADDR);
     port.write(now + ",");
-    for (int i = 0; i < MESSAGE_SIZE - 2; i++) {
-      port.write(0);
-    }
+//    for (int i = 0; i < MESSAGE_SIZE - 2; i++) {
+      port.write(",,,,,,,,,,,");
+//    }
 
     lastSend = now;
     
