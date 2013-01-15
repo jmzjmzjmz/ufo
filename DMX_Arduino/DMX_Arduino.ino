@@ -9,10 +9,9 @@ unsigned int rate = 127;
 
 unsigned long frame = 0;
 unsigned long lastFrame = 0;
-unsigned long lastTime = 0;
 
-unsigned long lastMillis = 0;
-unsigned long internalTimeSmoother = 0;
+unsigned long lastMillis = -1;
+unsigned long millisCounter = 0;
 
 struct Color { 
   int r;
@@ -57,23 +56,12 @@ void setup() {
 
 void loop() {
   
-read();
+  read();
+  
   if (isOff)
     return;
 
-
-  unsigned long t = 0;//RTC.now().unixtime();// * 50 / (rate+1);
-  unsigned long m = millis();
-
-  if (t != lastTime) {
-    internalTimeSmoother = 0;
-  }
-
-  internalTimeSmoother += m - lastMillis;
-  lastMillis = m;
-  lastTime = t;
-
-  frame = millis() / rate;
+  frame = resettableMillis() / rate;
 
   if (frame != lastFrame)
     pattern(-1, 0); // Per frame initialization
@@ -121,7 +109,9 @@ void read() {
     
     Serial1.read();
 
-    if (patternByte == OFF_PATTERN) {
+    if (patternByte == 7) {
+      millisCounter = 0;
+    } else if (patternByte == OFF_PATTERN) {
       isOff = true;
       hideAll();
     } else if (patterns[patternByte] != NULL) {
@@ -268,5 +258,22 @@ void sanityCheck() {
     delay(d);    
     setDMXColor(i, 0, 0, 0);
   }
+
+}
+
+
+unsigned long resettableMillis() {
+
+  unsigned long now = millis();
+
+  if (now != lastMillis) {
+
+    millisCounter += now - lastMillis;
+
+  }
+
+  lastMillis = now;
+
+  return millisCounter;
 
 }

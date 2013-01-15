@@ -48,10 +48,6 @@ unsigned long lastTime = -1;
 
 int now = 0;
 
-unsigned long lastSync = 0;
-unsigned long lastMillis = 0;
-unsigned long internalTimeSmoother = 0;
-
 float brightness = 1.0;
 int r1 = 127, g1 = 127, b1 = 127, r2 = 0, g2 = 0, b2 = 0, r3 = 0, g3 = 0, b3 = 0;
 
@@ -85,6 +81,10 @@ Mapping mapping = &forward;
 //lightPoles;
 //
 //lightPoles pole[NUM_POLES];
+
+
+unsigned long millisCounter = 0;
+unsigned long lastMillis = -1;
 
 void setup() {  
   
@@ -142,13 +142,8 @@ void read() {
 
     unsigned char address = Serial1.read();
 
-    // Serial1.readBytes(inData, len);
-    if (address == TIMING_ADDR) {
-      now++;
-      Serial.println(now);
-      Serial1.flush();
-      return;
-    } else if (address != myADDRESS){
+
+    if (address != myADDRESS){
       Serial1.flush();
       return;
     }
@@ -176,11 +171,8 @@ void read() {
     setColors();
 
     if (patternByte == 7) {
-      lastSync = millis();
-      patternByte = 80;
-    }
-
-    if (patternByte == 1) {
+      millisCounter = 0;
+    } else if (patternByte == 1) {
       mapping = &forward;
     } 
     else if (patternByte == 2) {
@@ -236,22 +228,8 @@ void loop() {
     showAll();
     return;
   }
-  
-  unsigned long m = millis();
-
-  if (now != lastTime) {
-    internalTimeSmoother = 0;
-  }
-
-  internalTimeSmoother += m - lastMillis;
-
-  lastMillis = m;
-  
-  lastTime = now;
-
-  frame = millis() / rate;
-
-
+ 
+  frame = resettableMillis() / rate;
 
   // if (currentTime >= loopTime + rate) { 
 
@@ -336,12 +314,18 @@ void showAll(){
 
 
 
+unsigned long resettableMillis() {
 
+  unsigned long now = millis();
 
+  if (now != lastMillis) {
 
+    millisCounter += now - lastMillis;
 
+  }
 
+  lastMillis = now;
 
+  return millisCounter;
 
-
-
+}

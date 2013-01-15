@@ -59,12 +59,8 @@ unsigned int incomingRate = 0;
 unsigned int rate = 2;
 unsigned int patternByte = NULL_PATTERN;
 
-// unix timestamp that the sketch starts at
-unsigned long startedAt = 0;
-unsigned long lastTime = -1;
-
-unsigned long lastMillis = 0;
-unsigned long internalTimeSmoother = 0;
+unsigned long millisCounter = 0;
+unsigned long lastMillis = -1;
 
 float brightness = 1.0;
 int r1 = 127, g1 = 0,   b1 = 0, 
@@ -92,7 +88,7 @@ void setup() {
 
   // Wire.begin(wireAddress);
 //  Wire.onReceive(receiveEvent); /* TUESDAY Specifically upset with this. */
- // Serial.begin(38400);
+ Serial.begin(9600);
   Serial1.begin(9600); 
 
   FastSPI_LED.setLeds(NUM_PIXELS);
@@ -135,11 +131,7 @@ void setup() {
 
 
   pattern = &rainbowCycle;
-  // pattern(-2, 0);
 
-  // showAll();
-
-  startedAt = 0;//RTC.now().unixtime();
 
 }
 
@@ -174,7 +166,9 @@ void read() {
     // setBrightnRate();
     setColors();
 
-    if (patternByte == 1) {
+    if (patternByte == 7) {
+      millisCounter = 0;
+    } else if (patternByte == 1) {
       mapping = &forward;
     } 
     else if (patternByte == 2) {
@@ -243,18 +237,9 @@ void loop() {
     return;
   }
 
-  t = 0;//RTC.now().unixtime();// * 50 / (rate+1);
-  m = millis();
+  frame = resettableMillis() / rate;
 
-  if (t != lastTime) {
-    internalTimeSmoother = 0;
-  }
-
-  internalTimeSmoother += m - lastMillis;
-  lastMillis = m;
-  lastTime = t;
-
-  frame = millis() / rate;
+  Serial.println(resettableMillis());
 
   // if (currentTime >= loopTime + rate) { 
 
@@ -347,15 +332,18 @@ void showAll() {
 }
 
 
+unsigned long resettableMillis() {
 
+  unsigned long now = millis();
 
+  if (now != lastMillis) {
 
+    millisCounter += now - lastMillis;
 
+  }
 
+  lastMillis = now;
 
+  return millisCounter;
 
-
-
-
-
-
+}

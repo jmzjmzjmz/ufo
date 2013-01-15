@@ -93,6 +93,8 @@ void setup() {
   r.add("** DITHER", 5);
 //  r.add("** SNAKE64", 6);
 
+  r.add("*** SYNC CLOCKS", 7);
+
   controlP5.addSlider("speed", 0, 127, 5, 200, 220, 20);
   controlP5.addSlider("dimVal", 0, 127, 5, 225, 220, 20);
 
@@ -141,21 +143,21 @@ final int INTERVAL = 1;
 final int TIMING_ADDR = 100;
 void draw() {
 //  
-  int now = millis()/1000 + 300;
-  
-  if (now - lastSend >= INTERVAL) {
-    
-//    println("time " + now);
-    
-    port.write(TIMING_ADDR);
-    port.write(now);
-    for (int i = 0; i < MESSAGE_SIZE - 2; i++) {
-      port.write('.');
-    }
-    
-    lastSend = now;
-    
-  }
+//  int now = millis()/1000 + 300;
+//  
+//  if (now - lastSend >= INTERVAL) {
+//    
+////    println("time " + now);
+//    
+//    port.write(TIMING_ADDR);
+//    port.write(now);
+//    for (int i = 0; i < MESSAGE_SIZE - 2; i++) {
+//      port.write('.');
+//    }
+//    
+//    lastSend = now;
+//    
+//  }
   
 }
 
