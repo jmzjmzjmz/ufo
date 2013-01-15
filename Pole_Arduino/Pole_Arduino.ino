@@ -65,8 +65,9 @@ Pattern pattern;
 typedef int (*Mapping)(long, int);
 Mapping mapping = &forward;
 
-unsigned long millisCounter = 0;
-unsigned long lastMillis = -1;
+int currentTime;
+unsigned long lastMillis;
+unsigned long internalTimeSmoother;
 
 void setup() {  
   
@@ -114,8 +115,14 @@ void read() {
   if (Serial1.available() > 12) {
 
     unsigned char address = Serial1.read();
+//Serial.println(address);
 
-
+    if (address == TIMING_ADDR) {
+      currentTime = Serial1.parseInt();
+      Serial.println(currentTime);
+      Serial1.flush();
+      return;
+    }
 
     if (address != myADDRESS){
       Serial1.flush();
@@ -127,7 +134,7 @@ void read() {
     incomingRate = Serial1.read();
     patternByte = Serial1.read();
 
-    Serial.println(patternByte);
+    // Serial.println(patternByte);
 
     r1 = Serial1.read();
     g1 = Serial1.read();
@@ -202,7 +209,21 @@ void loop() {
     return;
   }
  
-  frame = resettableMillis() / rate;
+  unsigned long currentMillis = millis();
+
+  if (currentTime != lastTime) {
+    internalTimeSmoother = 0;
+  }
+
+  internalTimeSmoother += currentMillis - lastMillis;
+
+  lastMillis = currentMillis;
+  lastTime = currentTime;
+
+  // int t = (currentTime + timesCycled * 256);
+
+  frame = (currentTime * 1000 + internalTimeSmoother) / rate;
+
 
   // if (currentTime >= loopTime + rate) { 
 
@@ -286,19 +307,3 @@ void showAll(){
 }
 
 
-
-unsigned long resettableMillis() {
-
-  unsigned long now = millis();
-
-  if (now != lastMillis) {
-
-    millisCounter += now - lastMillis;
-
-  }
-
-  lastMillis = now;
-
-  return millisCounter;
-
-}

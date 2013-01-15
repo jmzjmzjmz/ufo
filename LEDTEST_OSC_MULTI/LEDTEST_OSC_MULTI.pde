@@ -142,23 +142,23 @@ int lastSend = -1;
 final int INTERVAL = 1;
 final int TIMING_ADDR = 100;
 void draw() {
-//  
-//  int now = millis()/1000 + 300;
-//  
-//  if (now - lastSend >= INTERVAL) {
-//    
-////    println("time " + now);
-//    
-//    port.write(TIMING_ADDR);
-//    port.write(now);
-//    for (int i = 0; i < MESSAGE_SIZE - 2; i++) {
-//      port.write('.');
-//    }
-//    
-//    lastSend = now;
-//    
-//  }
   
+  int now = millis()/1000;
+  
+  if (now - lastSend >= INTERVAL) {
+    
+//    println("time " + now);
+    
+    port.write(TIMING_ADDR);
+    port.write(now + ",");
+    for (int i = 0; i < MESSAGE_SIZE - 2; i++) {
+      port.write(0);
+    }
+
+    lastSend = now;
+    
+  }
+  println(now);
 }
 
 void mouseMoved() {
