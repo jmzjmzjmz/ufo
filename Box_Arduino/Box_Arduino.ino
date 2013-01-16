@@ -153,7 +153,7 @@ void read() {
 
     if (address == TIMING_ADDR) {
       currentTime = Serial1.parseInt();
-      // Serial.println((long)whatTimeIThinkItIs - (long)currentTime*1000);
+      Serial.println((long)whatTimeIThinkItIs - (long)currentTime*1000);
       Serial1.flush();
       return;
     }
@@ -162,7 +162,6 @@ void read() {
       Serial1.flush();
       return;
     }
-
 
 
     incomingRate = Serial1.read();
@@ -256,6 +255,8 @@ void loop() {
     showAll();
     return;
   }
+
+
  
   unsigned long currentMillis = millis();
 
