@@ -85,6 +85,7 @@ Mapping mapping = &forward;
 
 
 int currentTime;
+unsigned long whatTimeIThinkItIs;
 unsigned long lastMillis;
 unsigned long internalTimeSmoother;
 
@@ -93,9 +94,10 @@ void setup() {
 
   //  pinMode(13, OUTPUT); 
 
-  // Wire.begin(wireAddress);
-//  Wire.onReceive(receiveEvent); /* TUESDAY Specifically upset with this. */
- Serial.begin(9600);
+  // Wire.begin(0);
+  // Wire.onReceive(receiveEvent); /* TUESDAY Specifically upset with this. */
+
+  Serial.begin(9600);
   Serial1.begin(9600); 
 
   FastSPI_LED.setLeds(NUM_PIXELS);
@@ -105,7 +107,7 @@ void setup() {
   FastSPI_LED.start();
   leds = (struct CRGB*)FastSPI_LED.getRGBData(); 
 
-//   RTC.begin();
+  RTC.begin();
 //   if (!RTC.isrunning()) {
 // //    Serial1.println("RTC is NOT running!"); /* TUESDAY Specifically upset with this. */
 //     RTC.adjust(DateTime(__DATE__, __TIME__));
@@ -143,30 +145,30 @@ void setup() {
 }
 
 void read() {
-  int len = 13;
-  char inData[len];
 
-  if (Serial1.available() > len - 1) {
-    
+  if (Serial1.available() > 12) {
+
     unsigned char address = Serial1.read();
 //Serial.println(address);
 
     if (address == TIMING_ADDR) {
       currentTime = Serial1.parseInt();
-      Serial.println(currentTime);
-      Serial1.clear();
+      // Serial.println((long)whatTimeIThinkItIs - (long)currentTime*1000);
+      Serial1.flush();
       return;
     }
 
     if (address != myADDRESS){
-      Serial1.clear();
+      Serial1.flush();
       return;
     }
 
 
 
-    rate = Serial1.read();
+    incomingRate = Serial1.read();
     patternByte = Serial1.read();
+
+    // Serial.println(patternByte);
 
     r1 = Serial1.read();
     g1 = Serial1.read();
@@ -178,11 +180,12 @@ void read() {
     g3 = Serial1.read();
     b3 = Serial1.read();
 
-    brightness = Serial1.read()/127.0;
+    incomingBrightness = Serial1.read()/127.0;
 
-    // setBrightnRate();
+    setBrightnRate();
     setColors();
 
+    
     if (patternByte == 1) {
       mapping = &forward;
     } 
@@ -206,8 +209,10 @@ void read() {
     else if (patternByte != NULL_PATTERN && patterns[patternByte] != NULL) {
       isOff = false;
       pattern = patterns[patternByte];
+      // now = 0;
       pattern(-2, 0); // On select initialization
     }
+
 
   }
 
@@ -251,7 +256,6 @@ void loop() {
     showAll();
     return;
   }
-
  
   unsigned long currentMillis = millis();
 
@@ -261,19 +265,13 @@ void loop() {
 
   internalTimeSmoother += currentMillis - lastMillis;
 
-
-
   lastMillis = currentMillis;
   lastTime = currentTime;
 
-  // int t = (currentTime + timesCycled * 256);
 
-  frame = (currentTime * 1000 + internalTimeSmoother) / rate;
+  whatTimeIThinkItIs = currentTime * 1000 + internalTimeSmoother;
 
-
-  Serial.println(frame);
-  // if (currentTime >= loopTime + rate) { 
-
+  frame = whatTimeIThinkItIs / rate;
 
   if (frame != lastFrame)
     pattern(-1, 0); // Per frame initialization

@@ -46,7 +46,7 @@ struct CRGB Wheel(uint16_t WheelPos) {
     g = 0;									//green off
     break; 
   }
-  return (CRGB){ r, g, b };
+  return (CRGB){ g, r, b };
 }
 
 PROGMEM prog_uchar gammaTable[]  = {

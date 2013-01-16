@@ -144,7 +144,7 @@ final int TIMING_ADDR = 100;
 void draw() {
   
   int now = millis()/1000 + 370;
-  
+//  
   if (now - lastSend >= INTERVAL) {
     
 //    println("time " + now);
