@@ -1,4 +1,4 @@
-final int MESSAGE_SIZE = 13;
+final int MESSAGE_SIZE = 14;
 
 int WHICH_LIGHTS = 1;
 int WHICH = 0;
@@ -52,7 +52,7 @@ class Headband {
   }
 
   public void send() {
-    serialData[0] = 2;//  WHICH++%3;
+    serialData[0] = WHICH++%3 + 1;
     serialData[1] = (byte)rate;
     serialData[2] = (byte)pattern;
     float a = alpha(colors[0].getColorValue())/255;
@@ -68,12 +68,15 @@ class Headband {
     serialData[10] = (byte)(green(colors[2].getColorValue())/2*a);
     serialData[11] = (byte) (blue(colors[2].getColorValue())/2*a);
     serialData[12] = (byte)dim;
+    serialData[13] = ',';
 
-    println(serialData);
+//    println(serialData);
 
     for (int i = 0; i<serialData.length;i++) { 
       port.write(serialData[i]);
     }
+    
+//    println(serialData[0]);
     
   }
   

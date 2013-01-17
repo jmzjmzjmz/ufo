@@ -118,7 +118,7 @@ void setup() {
   myPatterns[68] = "/1/multitoggle1/2/9";
   myPatterns[66] = "/1/multitoggle1/1/7";
   myPatterns[65] = "/1/multitoggle1/2/7";
-  myPatterns[64] = "/1/multitoggle1/1/8";
+  myPatterns[64] = "/1/multitoggle1/1/ 8";
   myPatterns[63] = "/1/multitoggle1/2/8";
   myPatterns[62] = "/1/multitoggle1/1/9";
   myPatterns[1] = "/1/multitoggle2/1/1";
@@ -135,30 +135,32 @@ void setup() {
   headbands[headbandSelect].pattern = 65;
   headbands[headbandSelect].rate = 20;
   headbands[headbandSelect].send();
+  
 }
 
 
 int lastSend = -1;
-final int INTERVAL = 1;
+final int INTERVAL = 100;
 final int TIMING_ADDR = 100;
 void draw() {
   
-  int now = millis()/1000 + 370;
-//  
+  int now = millis();
   if (now - lastSend >= INTERVAL) {
     
-//    println("time " + now);
-    
     port.write(TIMING_ADDR);
-    port.write(now + ",");
-//    for (int i = 0; i < MESSAGE_SIZE - 2; i++) {
-      port.write(",,,,,,,,,,,");
-//    }
+//    port.write(now);
+
+    port.write(new Integer(now).toString());
+
+    port.write(',');
 
     lastSend = now;
-    
+  
+//    println(now);
   }
-  println(now);
+  
+  
+  
 }
 
 void mouseMoved() {
@@ -167,6 +169,7 @@ void mouseMoved() {
 }
 
 void keyPressed() {
+//  println("keypressed " + millis());
   headbands[headbandSelect].send();
 }
 

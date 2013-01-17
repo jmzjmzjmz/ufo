@@ -20,7 +20,8 @@ struct CRGB {
 struct CRGB *leds;
 
 #define PIN 4
-#define myADDRESS 2 
+#define myADDRESS 2
+#define mySETADDRESS 3
 
 /* These don't seem to work as #define since they're used in other tabs ... */
 unsigned int NUM_ROWS = 64; 
@@ -84,11 +85,12 @@ typedef int (*Mapping)(long, int);
 Mapping mapping = &forward;
 
 
-int currentTime;
-unsigned long whatTimeIThinkItIs;
+unsigned long currentTime;
 unsigned long lastMillis;
 unsigned long internalTimeSmoother;
 
+String inputString = "";
+boolean stringComplete = false;
 
 void setup() {  
 
@@ -139,81 +141,101 @@ void setup() {
   patterns[80] = &pulseOnce;
 
 
-  pattern = &rainbowCycle;
+  pattern = &pulseSine;
+
+  inputString.reserve(200);
 
 
 }
 
 void read() {
 
-  if (Serial1.available() > 12) {
+  while (Serial1.available()) {
 
-    unsigned char address = Serial1.read();
-//Serial.println(address);
+    char c = (char)Serial1.read();
+    inputString += c;
+    if (c == ',') {
+      
+      if (inputString.startsWith('d')) {
 
-    if (address == TIMING_ADDR) {
-      currentTime = Serial1.parseInt();
-      Serial.println((long)whatTimeIThinkItIs - (long)currentTime*1000);
-      Serial1.flush();
-      return;
+        // Heartbeat.
+
+        // Big fat hack to turn a String into an int.
+        String sub = inputString.substring(1, inputString.length()-1);
+        char c[sub.length()];
+        for (int i = 0; i < sub.length(); i++) {
+          c[i] = sub.charAt(i);
+        }
+        currentTime = atol(c);
+
+        Serial.print("Current time: ");
+        Serial.println(currentTime);
+
+
+      } else { 
+
+        // Pattern.
+        unsigned char addr = (unsigned char)inputString.charAt(0);
+
+        Serial.print("Address: ");
+        Serial.println(addr);
+
+        if (addr == myADDRESS || addr == mySETADDRESS) {
+          
+          rate = (unsigned char)inputString.charAt(1);
+          patternByte = (unsigned char)inputString.charAt(2);
+
+          r1 = (unsigned char)inputString.charAt(3);
+          g1 = (unsigned char)inputString.charAt(4);
+          b1 = (unsigned char)inputString.charAt(5);
+          r2 = (unsigned char)inputString.charAt(6);
+          g2 = (unsigned char)inputString.charAt(7);
+          b2 = (unsigned char)inputString.charAt(8);
+          r3 = (unsigned char)inputString.charAt(9);
+          g3 = (unsigned char)inputString.charAt(10);
+          b3 = (unsigned char)inputString.charAt(11);
+
+          brightness = ((unsigned char)inputString.charAt(12))/127.0;
+
+          setColors();
+
+          if (patternByte == 1) {
+            mapping = &forward;
+          } 
+          else if (patternByte == 2) {
+            mapping = &backward;
+          } 
+          else if (patternByte == 3) {
+            mapping = &peak;
+          } 
+          else if (patternByte == 4) {
+            mapping = &valley;
+          } 
+          else if (patternByte == 5) {
+            mapping = &dither;
+          } 
+          else if (patternByte == OFF_PATTERN) {
+            hideAll();
+            showAll();
+            isOff = true;
+          } 
+          else if (patternByte != NULL_PATTERN && patterns[patternByte] != NULL) {
+            isOff = false;
+            pattern = patterns[patternByte];
+            pattern(-2, 0); // On select initialization
+          }
+
+        }
+
+
+      }
+
+      inputString = "";
+
     }
-
-    if (address != myADDRESS){
-      Serial1.flush();
-      return;
-    }
-
-
-    incomingRate = Serial1.read();
-    patternByte = Serial1.read();
-
-    // Serial.println(patternByte);
-
-    r1 = Serial1.read();
-    g1 = Serial1.read();
-    b1 = Serial1.read();
-    r2 = Serial1.read();
-    g2 = Serial1.read();
-    b2 = Serial1.read();
-    r3 = Serial1.read();
-    g3 = Serial1.read();
-    b3 = Serial1.read();
-
-    incomingBrightness = Serial1.read()/127.0;
-
-    setBrightnRate();
-    setColors();
-
-    
-    if (patternByte == 1) {
-      mapping = &forward;
-    } 
-    else if (patternByte == 2) {
-      mapping = &backward;
-    } 
-    else if (patternByte == 3) {
-      mapping = &peak;
-    } 
-    else if (patternByte == 4) {
-      mapping = &valley;
-    } 
-    else if (patternByte == 5) {
-      mapping = &dither;
-    } 
-    else if (patternByte == OFF_PATTERN) {
-      hideAll();
-      showAll();
-      isOff = true;
-    } 
-    else if (patternByte != NULL_PATTERN && patterns[patternByte] != NULL) {
-      isOff = false;
-      pattern = patterns[patternByte];
-      // now = 0;
-      pattern(-2, 0); // On select initialization
-    }
-
 
   }
+
 
 
 
@@ -269,10 +291,10 @@ void loop() {
   lastMillis = currentMillis;
   lastTime = currentTime;
 
+  // int t = (currentTime + timesCycled * 256);
 
-  whatTimeIThinkItIs = currentTime * 1000 + internalTimeSmoother;
+  frame = (currentTime + internalTimeSmoother) / rate;
 
-  frame = whatTimeIThinkItIs / rate;
 
   if (frame != lastFrame)
     pattern(-1, 0); // Per frame initialization
