@@ -145,53 +145,52 @@ void read() {
 
         // Pattern.
         unsigned char addr = (unsigned char)inputString.charAt(0);
-        if (addr != myADDRESS || addr != mySETADDRESS) {
-          return;
+        if (addr == myADDRESS || addr == mySETADDRESS) {
+          
+          rate = (unsigned char)inputString.charAt(1);
+          patternByte = (unsigned char)inputString.charAt(2);
+
+          r1 = (unsigned char)inputString.charAt(3);
+          g1 = (unsigned char)inputString.charAt(4);
+          b1 = (unsigned char)inputString.charAt(5);
+          r2 = (unsigned char)inputString.charAt(6);
+          g2 = (unsigned char)inputString.charAt(7);
+          b2 = (unsigned char)inputString.charAt(8);
+          r3 = (unsigned char)inputString.charAt(9);
+          g3 = (unsigned char)inputString.charAt(10);
+          b3 = (unsigned char)inputString.charAt(11);
+
+          brightness = ((unsigned char)inputString.charAt(12))/127.0;
+
+          setColors();
+
+          if (patternByte == 1) {
+            mapping = &forward;
+          } 
+          else if (patternByte == 2) {
+            mapping = &backward;
+          } 
+          else if (patternByte == 3) {
+            mapping = &peak;
+          } 
+          else if (patternByte == 4) {
+            mapping = &valley;
+          } 
+          else if (patternByte == 5) {
+            mapping = &dither;
+          } 
+          else if (patternByte == OFF_PATTERN) {
+            hideAll();
+            showAll();
+            isOff = true;
+          } 
+          else if (patternByte != NULL_PATTERN && patterns[patternByte] != NULL) {
+            isOff = false;
+            pattern = patterns[patternByte];
+            pattern(-2, 0); // On select initialization
+          }
+
         }
-
-        rate = (unsigned char)inputString.charAt(1);
-        patternByte = (unsigned char)inputString.charAt(2);
-
-        r1 = (unsigned char)inputString.charAt(3);
-        g1 = (unsigned char)inputString.charAt(4);
-        b1 = (unsigned char)inputString.charAt(5);
-        r2 = (unsigned char)inputString.charAt(6);
-        g2 = (unsigned char)inputString.charAt(7);
-        b2 = (unsigned char)inputString.charAt(8);
-        r3 = (unsigned char)inputString.charAt(9);
-        g3 = (unsigned char)inputString.charAt(10);
-        b3 = (unsigned char)inputString.charAt(11);
-
-        brightness = ((unsigned char)inputString.charAt(12))/127.0;
-
-        setColors();
-
-        if (patternByte == 1) {
-          mapping = &forward;
-        } 
-        else if (patternByte == 2) {
-          mapping = &backward;
-        } 
-        else if (patternByte == 3) {
-          mapping = &peak;
-        } 
-        else if (patternByte == 4) {
-          mapping = &valley;
-        } 
-        else if (patternByte == 5) {
-          mapping = &dither;
-        } 
-        else if (patternByte == OFF_PATTERN) {
-          hideAll();
-          showAll();
-          isOff = true;
-        } 
-        else if (patternByte != NULL_PATTERN && patterns[patternByte] != NULL) {
-          isOff = false;
-          pattern = patterns[patternByte];
-          pattern(-2, 0); // On select initialization
-        }
-
 
       }
 

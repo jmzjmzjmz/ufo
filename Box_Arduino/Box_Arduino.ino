@@ -20,7 +20,7 @@ struct CRGB {
 struct CRGB *leds;
 
 #define PIN 4
-#define myADDRESS 1
+#define myADDRESS 2
 #define mySETADDRESS 3
 
 /* These don't seem to work as #define since they're used in other tabs ... */
@@ -140,7 +140,7 @@ void setup() {
   patterns[80] = &pulseOnce;
 
 
-  pattern = &rainbow;
+  pattern = &pulseSine;
 
   inputString.reserve(200);
 
@@ -175,51 +175,55 @@ void read() {
 
         // Pattern.
         unsigned char addr = (unsigned char)inputString.charAt(0);
-        if (addr != myADDRESS || addr != mySETADDRESS) {
-          return;
-        }
 
-        rate = (unsigned char)inputString.charAt(1);
-        patternByte = (unsigned char)inputString.charAt(2);
+        Serial.print("Address: ");
+        Serial.println(addr);
 
-        r1 = (unsigned char)inputString.charAt(3);
-        g1 = (unsigned char)inputString.charAt(4);
-        b1 = (unsigned char)inputString.charAt(5);
-        r2 = (unsigned char)inputString.charAt(6);
-        g2 = (unsigned char)inputString.charAt(7);
-        b2 = (unsigned char)inputString.charAt(8);
-        r3 = (unsigned char)inputString.charAt(9);
-        g3 = (unsigned char)inputString.charAt(10);
-        b3 = (unsigned char)inputString.charAt(11);
+        if (addr == myADDRESS || addr == mySETADDRESS) {
+          
+          rate = (unsigned char)inputString.charAt(1);
+          patternByte = (unsigned char)inputString.charAt(2);
 
-        brightness = ((unsigned char)inputString.charAt(12))/127.0;
+          r1 = (unsigned char)inputString.charAt(3);
+          g1 = (unsigned char)inputString.charAt(4);
+          b1 = (unsigned char)inputString.charAt(5);
+          r2 = (unsigned char)inputString.charAt(6);
+          g2 = (unsigned char)inputString.charAt(7);
+          b2 = (unsigned char)inputString.charAt(8);
+          r3 = (unsigned char)inputString.charAt(9);
+          g3 = (unsigned char)inputString.charAt(10);
+          b3 = (unsigned char)inputString.charAt(11);
 
-        setColors();
+          brightness = ((unsigned char)inputString.charAt(12))/127.0;
 
-        if (patternByte == 1) {
-          mapping = &forward;
-        } 
-        else if (patternByte == 2) {
-          mapping = &backward;
-        } 
-        else if (patternByte == 3) {
-          mapping = &peak;
-        } 
-        else if (patternByte == 4) {
-          mapping = &valley;
-        } 
-        else if (patternByte == 5) {
-          mapping = &dither;
-        } 
-        else if (patternByte == OFF_PATTERN) {
-          hideAll();
-          showAll();
-          isOff = true;
-        } 
-        else if (patternByte != NULL_PATTERN && patterns[patternByte] != NULL) {
-          isOff = false;
-          pattern = patterns[patternByte];
-          pattern(-2, 0); // On select initialization
+          setColors();
+
+          if (patternByte == 1) {
+            mapping = &forward;
+          } 
+          else if (patternByte == 2) {
+            mapping = &backward;
+          } 
+          else if (patternByte == 3) {
+            mapping = &peak;
+          } 
+          else if (patternByte == 4) {
+            mapping = &valley;
+          } 
+          else if (patternByte == 5) {
+            mapping = &dither;
+          } 
+          else if (patternByte == OFF_PATTERN) {
+            hideAll();
+            showAll();
+            isOff = true;
+          } 
+          else if (patternByte != NULL_PATTERN && patterns[patternByte] != NULL) {
+            isOff = false;
+            pattern = patterns[patternByte];
+            pattern(-2, 0); // On select initialization
+          }
+
         }
 
 
@@ -230,89 +234,6 @@ void read() {
     }
   }
 
-
-
-  // int len = Serial1.available();
-
-  // char inData[len];
-
-  // while (Serial1.readBytesUntil('\n', inData, len)) {
-
-
-
-  // }
-
-  // int len = 13;
-  // char inData[len];
-
-  // Serial.println(Serial1.available());
-  // delay(100);
-
-  // if (Serial1.available() > len - 1) {
-
-  //   unsigned char address = Serial1.read();
-  //   // Serial.println(address);
-
-  //   if (address == TIMING_ADDR) {
-  //     currentTime = Serial1.parseInt();
-  //     // Serial1.clear();
-  //     return;
-  //   }
-
-  //   if (address != myADDRESS){
-  //     // Serial1.clear();
-  //     return;
-  //   }
-
-
-
-  //   rate = Serial1.read();
-  //   patternByte = Serial1.read();
-
-  //   r1 = Serial1.read();
-  //   g1 = Serial1.read();
-  //   b1 = Serial1.read();
-  //   r2 = Serial1.read();
-  //   g2 = Serial1.read();
-  //   b2 = Serial1.read();
-  //   r3 = Serial1.read();
-  //   g3 = Serial1.read();
-  //   b3 = Serial1.read();
-
-  //   brightness = Serial1.read()/127.0;
-
-  //   // setBrightnRate();
-  //   setColors();
-
-  //   if (patternByte == 1) {
-  //     mapping = &forward;
-  //   } 
-  //   else if (patternByte == 2) {
-  //     mapping = &backward;
-  //   } 
-  //   else if (patternByte == 3) {
-  //     mapping = &peak;
-  //   } 
-  //   else if (patternByte == 4) {
-  //     mapping = &valley;
-  //   } 
-  //   else if (patternByte == 5) {
-  //     mapping = &dither;
-  //   } 
-  //   else if (patternByte == OFF_PATTERN) {
-  //     hideAll();
-  //     showAll();
-  //     isOff = true;
-  //   } 
-  //   else if (patternByte != NULL_PATTERN && patterns[patternByte] != NULL) {
-  //     isOff = false;
-  //     pattern = patterns[patternByte];
-  //     pattern(-2, 0); // On select initialization
-  //   }
-
-  //   // Serial1.clear();
-
-  // }
 
 
 
