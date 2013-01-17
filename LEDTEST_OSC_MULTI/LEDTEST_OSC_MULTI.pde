@@ -146,17 +146,20 @@ void draw() {
   int now = millis();
   
   if (now - lastSend >= INTERVAL) {
-
     
     port.write(TIMING_ADDR);
-    port.write(now + ",");
-    for (int i = 0; i < MESSAGE_SIZE - 2; i++) {
-      port.write(0);
-    }
+//    port.write(now);
+
+    port.write(new Integer(now).toString());
+
+    port.write(',');
 
     lastSend = now;
-    
+  
+    println(now);
   }
+  
+  
   
 }
 
