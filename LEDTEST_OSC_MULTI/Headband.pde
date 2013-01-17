@@ -52,7 +52,7 @@ class Headband {
   }
 
   public void send() {
-    serialData[0] = 2;//  WHICH++%3;
+    serialData[0] = 1;
     serialData[1] = (byte)rate;
     serialData[2] = (byte)pattern;
     float a = alpha(colors[0].getColorValue())/255;

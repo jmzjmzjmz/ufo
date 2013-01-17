@@ -32,7 +32,7 @@ void setup() {
   background(0);
   println(Serial.list());
   
-  port = new Serial(this, Serial.list()[4], 9600); 
+  port = new Serial(this, Serial.list()[6], 9600); 
   controlP5 = new ControlP5(this);
 
   /* start oscP5, listening for incoming messages at port 12005 */
@@ -135,11 +135,12 @@ void setup() {
   headbands[headbandSelect].pattern = 65;
   headbands[headbandSelect].rate = 20;
   headbands[headbandSelect].send();
+  
 }
 
 
 int lastSend = -1;
-final int INTERVAL = 200;
+final int INTERVAL = 50;
 final int TIMING_ADDR = 100;
 void draw() {
   
@@ -156,7 +157,7 @@ void draw() {
 
     lastSend = now;
   
-    println(now);
+//    println(now);
   }
   
   

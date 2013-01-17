@@ -20,7 +20,8 @@ struct CRGB {
 struct CRGB *leds;
 
 #define PIN 4
-#define myADDRESS 2 
+#define myADDRESS 1
+#define mySETADDRESS 3
 
 /* These don't seem to work as #define since they're used in other tabs ... */
 unsigned int NUM_ROWS = 64; 
@@ -174,7 +175,7 @@ void read() {
 
         // Pattern.
         unsigned char addr = (unsigned char)inputString.charAt(0);
-        if (addr != myADDRESS) {
+        if (addr != myADDRESS || addr != mySETADDRESS) {
           return;
         }
 

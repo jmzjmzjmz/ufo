@@ -21,7 +21,8 @@ boolean light = false;
 
 #define NUM_POLES 6
 
-#define myADDRESS 2
+#define myADDRESS 1
+#define mySETADDRESS 3
 
 LPD8806 strip = LPD8806(40);
 
@@ -144,7 +145,7 @@ void read() {
 
         // Pattern.
         unsigned char addr = (unsigned char)inputString.charAt(0);
-        if (addr != myADDRESS) {
+        if (addr != myADDRESS || addr != mySETADDRESS) {
           return;
         }
 
