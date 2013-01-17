@@ -118,7 +118,7 @@ void setup() {
   myPatterns[68] = "/1/multitoggle1/2/9";
   myPatterns[66] = "/1/multitoggle1/1/7";
   myPatterns[65] = "/1/multitoggle1/2/7";
-  myPatterns[64] = "/1/multitoggle1/1/8";
+  myPatterns[64] = "/1/multitoggle1/1/ 8";
   myPatterns[63] = "/1/multitoggle1/2/8";
   myPatterns[62] = "/1/multitoggle1/1/9";
   myPatterns[1] = "/1/multitoggle2/1/1";
@@ -139,15 +139,14 @@ void setup() {
 
 
 int lastSend = -1;
-final int INTERVAL = 1;
+final int INTERVAL = 200;
 final int TIMING_ADDR = 100;
 void draw() {
   
-  int now = millis()/1000 + 370;
+  int now = millis();
   
   if (now - lastSend >= INTERVAL) {
-    
-//    println("time " + now);
+
     
     port.write(TIMING_ADDR);
     port.write(now + ",");
@@ -158,7 +157,7 @@ void draw() {
     lastSend = now;
     
   }
-  println(now);
+  
 }
 
 void mouseMoved() {

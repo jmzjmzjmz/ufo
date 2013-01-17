@@ -153,7 +153,7 @@ void read() {
 
     if (address == TIMING_ADDR) {
       currentTime = Serial1.parseInt();
-      Serial.println(currentTime);
+      // Serial.println(currentTime);
       Serial1.clear();
       return;
     }
@@ -268,7 +268,7 @@ void loop() {
 
   // int t = (currentTime + timesCycled * 256);
 
-  frame = (currentTime * 1000 + internalTimeSmoother) / rate;
+  frame = (currentTime + internalTimeSmoother) / rate;
 
 
   Serial.println(frame);

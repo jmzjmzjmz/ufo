@@ -222,7 +222,7 @@ void loop() {
 
   // int t = (currentTime + timesCycled * 256);
 
-  frame = (currentTime * 1000 + internalTimeSmoother) / rate;
+  frame = (currentTime + internalTimeSmoother) / rate;
 
 
   // if (currentTime >= loopTime + rate) { 
