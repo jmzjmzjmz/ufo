@@ -150,9 +150,9 @@ void draw() {
     
     port.write(TIMING_ADDR);
     port.write(now + ",");
-//    for (int i = 0; i < MESSAGE_SIZE - 2; i++) {
-      port.write(",,,,,,,,,,,");
-//    }
+    for (int i = 0; i < MESSAGE_SIZE - 2; i++) {
+      port.write(0);
+    }
 
     lastSend = now;
     
@@ -166,6 +166,7 @@ void mouseMoved() {
 }
 
 void keyPressed() {
+//  println("keypressed " + millis());
   headbands[headbandSelect].send();
 }
 

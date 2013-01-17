@@ -119,7 +119,7 @@ void read() {
 
     if (address == TIMING_ADDR) {
       currentTime = Serial1.parseInt();
-      Serial.println(currentTime);
+      // Serial.println(currentTime);
       Serial1.flush();
       return;
     }

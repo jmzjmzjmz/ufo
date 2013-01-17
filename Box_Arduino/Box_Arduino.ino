@@ -137,7 +137,7 @@ void setup() {
   patterns[80] = &pulseOnce;
 
 
-  pattern = &rainbowCycle;
+  pattern = &pulseSine;
 
 
 }
@@ -146,17 +146,22 @@ void read() {
   int len = 13;
   char inData[len];
 
+  Serial.println(Serial1.available());
+  delay(5);
+
   if (Serial1.available() > len - 1) {
     
-    unsigned char address = Serial1.read();
-//Serial.println(address);
 
-    if (address == TIMING_ADDR) {
-      currentTime = Serial1.parseInt();
-      // Serial.println(currentTime);
-      Serial1.clear();
-      return;
-    }
+
+    unsigned char address = Serial1.read();
+    // Serial.println(address);
+
+    // if (address == TIMING_ADDR) {
+    //   currentTime = Serial1.parseInt();
+      
+    //   Serial1.clear();
+    //   return;
+    // }
 
     if (address != myADDRESS){
       Serial1.clear();
@@ -208,6 +213,9 @@ void read() {
       pattern = patterns[patternByte];
       pattern(-2, 0); // On select initialization
     }
+
+
+    Serial1.clear();
 
   }
 
@@ -271,7 +279,7 @@ void loop() {
   frame = (currentTime + internalTimeSmoother) / rate;
 
 
-  Serial.println(frame);
+  // Serial.println(frame);
   // if (currentTime >= loopTime + rate) { 
 
 
