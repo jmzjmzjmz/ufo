@@ -65,7 +65,7 @@ Pattern pattern;
 typedef int (*Mapping)(long, int);
 Mapping mapping = &forward;
 
-int currentTime;
+unsigned long currentTime;
 unsigned long lastMillis;
 unsigned long internalTimeSmoother;
 
@@ -132,7 +132,7 @@ void read() {
         for (int i = 0; i < sub.length(); i++) {
           c[i] = sub.charAt(i);
         }
-        currentTime = atoi(c);
+        currentTime = atol(c);
 
         Serial.print("Current time: ");
         Serial.println(currentTime);
