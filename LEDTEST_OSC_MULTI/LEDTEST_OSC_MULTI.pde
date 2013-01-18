@@ -156,7 +156,7 @@ void draw() {
 
     lastSend = now;
   
-//    println(now);
+    println(now);
   }
   
   

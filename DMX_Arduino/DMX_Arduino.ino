@@ -92,6 +92,7 @@ void loop() {
 
   frame = (currentTime + internalTimeSmoother) / rate;
 
+  // Serial.println(currentTime + internalTimeSmoother);
 
   if (frame != lastFrame)
     pattern(-1, 0); // Per frame initialization
@@ -221,7 +222,7 @@ struct Color colorAlternator(long f, int dmxIndex) {
 }
 
 struct Color rainbow(long f, int dmxIndex) {
-  return wheel(f);
+  return wheel(f % 384);
 }
 
 struct Color rainbowCycle(long f, int dmxIndex) {
