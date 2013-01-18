@@ -3,6 +3,9 @@
 
 #define OFF_PATTERN 68
 #define myADDRESS 2
+#define mySETADDRESS 3
+#define NULL_PATTERN 0
+
 
 unsigned int NUM_DMX = 4;
 unsigned int rate = 127;
@@ -10,6 +13,12 @@ unsigned int rate = 127;
 unsigned long frame = 0;
 unsigned long lastFrame = 0;
 
+unsigned long lastTime;
+unsigned long currentTime;
+
+unsigned long internalTimeSmoother;
+
+unsigned long currentMillis;
 unsigned long lastMillis = -1;
 unsigned long millisCounter = 0;
 
@@ -30,7 +39,12 @@ struct Color BLACK = (Color){ 0, 0, 0 };
 
 float params[20];
 
+float brightness = 1.0;
 bool isOff = false;
+
+String inputString = "";
+
+boolean light = false;
 
 void setup() {
 
@@ -39,6 +53,7 @@ void setup() {
   DmxSimple.usePin(3);
   DmxSimple.maxChannel(4);  
      
+  inputString.reserve(200);
 
   patterns[62] = &flickerStrobe;
   patterns[65] = &rainbowCycle;
@@ -61,7 +76,22 @@ void loop() {
   if (isOff)
     return;
 
-  frame = resettableMillis() / rate;
+
+  unsigned long currentMillis = millis();
+
+  if (currentTime != lastTime) {
+    internalTimeSmoother = 0;
+  }
+
+  internalTimeSmoother += currentMillis - lastMillis;
+
+  lastMillis = currentMillis;
+  lastTime = currentTime;
+
+  // int t = (currentTime + timesCycled * 256);
+
+  frame = (currentTime + internalTimeSmoother) / rate;
+
 
   if (frame != lastFrame)
     pattern(-1, 0); // Per frame initialization
@@ -77,50 +107,87 @@ void loop() {
   }
 
 
+  if (light)
+    digitalWrite(13, HIGH);
+  else
+    digitalWrite(13, LOW);
+
+  light = !light;
+
 }
 
-
 void read() {
+  
+  while (Serial1.available()) {
 
-  // wait for 12 incoming bytes
-  if (Serial1.available() > 12) {
-
-    if (Serial1.read() != myADDRESS){
+    char c = (char)Serial1.read();
+    inputString += c;
+    if (c == ',') {
       
-      Serial1.flush();
-      return;
+      if (inputString.startsWith("d")) {
 
-    }
+        // Heartbeat.
 
-    rate = Serial1.read();
-    byte patternByte = Serial1.read();
+        Serial1.println("HEARTBEAT");
 
-    color1.r = Serial1.read();
-    color1.g = Serial1.read();
-    color1.b = Serial1.read();
+        // Big fat hack to turn a String into an int.
+        String sub = inputString.substring(1, inputString.length()-1);
+        char c[sub.length()];
+        for (int i = 0; i < sub.length(); i++) {
+          c[i] = sub.charAt(i);
+        }
+        currentTime = atol(c);
 
-    color2.r = Serial1.read();
-    color2.g = Serial1.read();
-    color2.b = Serial1.read();
+        Serial.print("Current time: ");
+        Serial.println(currentTime);
 
-    Serial1.read();
-    Serial1.read();
-    Serial1.read();
-    
-    Serial1.read();
 
-    if (patternByte == 7) {
-      millisCounter = 0;
-    } else if (patternByte == OFF_PATTERN) {
-      isOff = true;
-      hideAll();
-    } else if (patterns[patternByte] != NULL) {
-      isOff = false;
-      pattern = patterns[patternByte];
-      pattern(-2, 0);
+      } else { 
+
+        Serial1.println("PATTERN");
+
+        // Pattern.
+        unsigned char addr = (unsigned char)inputString.charAt(0);
+        if (addr == myADDRESS || addr == mySETADDRESS) {
+          
+          rate = (unsigned char)inputString.charAt(1);
+          unsigned char patternByte = (unsigned char)inputString.charAt(2);
+
+          color1.r = (unsigned char)inputString.charAt(3);
+          color1.g = (unsigned char)inputString.charAt(4);
+          color1.b = (unsigned char)inputString.charAt(5);
+          color2.r = (unsigned char)inputString.charAt(6);
+          color2.g = (unsigned char)inputString.charAt(7);
+          color2.b = (unsigned char)inputString.charAt(8);
+          // r3 = (unsigned char)inputString.charAt(9);
+          // g3 = (unsigned char)inputString.charAt(10);
+          // b3 = (unsigned char)inputString.charAt(11);
+
+          brightness = ((unsigned char)inputString.charAt(12))/127.0;
+
+          // setColors();
+          
+          if (patternByte == OFF_PATTERN) {
+            hideAll();
+            isOff = true;
+          } 
+          else if (patternByte != NULL_PATTERN && patterns[patternByte] != NULL) {
+            isOff = false;
+            pattern = patterns[patternByte];
+            pattern(-2, 0); // On select initialization
+          }
+
+        }
+
+      }
+
+      inputString = "";
+
     }
 
   }
+
+
 
 }
 
@@ -258,22 +325,5 @@ void sanityCheck() {
     delay(d);    
     setDMXColor(i, 0, 0, 0);
   }
-
-}
-
-
-unsigned long resettableMillis() {
-
-  unsigned long now = millis();
-
-  if (now != lastMillis) {
-
-    millisCounter += now - lastMillis;
-
-  }
-
-  lastMillis = now;
-
-  return millisCounter;
 
 }
