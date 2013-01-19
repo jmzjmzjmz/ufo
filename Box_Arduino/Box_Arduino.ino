@@ -20,8 +20,9 @@ struct CRGB {
 struct CRGB *leds;
 
 #define PIN 4
-#define myADDRESS 2
-#define mySETADDRESS 3
+#define myADDRESS 17
+#define mySETADDRESS 14
+#define globalADDR 19
 
 /* These don't seem to work as #define since they're used in other tabs ... */
 unsigned int NUM_ROWS = 64; 
@@ -153,15 +154,18 @@ void setup() {
 
 void read() {
 
+
+
   while (Serial1.available()) {
 
     char c = (char)Serial1.read();
     inputString += c;
+    
     if (c == ',') {
-      
-      if (inputString.startsWith('d')) {
 
-        // Heartbeat.
+      
+    
+      if (inputString.startsWith('d')) {
 
         // Big fat hack to turn a String into an int.
         String sub = inputString.substring(1, inputString.length()-1);
@@ -177,13 +181,14 @@ void read() {
 
       } else { 
 
-        // Pattern.
         unsigned char addr = (unsigned char)inputString.charAt(0);
-
-        Serial.print("Address: ");
+        Serial.println("PATTERN");
         Serial.println(addr);
 
-        if (addr == myADDRESS || addr == mySETADDRESS) {
+        // Pattern.
+        
+
+        if (addr == myADDRESS || addr == mySETADDRESS || addr == globalADDR)  {
           
           rate = (unsigned char)inputString.charAt(1);
           patternByte = (unsigned char)inputString.charAt(2);
@@ -217,12 +222,6 @@ void read() {
           else if (patternByte == 5) {
             mapping = &dither;
           } 
-          else if (patternByte == 6) {
-            doSnake = false;
-          }
-          else if (patternByte == 7) {
-            doSnake = true;
-          }
           else if (patternByte == OFF_PATTERN) {
             hideAll();
             showAll();
@@ -235,7 +234,6 @@ void read() {
           }
 
         }
-
 
       }
 
@@ -304,6 +302,7 @@ void loop() {
 
   frame = (currentTime + internalTimeSmoother) / rate;
 
+  
 
   if (frame != lastFrame)
     pattern(-1, 0); // Per frame initialization
@@ -371,6 +370,8 @@ void loop() {
     digitalWrite(13, LOW);
 
   light = !light;
+
+  // delay(500);
 
 }
 

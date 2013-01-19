@@ -21,10 +21,11 @@ boolean light = false;
 
 #define NUM_POLES 6
 
-#define myADDRESS 1
-#define mySETADDRESS 3
+#define myADDRESS 13
+#define mySETADDRESS 7
+#define globalADDR 19
 
-LPD8806 strip = LPD8806(40);
+LPD8806 strip = LPD8806(74);
 
 // RTC_DS1307 RTC;
 
@@ -146,11 +147,14 @@ void read() {
 
       } else { 
 
-        Serial1.println("PATTERN");
+        unsigned char addr = (unsigned char)inputString.charAt(0);
+
+        Serial.println("PATTERN");
+        Serial.println(addr);
+
 
         // Pattern.
-        unsigned char addr = (unsigned char)inputString.charAt(0);
-        if (addr == myADDRESS || addr == mySETADDRESS) {
+        if (addr == myADDRESS || addr == mySETADDRESS || addr == globalADDR) {
           
           rate = (unsigned char)inputString.charAt(1);
           patternByte = (unsigned char)inputString.charAt(2);

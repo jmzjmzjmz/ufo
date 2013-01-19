@@ -2,8 +2,9 @@
 #include <Wire.h>
 
 #define OFF_PATTERN 68
-#define myADDRESS 2
-#define mySETADDRESS 3
+#define myADDRESS 18
+#define mySETADDRESS 18
+#define globalADDR 19
 #define NULL_PATTERN 0
 
 
@@ -129,7 +130,7 @@ void read() {
 
         // Heartbeat.
 
-        Serial1.println("HEARTBEAT");
+        // Serial.println("HEARTBEAT");
 
         // Big fat hack to turn a String into an int.
         String sub = inputString.substring(1, inputString.length()-1);
@@ -145,11 +146,13 @@ void read() {
 
       } else { 
 
-        Serial1.println("PATTERN");
+        unsigned char addr = (unsigned char)inputString.charAt(0);
+
+        Serial.println("PATTERN");
+        Serial.println(addr);
 
         // Pattern.
-        unsigned char addr = (unsigned char)inputString.charAt(0);
-        if (addr == myADDRESS || addr == mySETADDRESS) {
+        if (addr == myADDRESS || addr == mySETADDRESS || addr == globalADDR) {
           
           rate = (unsigned char)inputString.charAt(1);
           unsigned char patternByte = (unsigned char)inputString.charAt(2);
