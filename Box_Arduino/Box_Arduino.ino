@@ -65,14 +65,15 @@ unsigned long lastTime = -1;
 
 
 float brightness = 1.0;
-int r1 = 127, g1 = 0,   b1 = 0, 
-    r2 = 0,   g2 = 127,   b2 = 0, 
+int r1 = 25,  g1 = 25,  b1 = 25, 
+    r2 = 0,   g2 = 0,   b2 = 0, 
     r3 = 0,   g3 = 0,   b3 = 0;
 
 float params[20];
 struct CRGB color1, color2, color3;
 
 boolean isOff = false;
+boolean doSnake = true;
 
 long frame = 0;
 long lastFrame = -1;
@@ -92,6 +93,7 @@ unsigned long internalTimeSmoother;
 String inputString = "";
 boolean stringComplete = false;
 
+
 void setup() {  
 
   //  pinMode(13, OUTPUT); 
@@ -109,7 +111,7 @@ void setup() {
   FastSPI_LED.start();
   leds = (struct CRGB*)FastSPI_LED.getRGBData(); 
 
-  RTC.begin();
+  // RTC.begin();
 //   if (!RTC.isrunning()) {
 // //    Serial1.println("RTC is NOT running!"); /* TUESDAY Specifically upset with this. */
 //     RTC.adjust(DateTime(__DATE__, __TIME__));
@@ -135,13 +137,14 @@ void setup() {
   patterns[74] = &colorWipe;
   patterns[75] = &colorAlternator;
   patterns[76] = &stripe;
-   patterns[77] = &colorChase;
-   // patterns[78] = &colorWipeMeter;
-  //  patterns[79] = &colorWipeMeterGradient;
+  patterns[77] = &colorChase;
+  patterns[78] = &colorWipeMeter;
+  patterns[79] = &colorWipeMeterGradient;
   patterns[80] = &pulseOnce;
 
 
-  pattern = &pulseSine;
+  pattern = &pulseOnce;
+  pattern(-2, 0);
 
   inputString.reserve(200);
 
@@ -214,6 +217,12 @@ void read() {
           else if (patternByte == 5) {
             mapping = &dither;
           } 
+          else if (patternByte == 6) {
+            doSnake = false;
+          }
+          else if (patternByte == 7) {
+            doSnake = true;
+          }
           else if (patternByte == OFF_PATTERN) {
             hideAll();
             showAll();
@@ -303,7 +312,9 @@ void loop() {
 
   for (_i = 0; _i < NUM_PIXELS; _i++) {
 
-    k = snake(frame, _i);
+    if (doSnake) k = snake(frame, _i);
+    else k = _i;
+
     j = mapping(frame, k);
     color = pattern(frame, j);
 

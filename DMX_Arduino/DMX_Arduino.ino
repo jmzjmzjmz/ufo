@@ -8,7 +8,7 @@
 
 
 unsigned int NUM_DMX = 4;
-unsigned int rate = 127;
+unsigned int rate = 20;
 
 unsigned long frame = 0;
 unsigned long lastFrame = 0;
@@ -32,8 +32,8 @@ typedef struct Color (*Pattern)(long, int);
 Pattern patterns[128];
 Pattern pattern;
 
-struct Color color1 = (Color){ 0, 0, 255 };
-struct Color color2 = (Color){ 255, 0, 255 };
+struct Color color1 = (Color){ 70, 70, 70 };
+struct Color color2 = (Color){ 0, 0, 0 };
 
 struct Color BLACK = (Color){ 0, 0, 0 };
 
@@ -63,9 +63,9 @@ void setup() {
   patterns[75] = &colorAlternator;
   patterns[80] = &pulseOnce;
 
-  pattern = &flickerStrobe;
-
-  sanityCheck();
+  pattern = &pulseOnce;
+  pattern(-2, 0);
+  // sanityCheck();
 
 }
 
@@ -103,7 +103,7 @@ void loop() {
 
     struct Color c = pattern(frame, i);
 
-    setDMXColor(i, c.r, c.g, c.b);
+    setDMXColor(i, c.r*brightness, c.g*brightness, c.b*brightness);
 
   }
 

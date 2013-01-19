@@ -48,7 +48,9 @@ unsigned long startedAt = 0;
 unsigned long lastTime = -1;
 
 float brightness = 1.0;
-int r1 = 127, g1 = 127, b1 = 127, r2 = 0, g2 = 0, b2 = 0, r3 = 0, g3 = 0, b3 = 0;
+int r1 = 25, g1 = 25, b1 = 25, 
+r2 = 0, g2 = 0, b2 = 0, 
+r3 = 0, g3 = 0, b3 = 0;
 
 float params[20];
 uint32_t color1, color2, color3;
@@ -81,6 +83,8 @@ void setup() {
   Serial.begin(9600);
   
   strip.begin();
+  
+  setColors();
 
   hideAll();
   showAll();
@@ -105,7 +109,8 @@ void setup() {
   patterns[79] = &colorWipeMeterGradient;
   patterns[80] = &pulseOnce;
 
-  pattern = &rainbow;
+  pattern = &pulseOnce;
+  pattern(-2, 0);
 
   startedAt = 0;//RTC.now().unixtime();
 

@@ -67,9 +67,12 @@ struct CRGB gradient(long f, int pixelIndex) {
 }
 
 struct CRGB pulseSine(long f, int pixelIndex) {
- if (f < 0) return NULL_COLOR;
- float r = 25;
- return lerpColor(color1, color2, (sin(f/r)+1)/2);
+  if (f == -2) return NULL_COLOR;
+  if (f == -1) {
+    params[0] = (sin(frame/25.0)+1)/2;
+    return NULL_COLOR;
+  }
+  return lerpColor(color1, color2, params[0]);
 }
 
 struct CRGB pulseSaw(long f, int pixelIndex) {
@@ -78,35 +81,35 @@ struct CRGB pulseSaw(long f, int pixelIndex) {
  return lerpColor(color1, color2, (f % (int)r / r));
 }
 
-//uint32_t colorWipeMeter(long f, int pixelIndex) {
-//  
-//  if (f == -2) return NULL_COLOR;
-//    
-//  if (f == CRGB) {
-//    params[0] = random(0,NUM_ROWS);
-//    return NULL_COLOR;
-//  }
-//  
-//  if (pixelIndex % NUM_ROWS < params[0]) 
-//    return color1;
-//  return color2;
-//  
-//}
-//
-//uint32_t colorWipeMeterGradient(long f, int pixelIndex) {
-//  
-//  if (f == -2) return NULL_COLOR;
-//  
-//  if (f == CRGB) {
-//    params[0] = random(NUM_ROWS);
-//    return NULL_COLOR;
-//  }
-//
-//  if (pixelIndex % NUM_ROWS < params[0]) 
-//    return lerpColor(color1, color2, (sin(f/25.0)+1)/2);
-//  return color3;
-//
-//}
+struct CRGB colorWipeMeter(long f, int pixelIndex) {
+ 
+ if (f == -2) return NULL_COLOR;
+   
+ if (f == -1) {
+   params[0] = random(0,NUM_ROWS);
+   return NULL_COLOR;
+ }
+ 
+ if (pixelIndex % NUM_ROWS < params[0]) 
+   return color1;
+ return color2;
+ 
+}
+
+struct CRGB colorWipeMeterGradient(long f, int pixelIndex) {
+ 
+ if (f == -2) return NULL_COLOR;
+ 
+ if (f == -1) {
+   params[0] = random(NUM_ROWS);
+   return NULL_COLOR;
+ }
+
+ if (pixelIndex % NUM_ROWS < params[0]) 
+   return lerpColor(color1, color2, (sin(f/25.0)+1)/2);
+ return color3;
+
+}
 
 struct CRGB flickerStrobeTwo(long f, int pixelIndex) {
  

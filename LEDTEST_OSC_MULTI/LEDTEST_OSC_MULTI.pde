@@ -13,7 +13,7 @@ NetAddress myCompLocation;
 
 String iPadIP = "192.168.1.14";
 int iPadPort = 12005;
-String compIP = "192.168.1.10";
+String compIP = "192.168.1.5";
 int compPort = 12001;
 
 public int headbandSelect=1;
@@ -91,9 +91,11 @@ void setup() {
   r.add("** PEAK", 3);
   r.add("** VALLEY", 4);
   r.add("** DITHER", 5);
+  r.add("** SNAKE-OFF", 6);
+  r.add("** SNAKE-ON", 7);
 //  r.add("** SNAKE64", 6);
 
-  r.add("*** SYNC CLOCKS", 7);
+//  r.add("*** SYNC CLOCKS", 7);
 
   controlP5.addSlider("speed", 0, 127, 5, 200, 220, 20);
   controlP5.addSlider("dimVal", 0, 127, 5, 225, 220, 20);
@@ -133,7 +135,7 @@ void setup() {
   headbands[1] = new Headband(0xFFFF);
 
   headbands[headbandSelect].pattern = 65;
-  headbands[headbandSelect].rate = 20;
+  headbands[headbandSelect].rate = 2;
   headbands[headbandSelect].send();
   
 }
@@ -143,6 +145,8 @@ int lastSend = -1;
 final int INTERVAL = 100;
 final int TIMING_ADDR = 100;
 void draw() {
+  
+ 
   
   int now = millis();
   if (now - lastSend >= INTERVAL) {
@@ -156,7 +160,7 @@ void draw() {
 
     lastSend = now;
   
-    println(now);
+//    println(now);
   }
   
   
@@ -189,6 +193,8 @@ void whichLights(int theId) {
 /* incoming osc message are forwarded to the oscEvent method. */
 void oscEvent(OscMessage theOscMessage) {
 
+  println(theOscMessage.addrPattern());
+  
   //  String message = theOscMessage.addrPattern();
   //  
   //  if(message.indexOf("z") == message.length() - 1){
