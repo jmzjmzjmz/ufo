@@ -125,7 +125,7 @@ void read() {
 
     char c = (char)Serial1.read();
     inputString += c;
-    if (c == ',') {
+    if (c == 128) {
       
       if (inputString.startsWith("d")) {
 
@@ -271,9 +271,9 @@ void loop() {
 
 
     if (brightness < 1) {
-      r = lerp(0, gamma(r), brightness);
-      g = lerp(0, gamma(g), brightness);
-      b = lerp(0, gamma(b), brightness);
+      r = lerp(0, r, brightness);
+      g = lerp(0, g, brightness);
+      b = lerp(0, b, brightness);
     }
 
     strip.setPixelColor(i, r, g, b);

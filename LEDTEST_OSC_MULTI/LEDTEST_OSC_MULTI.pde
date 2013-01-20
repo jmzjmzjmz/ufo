@@ -167,21 +167,21 @@ void draw() {
   
  
   
-  int now = millis();
-  if (now - lastSend >= INTERVAL) {
-    
-    port.write(TIMING_ADDR);
-//    port.write(now);
-
-    port.write(new Integer(now).toString());
-
-    port.write(',');
-
-    lastSend = now;
-  
-//    println(now);
-  }
-  
+//  int now = millis();
+//  if (now - lastSend >= INTERVAL) {
+//    
+//    port.write(TIMING_ADDR);
+////    port.write(now);
+//
+//    port.write(new Integer(now).toString());
+//
+//    port.write(',');
+//
+//    lastSend = now;
+//  
+////    println(now);
+//  }
+//  
   
   
 }

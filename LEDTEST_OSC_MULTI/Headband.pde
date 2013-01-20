@@ -66,7 +66,7 @@ class Headband {
     serialData[10] = (byte)(green(colors[2].getColorValue())/2*a);
     serialData[11] = (byte) (blue(colors[2].getColorValue())/2*a);
     serialData[12] = (byte)dim;
-    serialData[13] = ',';
+    serialData[13] = 128;
 
     println(serialData);
 

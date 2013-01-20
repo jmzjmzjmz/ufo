@@ -161,9 +161,16 @@ void read() {
     char c = (char)Serial1.read();
     inputString += c;
     
-    if (c == ',') {
+    if (c == 128) {
 
-      
+      for (int i = 0; i < inputString.length(); i++) {
+        Serial.print(inputString.charAt(i), DEC);
+        if (i == inputString.length()-1) {
+          Serial.println(" | ");
+        } else { 
+          Serial.print(" | ");
+        }
+      }
     
       if (inputString.startsWith('d')) {
 
@@ -175,15 +182,15 @@ void read() {
         }
         currentTime = atol(c);
 
-        Serial.print("Current time: ");
-        Serial.println(currentTime);
+        // Serial.print("Current time: ");
+        // Serial.println(currentTime);
 
 
       } else { 
 
         unsigned char addr = (unsigned char)inputString.charAt(0);
-        Serial.println("PATTERN");
-        Serial.println(addr);
+        // Serial.println("PATTERN");
+        // Serial.println(addr);
 
         // Pattern.
         
@@ -320,9 +327,9 @@ void loop() {
 //    r = red(color), g = green(color), b = blue(color);
 
     if (brightness < 1) {
-      color.r = lerp(0, gamma(color.r), brightness);
-      color.g = lerp(0, gamma(color.g), brightness);
-      color.b = lerp(0, gamma(color.b), brightness);
+      color.r = lerp(0, color.r, brightness);
+      color.g = lerp(0, color.g, brightness);
+      color.b = lerp(0, color.b, brightness);
     }
 
     //      strip.setPixelColor(_i, r, g, b);

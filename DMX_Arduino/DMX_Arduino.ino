@@ -124,7 +124,7 @@ void read() {
 
     char c = (char)Serial1.read();
     inputString += c;
-    if (c == ',') {
+    if (c == 128) {
       
       if (inputString.startsWith("d")) {
 
