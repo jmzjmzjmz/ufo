@@ -27,32 +27,34 @@ NetAddress myCompLocation;
 
 String iPadIP = "192.168.1.7";
 int iPadPort = 12005;
-String compIP = "192.168.1.5";
 int compPort = 12001;
 
 public int headbandSelect=1;
-
 
 
 String[] myPatterns = new String[81];
 
 import controlP5.*;
 ControlP5 controlP5;
+Textfield tf;
 
 Radio r2;
 
 Headband[] headbands = new Headband[3];
+
+
 
 void setup() {
   size(400, 650);
   background(0);
   println(Serial.list());
   
-  port = new Serial(this, Serial.list()[6], 9600); 
+  port = new Serial(this, Serial.list()[0], 9600); 
   controlP5 = new ControlP5(this);
 
   /* start oscP5, listening for incoming messages at port 12005 */
   oscP5 = new OscP5(this, compPort);
+  
 
   /* myRemoteLocation is a NetAddress. a NetAddress takes 2 parameters,
    * an ip address and a port number. myRemoteLocation is used as parameter in
@@ -62,8 +64,11 @@ void setup() {
    * send messages back to this sketch.
    */
   myRemoteLocation = new NetAddress(iPadIP, iPadPort);
-  myCompLocation = new NetAddress(compIP, compPort);
+  myCompLocation = new NetAddress(oscP5.ip(), compPort);
 
+  tf = controlP5.addTextfield("ipad_address", 100, 300, 160, 20);
+  tf.setText(iPadIP);
+     
   r2 = controlP5.addRadio("whichLights", 5, 270);
   r2.add("vertical1", 0);
   r2.add("vertical2", 1);
@@ -156,7 +161,7 @@ void setup() {
   headbands[headbandSelect].pattern = 80;
   headbands[headbandSelect].rate = 20;
   headbands[headbandSelect].send();
-  
+     
 }
 
 
@@ -186,6 +191,14 @@ void draw() {
   
 }
 
+
+public void ipadAddress(String theText) {
+  // automatically receives results from controller input
+  println("a textfield event for controller 'input' : "+theText);
+  myRemoteLocation = new NetAddress(iPadIP, iPadPort);
+  tf.setLabel("             "  + theText);
+}
+
 void mouseMoved() {
   headbands[headbandSelect].rate = int(map(mouseX, 0, width, 0, 255));
 //  headbands[headbandSelect].send();
@@ -193,6 +206,13 @@ void mouseMoved() {
 
 void keyPressed() {
 //  println("keypressed " + millis());
+}
+
+void mousePressed() { 
+  headbands[headbandSelect].send();
+}
+
+void mouseDragged() { 
   headbands[headbandSelect].send();
 }
 
