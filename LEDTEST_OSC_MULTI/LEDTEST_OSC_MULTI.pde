@@ -48,7 +48,7 @@ void setup() {
   background(0);
   println(Serial.list());
   
-  port = new Serial(this, Serial.list()[4], 9600); 
+  port = new Serial(this, Serial.list()[6], 9600); 
   controlP5 = new ControlP5(this);
 
   /* start oscP5, listening for incoming messages at port 12005 */
