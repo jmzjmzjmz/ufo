@@ -1,5 +1,5 @@
 final int MESSAGE_SIZE = 14;
-int WHICH = GLOBAL_ADDR;
+int WHICH = 19;
 class Headband {
 
   private int serialData[] = new int[MESSAGE_SIZE];

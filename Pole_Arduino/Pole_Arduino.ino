@@ -1,4 +1,4 @@
-// make an empty tab called ignore.h and this will run.
+ // make an empty tab called ignore.h and this will run.
 #include "ignore.h" 
 #include "LPD8806.h"
 
@@ -123,15 +123,17 @@ void read() {
   
   while (Serial1.available()) {
 
+
     char c = (char)Serial1.read();
+    // Serial.println(c, DEC);
     inputString += c;
-    if (c == 128) {
+    if (c == -128) {
+
+
       
       if (inputString.startsWith("d")) {
 
         // Heartbeat.
-
-        Serial1.println("HEARTBEAT");
 
         // Big fat hack to turn a String into an int.
         String sub = inputString.substring(1, inputString.length()-1);
