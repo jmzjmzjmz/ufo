@@ -1,5 +1,8 @@
 final int MESSAGE_SIZE = 14;
 int WHICH = 19;
+
+///Queue<Integer> toSend = new Queue<Integer>();
+
 class Headband {
 
   private int serialData[] = new int[MESSAGE_SIZE];
@@ -74,10 +77,9 @@ class Headband {
       port.write(serialData[i]);
     }
     
-
-    
   }
   
-  
 }
+
+
 

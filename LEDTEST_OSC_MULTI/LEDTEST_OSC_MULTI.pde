@@ -117,7 +117,7 @@ myPatterns[5] = "/1/multitoggle2/1/3";
 }
 int lastSend = -1;
 final int INTERVAL = 100;
-final int TIMING_ADDR = 100;
+final int TIMING_ADDR = 129;
 
 void draw() {
  
@@ -141,6 +141,7 @@ void draw() {
 
 
 void keyPressed() {
+ headbands[headbandSelect].rate = (int)map(mouseX,0,width,2,255);
   headbands[headbandSelect].send();
 }
 

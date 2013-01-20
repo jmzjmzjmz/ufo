@@ -124,9 +124,19 @@ void read() {
 
     char c = (char)Serial1.read();
     inputString += c;
-    if (c == 128) {
+    if (c == -128) {
+
+
+      for (int i = 0; i < inputString.length(); i++) {
+        Serial.print(inputString.charAt(i), DEC);
+        if (i == inputString.length()-1) {
+          Serial.println(" | ");
+        } else { 
+          Serial.print(" | ");
+        }
+      }
       
-      if (inputString.startsWith("d")) {
+      if (inputString.charAt(0) == -127) {
 
         // Heartbeat.
 
@@ -140,21 +150,21 @@ void read() {
         }
         currentTime = atol(c);
 
-        Serial.print("Current time: ");
-        Serial.println(currentTime);
+        // Serial.print("Current time: ");
+        // Serial.println(currentTime);
 
 
       } else { 
 
         unsigned char addr = (unsigned char)inputString.charAt(0);
 
-        Serial.println("PATTERN");
-        Serial.println(addr);
+        // Serial.println("PATTERN");
+        // Serial.println(addr);
 
         // Pattern.
         if (addr == myADDRESS || addr == mySETADDRESS || addr == globalADDR) {
           
-          rate = (unsigned char)inputString.charAt(1);
+          rate = (unsigned char)inputString.charAt(1) + 1;
           unsigned char patternByte = (unsigned char)inputString.charAt(2);
 
           color1.r = (unsigned char)inputString.charAt(3);

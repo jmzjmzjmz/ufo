@@ -131,7 +131,7 @@ void read() {
 
 
       
-      if (inputString.startsWith("d")) {
+      if (inputString.charAt(0) == -127) {
 
         // Heartbeat.
 
@@ -143,22 +143,22 @@ void read() {
         }
         currentTime = atol(c);
 
-        Serial.print("Current time: ");
-        Serial.println(currentTime);
+        // Serial.print("Current time: ");
+        // Serial.println(currentTime);
 
 
       } else { 
 
         unsigned char addr = (unsigned char)inputString.charAt(0);
 
-        Serial.println("PATTERN");
-        Serial.println(addr);
+        // Serial.println("PATTERN");
+        // Serial.println(addr);
 
 
         // Pattern.
         if (addr == myADDRESS || addr == mySETADDRESS || addr == globalADDR) {
           
-          rate = (unsigned char)inputString.charAt(1);
+          rate = (unsigned char)inputString.charAt(1) + 1;
           patternByte = (unsigned char)inputString.charAt(2);
 
           r1 = (unsigned char)inputString.charAt(3);

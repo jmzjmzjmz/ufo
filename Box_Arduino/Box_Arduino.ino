@@ -9,6 +9,7 @@
 #include <Wire.h>
 #include <FastSPI_LED.h>
 
+
 struct CRGB { 
 
   unsigned char g; 
@@ -108,10 +109,14 @@ void setup() {
   FastSPI_LED.setLeds(NUM_PIXELS);
   FastSPI_LED.setChipset(CFastSPI_LED::SPI_LPD8806);
   FastSPI_LED.setPin(PIN);
-  FastSPI_LED.setDataRate(1);
+  // FastSPI_LED.setDataRate(3);
   FastSPI_LED.init();
   FastSPI_LED.start();
   leds = (struct CRGB*)FastSPI_LED.getRGBData(); 
+
+  //SLOW DOWN SPI DATA RATE FOR LONG LENGTHS OF CABLING
+SPI0_CTAR0 &= 0xFFFFFFF0; //mask register
+SPI0_CTAR0 |= 0x00000002; //<====== HERE
 
   // RTC.begin();
 //   if (!RTC.isrunning()) {
@@ -173,7 +178,7 @@ void read() {
         }
       }
     
-      if (inputString.startsWith('d')) {
+      if (inputString.startsWith(129)) {
 
         // Big fat hack to turn a String into an int.
         String sub = inputString.substring(1, inputString.length()-1);
@@ -198,7 +203,7 @@ void read() {
 
         if (addr == myADDRESS || addr == mySETADDRESS || addr == globalADDR)  {
           
-          rate = (unsigned char)inputString.charAt(1);
+          rate = (unsigned char)inputString.charAt(1) + 1;
           patternByte = (unsigned char)inputString.charAt(2);
 
           r1 = (unsigned char)inputString.charAt(3);
