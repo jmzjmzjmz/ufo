@@ -177,8 +177,8 @@ void read() {
           Serial.print(" | ");
         }
       }
-    
-      if (inputString.startsWith(129)) {
+
+      if (inputString.charAt(0) == 129) {
 
         // Big fat hack to turn a String into an int.
         String sub = inputString.substring(1, inputString.length()-1);
@@ -188,8 +188,8 @@ void read() {
         }
         currentTime = atol(c);
 
-        // Serial.print("Current time: ");
-        // Serial.println(currentTime);
+        Serial.print("Current time: ");
+        Serial.println(currentTime);
 
 
       } else { 

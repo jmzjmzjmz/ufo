@@ -129,8 +129,6 @@ void read() {
     inputString += c;
     if (c == -128) {
 
-
-      
       if (inputString.charAt(0) == -127) {
 
         // Heartbeat.

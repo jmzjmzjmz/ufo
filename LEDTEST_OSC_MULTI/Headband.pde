@@ -1,7 +1,7 @@
 final int MESSAGE_SIZE = 14;
 int WHICH = 19;
 
-///Queue<Integer> toSend = new Queue<Integer>();
+LinkedList<Integer> toSend = new LinkedList<Integer>();
 
 class Headband {
 
@@ -73,9 +73,12 @@ class Headband {
 
 //    println(serialData);
 
-    for (int i = 0; i<serialData.length;i++) { 
-      port.write(serialData[i]);
+    for (int i = 0; i<serialData.length;i++) {
+     toSend.offer(serialData[i]); 
+//      port.write(serialData[i]);
     }
+
+    
     
   }
   
