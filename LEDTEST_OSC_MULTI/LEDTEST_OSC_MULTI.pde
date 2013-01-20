@@ -28,7 +28,7 @@ void setup() {
   size(400, 400);
   background(0);
    println(Serial.list());
-    port = new Serial(this, Serial.list()[6], 9600); 
+    port = new Serial(this, Serial.list()[4], 9600); 
 
   
  
@@ -115,9 +115,28 @@ myPatterns[5] = "/1/multitoggle2/1/3";
   headbands[headbandSelect].rate = 9;
   headbands[headbandSelect].send();
 }
+int lastSend = -1;
+final int INTERVAL = 100;
+final int TIMING_ADDR = 100;
 
 void draw() {
+ 
+  int now = millis();
+  if (now - lastSend >= INTERVAL) {
+    
+    port.write(TIMING_ADDR);
+//    port.write(now);
 
+    port.write(new Integer(now).toString());
+
+    port.write(128);
+
+    lastSend = now;
+  
+//    println(now);
+  }
+  
+  
 }
 
 

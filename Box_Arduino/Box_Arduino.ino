@@ -108,6 +108,7 @@ void setup() {
   FastSPI_LED.setLeds(NUM_PIXELS);
   FastSPI_LED.setChipset(CFastSPI_LED::SPI_LPD8806);
   FastSPI_LED.setPin(PIN);
+  FastSPI_LED.setDataRate(1);
   FastSPI_LED.init();
   FastSPI_LED.start();
   leds = (struct CRGB*)FastSPI_LED.getRGBData(); 
