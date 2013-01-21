@@ -109,14 +109,14 @@ void setup() {
   FastSPI_LED.setLeds(NUM_PIXELS);
   FastSPI_LED.setChipset(CFastSPI_LED::SPI_LPD8806);
   FastSPI_LED.setPin(PIN);
-  // FastSPI_LED.setDataRate(3);
+  FastSPI_LED.setDataRate(3);
   FastSPI_LED.init();
   FastSPI_LED.start();
   leds = (struct CRGB*)FastSPI_LED.getRGBData(); 
 
   //SLOW DOWN SPI DATA RATE FOR LONG LENGTHS OF CABLING
-SPI0_CTAR0 &= 0xFFFFFFF0; //mask register
-SPI0_CTAR0 |= 0x00000002; //<====== HERE
+  SPI0_CTAR0 &= 0x7FFFFFFF; //mask register
+  //SPI0_CTAR0 |= 0x00000000; //<====== HERE
 
   // RTC.begin();
 //   if (!RTC.isrunning()) {
@@ -169,14 +169,14 @@ void read() {
     
     if (c == 128) {
 
-      for (int i = 0; i < inputString.length(); i++) {
-        Serial.print(inputString.charAt(i), DEC);
-        if (i == inputString.length()-1) {
-          Serial.println(" | ");
-        } else { 
-          Serial.print(" | ");
-        }
-      }
+      // for (int i = 0; i < inputString.length(); i++) {
+      //   Serial.print(inputString.charAt(i), DEC);
+      //   if (i == inputString.length()-1) {
+      //     Serial.println(" | ");
+      //   } else { 
+      //     Serial.print(" | ");
+      //   }
+      // }
 
       if (inputString.charAt(0) == 129) {
 
@@ -188,8 +188,8 @@ void read() {
         }
         currentTime = atol(c);
 
-        Serial.print("Current time: ");
-        Serial.println(currentTime);
+        // Serial.print("Current time: ");
+        // Serial.println(currentTime);
 
 
       } else { 

@@ -127,14 +127,14 @@ void read() {
     if (c == -128) {
 
 
-      for (int i = 0; i < inputString.length(); i++) {
-        Serial.print(inputString.charAt(i), DEC);
-        if (i == inputString.length()-1) {
-          Serial.println(" | ");
-        } else { 
-          Serial.print(" | ");
-        }
-      }
+      // for (int i = 0; i < inputString.length(); i++) {
+      //   Serial.print(inputString.charAt(i), DEC);
+      //   if (i == inputString.length()-1) {
+      //     Serial.println(" | ");
+      //   } else { 
+      //     Serial.print(" | ");
+      //   }
+      // }
       
       if (inputString.charAt(0) == -127) {
 

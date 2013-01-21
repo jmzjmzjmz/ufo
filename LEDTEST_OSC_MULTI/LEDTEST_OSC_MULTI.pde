@@ -34,7 +34,7 @@ void setup() {
   size(400, 400);
   background(0);
   println(Serial.list());
-  port = new Serial(this, "/dev/tty.usbserial-A4006DzB", 9600); 
+  port = new Serial(this, Serial.list[4], 9600); 
 
 
   controlP5 = new ControlP5(this);
@@ -234,7 +234,7 @@ void oscEvent(OscMessage theOscMessage) {
     }
   }
 
-  if (theOscMessage.checkAddrPattern("/1/push1") 
+  if (theOscMessage.checkAddrPattern("/1/push1")  
     && theOscMessage.get(0).floatValue()==1.0) {
     swapColors();
     return;
