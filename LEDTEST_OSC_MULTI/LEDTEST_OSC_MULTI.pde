@@ -17,9 +17,8 @@ OscP5 oscP5;
 NetAddress myRemoteLocation;
 NetAddress myCompLocation;
 
-String iPadIP = "192.168.1.7";
+String iPadIP = "169.254.43.69";
 int iPadPort = 12005;
-String compIP = "192.168.1.5";
 int compPort = 12001;
 
 public int headbandSelect=1;
@@ -34,13 +33,9 @@ void setup() {
   size(400, 400);
   background(0);
   println(Serial.list());
-  port = new Serial(this, Serial.list[4], 9600); 
-
+  port = new Serial(this, "/dev/tty.usbserial-A501E3DJ", 9600); 
 
   controlP5 = new ControlP5(this);
-
-
-
 
   /* start oscP5, listening for incoming messages at port 12005 */
   oscP5 = new OscP5(this, compPort);
@@ -53,7 +48,7 @@ void setup() {
    * send messages back to this sketch.
    */
   myRemoteLocation = new NetAddress(iPadIP, iPadPort);
-  myCompLocation = new NetAddress(compIP, compPort);
+  myCompLocation = new NetAddress(oscP5.ip(), compPort);
 
   Radio r = controlP5.addRadio("radio", 270, 5);
   r.deactivateAll(); // use deactiveAll to not make the first radio button active.
@@ -274,9 +269,9 @@ void oscEvent(OscMessage theOscMessage) {
   if (theOscMessage.checkAddrPattern("/1/push4") 
     && theOscMessage.get(0).floatValue()==1.0) {
     //PULSE GREEN TO WHITE
-    OSCrate(50);
+    OSCrate(10);
     OSCmaster(127);//FULL BRIGHTNESS
-    OSCcolors(0, 255, 0, 255, 255, 255);
+    OSCcolors(0, 255, 255, 0, 0, 0);
     //make sure to set mapping too
     OSCpattern(1);
     OSCpattern(80);
@@ -297,7 +292,7 @@ void oscEvent(OscMessage theOscMessage) {
   if (theOscMessage.checkAddrPattern("/1/presets/1/2") 
     && theOscMessage.get(0).floatValue()==1.0) {
     //RAINBOW FAST
-    OSCrate(0);
+    OSCrate(17);
     OSCmaster(127);//FULL BRIGHTNESS
     //make sure to set mapping too
     OSCpattern(1);
@@ -319,7 +314,7 @@ void oscEvent(OscMessage theOscMessage) {
   if (theOscMessage.checkAddrPattern("/1/presets/1/4") 
     && theOscMessage.get(0).floatValue()==1.0) {
     //RAINBOW PEAK
-    OSCrate(0);
+    OSCrate(17);
     OSCmaster(127);//FULL BRIGHTNESS
     //make sure to set mapping too
     OSCpattern(3);
@@ -330,7 +325,7 @@ void oscEvent(OscMessage theOscMessage) {
   if (theOscMessage.checkAddrPattern("/1/presets/1/5") 
     && theOscMessage.get(0).floatValue()==1.0) {
     //RAINBOW DITHER
-    OSCrate(0);
+    OSCrate(17);
     OSCmaster(127);//FULL BRIGHTNESS
     //make sure to set mapping too
     OSCpattern(5);
@@ -346,7 +341,7 @@ void oscEvent(OscMessage theOscMessage) {
   if (theOscMessage.checkAddrPattern("/1/presets/2/2") 
     && theOscMessage.get(0).floatValue()==1.0) {
     //EASTER PASTELS
-    OSCrate(0);
+    OSCrate(17);
     OSCmaster(127);//FULL BRIGHTNESS
     //make sure to set mapping too
     OSCpattern(1);
@@ -369,7 +364,7 @@ void oscEvent(OscMessage theOscMessage) {
   if (theOscMessage.checkAddrPattern("/1/presets/2/4") 
     && theOscMessage.get(0).floatValue()==1.0) {
     //FLICKER FOUR ALL WHITE FAST 
-    OSCrate(0);
+    OSCrate(17);
     OSCmaster(127);//FULL BRIGHTNESS
     OSCcolors(255, 255, 255, 255, 255, 255);
     //make sure to set mapping too
@@ -381,7 +376,7 @@ void oscEvent(OscMessage theOscMessage) {
   if (theOscMessage.checkAddrPattern("/1/presets/2/5") 
     && theOscMessage.get(0).floatValue()==1.0) {
     //RAINBOW CYCLE
-    OSCrate(0);
+    OSCrate(17);
     OSCmaster(127);//FULL BRIGHTNESS
     //make sure to set mapping too
     OSCpattern(1);
@@ -392,7 +387,7 @@ void oscEvent(OscMessage theOscMessage) {
   if (theOscMessage.checkAddrPattern("/1/presets/3/1") 
     && theOscMessage.get(0).floatValue()==1.0) {
     //BLUE PINK RAIN
-    OSCrate(0);
+    OSCrate(17);
     OSCmaster(127);//FULL BRIGHTNESS
     OSCcolors(0, 0, 255, 255, 0, 0);
     //make sure to set mapping too
@@ -404,7 +399,7 @@ void oscEvent(OscMessage theOscMessage) {
   if (theOscMessage.checkAddrPattern("/1/presets/3/2") 
     && theOscMessage.get(0).floatValue()==1.0) {
     //YELLOW GREEN RAIN
-    OSCrate(0);
+    OSCrate(17);
     OSCmaster(127);//FULL BRIGHTNESS
     OSCcolors(255, 255, 0, 0, 255, 0);
     //make sure to set mapping too
@@ -416,7 +411,7 @@ void oscEvent(OscMessage theOscMessage) {
   if (theOscMessage.checkAddrPattern("/1/presets/3/3") 
     && theOscMessage.get(0).floatValue()==1.0) {
     //BLUE TURQUOISE STRIPES UP
-    OSCrate(0);
+    OSCrate(17);
     OSCmaster(127);//FULL BRIGHTNESS
     OSCcolors(0, 0, 255, 0, 255, 118);
     //make sure to set mapping too
@@ -428,7 +423,7 @@ void oscEvent(OscMessage theOscMessage) {
   if (theOscMessage.checkAddrPattern("/1/presets/3/4") 
     && theOscMessage.get(0).floatValue()==1.0) {
     //RED GAP CHASE
-    OSCrate(0);
+    OSCrate(17);
     OSCmaster(127);//FULL BRIGHTNESS
     OSCcolors(0, 0, 0, 255, 0, 0);
     //make sure to set mapping too
@@ -440,7 +435,7 @@ void oscEvent(OscMessage theOscMessage) {
   if (theOscMessage.checkAddrPattern("/1/presets/3/5") 
     && theOscMessage.get(0).floatValue()==1.0) {
     //RED/GREEN STROBE
-    OSCrate(0);
+    OSCrate(127/2);
     OSCmaster(127);//FULL BRIGHTNESS
     OSCcolors(255, 0, 0, 0, 255, 0);
     //make sure to set mapping too
@@ -464,7 +459,7 @@ void oscEvent(OscMessage theOscMessage) {
   if (theOscMessage.checkAddrPattern("/1/presets/4/2") 
     && theOscMessage.get(0).floatValue()==1.0) {
     //WHITE RAIN
-    OSCrate(0);
+    OSCrate(17);
     OSCmaster(127);//FULL BRIGHTNESS
     OSCcolors(255, 255, 255, 0, 0, 0);
     //make sure to set mapping too
@@ -476,7 +471,7 @@ void oscEvent(OscMessage theOscMessage) {
   if (theOscMessage.checkAddrPattern("/1/presets/4/3") 
     && theOscMessage.get(0).floatValue()==1.0) {
     //PURPLE BLUE STRIPES
-    OSCrate(0);
+    OSCrate(17);
     OSCmaster(127);//FULL BRIGHTNESS
     OSCcolors(255, 0, 255, 0, 255, 255);
     //make sure to set mapping too
@@ -525,7 +520,7 @@ void oscEvent(OscMessage theOscMessage) {
     && theOscMessage.get(0).floatValue()==1.0) {
     //XMAS COLORS
     OSCmaster(127);//FULL BRIGHTNESS
-    OSCcolors(255, 0, 0, 0, 255, 0);
+    OSCcolors(255, 0, 0, 0, 0, 10);
     headbands[headbandSelect].send();
     return;
   }
@@ -533,7 +528,7 @@ void oscEvent(OscMessage theOscMessage) {
   if (theOscMessage.checkAddrPattern("/1/presets/5/3") 
     && theOscMessage.get(0).floatValue()==1.0) {
     //SINE FADE GREEN TO PURPLE
-    OSCrate(0);
+    OSCrate(17);
     OSCmaster(127);//FULL BRIGHTNESS
     OSCcolors(0, 255, 0, 211, 0, 255);
     //make sure to set mapping too
@@ -545,7 +540,7 @@ void oscEvent(OscMessage theOscMessage) {
   if (theOscMessage.checkAddrPattern("/1/presets/5/4") 
     && theOscMessage.get(0).floatValue()==1.0) {
     //SINE FADE RED TO BLUE
-    OSCrate(0);
+    OSCrate(17);
     OSCmaster(127);//FULL BRIGHTNESS
     OSCcolors(255, 0, 0, 0, 0, 255);
     //make sure to set mapping too
@@ -557,7 +552,7 @@ void oscEvent(OscMessage theOscMessage) {
   if (theOscMessage.checkAddrPattern("/1/presets/5/5") 
     && theOscMessage.get(0).floatValue()==1.0) {
     //STROBE WHITE
-    OSCrate(0);
+    OSCrate(17);
     OSCmaster(127);//FULL BRIGHTNESS
     OSCcolors(255, 255, 255, 0, 0, 0);
     //make sure to set mapping too
