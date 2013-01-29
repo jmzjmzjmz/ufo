@@ -2,15 +2,15 @@ class LightGroup {
 
   public final int address;
 
-  // These are only public so p5 can manipulate them.
-  // Don't change manually!
+  // These are only public so cp5 can manipulate them!
+  // PLZ Don't change manually! (use the setXxxx methods instead)
   public int pattern = OFF_PATTERN;
   public int mapping = 1;
   public int rate = 0;
   public int brightness = 127;
 
   // Would have liked to make these arrays, but controlP5's reflection makes that harder.
-  // Also addListener didn't work for color
+  // Also addListener didn't work for controlGroups :(
   public color color1 = color(255), color2 = color(0);
   
   // Interface elements
@@ -38,9 +38,7 @@ class LightGroup {
              .setText(title)
              .setPosition(x - 4, y);
 
-
     y += PADDING;
-
     
     colorPicker1 = controlP5.addColorPicker("picker1-" + address)
                             .setPosition(x, y)
@@ -86,12 +84,9 @@ class LightGroup {
         if (i == INITIAL_PATTERN) {
           patternList.activate(patternList.getItems().size()-1);
         }
-        // y += RADIO_SIZE;
         j++;
       }
     }
-
-    // y += PADDING*2;
 
     mappingList = controlP5.addRadioButton("mappings-" + address)
                            .setPosition(x +150, y)
@@ -120,17 +115,72 @@ class LightGroup {
   }
 
   public void applySettings(LightGroupSettings settings) {
+    setRate(settings.rate);
+    setBrightness(settings.brightness);
+    setMapping(settings.mapping);
+    setPattern(settings.pattern);
+    setColor1(settings.color1);
+    setColor2(settings.color2);
+  }
 
-    rateSlider.setValue(settings.rate);
-    brightnessSlider.setValue(settings.brightness);
+  public void setRate(int value) {
+    rateSlider.setValue(value);      
+  }
 
-    //h8 u cp5
-    mappingList.activate(mappings[settings.mapping] + address);
-    patternList.activate(patterns[settings.pattern] + address);
+  public void setBrightness(int value) {
+    brightnessSlider.setValue(value);
+  }
 
-    colorPicker1.setColorValue(settings.color1);
-    colorPicker2.setColorValue(settings.color2);
+  public void setMapping(int value) {
+    mappingList.activate(mappings[value] + address); // h8 u cp5
+  }
+
+  public void setPattern(int value) {
+    patternList.activate(patterns[value] + address); // h8 u cp5
+  }
+
+  public void setColor1(color value) {
+    colorPicker1.setColorValue(value);
+  }
+
+  public void setColor2(color value) {
+    colorPicker2.setColorValue(value);
+  }
+
+  public void sendMessage() {
+
+    byte[] serialData = new byte[14];
+    color color1 = colorPicker1.getColorValue();
+    color color2 = colorPicker2.getColorValue();
+    float a;
+
+    serialData[0] = (byte)address;
+    serialData[1] = (byte)rate;
+    serialData[2] = (byte)pattern;
+
+    a = alpha(color1)/255;
+    serialData[3] = (byte)(red(color1)   /2*a);
+    serialData[4] = (byte)(green(color1) /2*a);
+    serialData[5] = (byte)(blue(color1)  /2*a);
+
+    a = alpha(color2)/255;
+    serialData[6] = (byte)(red(color2)   /2*a);
+    serialData[7] = (byte)(green(color2) /2*a);
+    serialData[8] = (byte)(blue(color2)  /2*a);
+
+    // Ignore third color.
+    serialData[9] = 0;
+    serialData[10] = 0;
+    serialData[11] = 0;
+
+    serialData[12] = (byte)brightness;
+    serialData[13] = (byte)DELIMETER;
+
+    for (int i = 0; i < serialData.length; i++) {
+      messageQueue.offer(serialData[i]);
+    }
 
   }
+
 
 }

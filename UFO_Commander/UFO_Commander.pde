@@ -1,6 +1,10 @@
 import controlP5.*;
+import processing.serial.*; 
+import java.util.LinkedList;
 
 final String PRESET_FILE = "presets.txt";
+final String SERIAL_PORT = "/dev/tty.usbserial-A501E3DJ";
+final int BAUD_RATE = 9600;
 
 final int MESSAGE_SIZE = 14;
 final int TIMING_ADDR = 129;
@@ -9,7 +13,7 @@ final int INITIAL_PATTERN = 80;
 final int DELIMETER = 128;
 final int INTERVAL = 1000;
 
-int lastSend;
+int lastHeartbeat;
 
 ArrayList lightGroups = new ArrayList();
 ArrayList presets = new ArrayList();
@@ -33,6 +37,9 @@ ListBox presetList;
 Textfield presetNamer;
 
 boolean sympathizeEvents = false;
+
+Serial port;
+LinkedList messageQueue = new LinkedList();
 
 void setup() {
   
@@ -65,6 +72,22 @@ void setup() {
 
   controlP5 = new ControlP5(this);
 
+  // Only instantiate port if we know for sure it exists.
+  // Port won't be null if you give it a bunk address.
+  String[] serialPorts = Serial.list();
+
+  for (int i = 0; i < serialPorts.length; i++) {
+    if (serialPorts[i] == SERIAL_PORT) {
+      port = new Serial(this, SERIAL_PORT, BAUD_RATE);  
+    }
+  }
+
+  if (port != null) {
+    println("Using serial port " + SERIAL_PORT);
+  } else { 
+    println("Did not find a serial port!");
+  }
+
   groupVerticalPoles = new LightGroup("Vertical Poles", 10);
   groupHorizontalPoles = new LightGroup("Horizontal Poles", 11);
   groupBoxes = new LightGroup("Boxes", 12);
@@ -91,14 +114,36 @@ void draw() {
  
   background(0);
 
+  if (port != null) {
+    emptyMessageQueue();
+    heartbeat();
+  }
+
+}
+
+void emptyMessageQueue() {
+
+  while (messageQueue.peek() != null) {
+    port.write(((Integer)messageQueue.poll()).intValue());
+  }
+
+}
+
+void heartbeat() {
+  int now = millis();
+  if (now - lastHeartbeat >= INTERVAL) {
+    port.write(TIMING_ADDR);
+    port.write(new Integer(now).toString());
+    port.write(DELIMETER);
+    lastHeartbeat = now;
+  }
 }
 
 void controlEvent(ControlEvent theEvent) {
 
   expressSympathy(theEvent);
 
-  if (checkLightControllers(theEvent))
-    return;
+  checkLightControllers(theEvent);
 
   if (theEvent.isFrom(presetNamer)) {
     savePreset(theEvent.getStringValue());
@@ -230,12 +275,12 @@ void writePresets() {
 
 }
 
-
 void loadPresets() {
 
   BufferedReader reader = createReader(PRESET_FILE);
 
   String line = null;
+
   do { 
     
     try {
