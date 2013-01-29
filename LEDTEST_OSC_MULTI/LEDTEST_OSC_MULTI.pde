@@ -3,7 +3,7 @@ Serial port;
 import oscP5.*;
 import netP5.*;
 
-boolean DEBUG = false;
+boolean DEBUG = true;
 
 int redVal1 = 0, greenVal1 = 0, blueVal1 = 0, redVal2 = 0, greenVal2 = 0, blueVal2 = 0;
 
@@ -17,9 +17,9 @@ OscP5 oscP5;
 NetAddress myRemoteLocation;
 NetAddress myCompLocation;
 
-String iPadIP = "192.168.1.7";
+String iPadIP = "192.168.112.114";
 int iPadPort = 12005;
-String compIP = "192.168.1.5";
+String compIP = "192.168.112.110";
 int compPort = 12001;
 
 public int headbandSelect=1;
@@ -34,7 +34,7 @@ void setup() {
   size(400, 400);
   background(0);
   println(Serial.list());
-  port = new Serial(this, Serial.list[4], 9600); 
+  port = new Serial(this, Serial.list()[0], 9600); 
 
 
   controlP5 = new ControlP5(this);
@@ -162,7 +162,7 @@ void radio(int theId) {
 void oscEvent(OscMessage theOscMessage) {
 
   String message = theOscMessage.addrPattern();
-  println(message);
+ 
   //  
   //  if(message.indexOf("z") == message.length() - 1){
   //   return; 
@@ -171,6 +171,7 @@ void oscEvent(OscMessage theOscMessage) {
   /* print the address pattern and the typetag of the received OscMessage */
 
   if (DEBUG) {
+    println(message);
     println("### received an osc message.");
     println("### addrpattern\t"+theOscMessage.addrPattern());
     println(theOscMessage.get(0).floatValue());
@@ -601,7 +602,6 @@ void oscEvent(OscMessage theOscMessage) {
 }
 
 void clearPattern() { 
-    
   for (int i = 1; i <= 9; i++) {
     for (int j = 1; j <= 2; j++) {  
       String addr = "/1/multitoggle1/"+j+"/"+i;
@@ -610,8 +610,7 @@ void clearPattern() {
       oscP5.send(clearPattern, myRemoteLocation);
     }
   }
-  
-}
+  }
 
 //OSC helper functions
 void OSCpattern(int patternNum) {

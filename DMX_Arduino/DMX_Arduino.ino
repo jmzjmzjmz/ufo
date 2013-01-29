@@ -8,8 +8,8 @@
 #define NULL_PATTERN 0
 
 
-unsigned int NUM_DMX = 4;
-unsigned int rate = 20;
+unsigned int NUM_DMX = 8;
+unsigned int rate = 1;
 
 unsigned long frame = 0;
 unsigned long lastFrame = 0;
@@ -52,7 +52,7 @@ void setup() {
   Serial1.begin(9600); 
 
   DmxSimple.usePin(3);
-  DmxSimple.maxChannel(4);  
+  DmxSimple.maxChannel(50);  
      
   inputString.reserve(200);
 

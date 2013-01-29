@@ -71,7 +71,7 @@ class Headband {
     serialData[12] = (byte)dim;
     serialData[13] = 128;
 
-//    println(serialData);
+  //  println(serialData);
 
     for (int i = 0; i<serialData.length;i++) {
      toSend.offer(serialData[i]); 
