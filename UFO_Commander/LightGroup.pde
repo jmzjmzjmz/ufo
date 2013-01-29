@@ -3,15 +3,15 @@ class LightGroup {
   public final int address;
 
   // These are only public so p5 can manipulate them.
-  // Don't change!
+  // Don't change manually!
   public int pattern = OFF_PATTERN;
-  public int mapping;
-  public int rate;
-  public int brightness;
+  public int mapping = 1;
+  public int rate = 0;
+  public int brightness = 127;
 
   // Would have liked to make these arrays, but controlP5's reflection makes that harder.
   // Also addListener didn't work for color
-  public color color1, color2;
+  public color color1 = color(255), color2 = color(0);
   
   // Interface elements
   public final ColorPicker colorPicker1, colorPicker2;
@@ -43,11 +43,13 @@ class LightGroup {
 
     
     colorPicker1 = controlP5.addColorPicker("picker1-" + address)
-                            .setPosition(x, y);
+                            .setPosition(x, y)
+                            .setColorValue(color1);
     y += 70;
 
     colorPicker2 = controlP5.addColorPicker("picker2-" + address)
-                            .setPosition(x, y);
+                            .setPosition(x, y)
+                            .setColorValue(color2);
     y += 70;
 
     rateSlider = controlP5.addSlider("rate-"+address)
@@ -56,7 +58,7 @@ class LightGroup {
              .setSize(220, 20)
              .setDecimalPrecision(0)
              .setLabel("rate")
-             .setValue(0);
+             .setValue(rate);
 
     y += PADDING * 2;
 
@@ -66,7 +68,7 @@ class LightGroup {
              .setSize(220, 20)
              .setDecimalPrecision(0)
              .setLabel("bright")
-             .setValue(127);
+             .setValue(brightness);
 
     y += PADDING * 2;
 
@@ -114,6 +116,19 @@ class LightGroup {
 
     return new LightGroupSettings(pattern, 
       mapping, rate, brightness, color1, color2);
+
+  }
+
+  public void applySettings(LightGroupSettings settings) {
+
+    println(settings);
+
+    rateSlider.setValue(settings.rate);
+    brightnessSlider.setValue(settings.brightness);
+    mappingList.setValue(settings.mapping);
+    patternList.setValue(settings.pattern);
+    colorPicker1.setColorValue(settings.color1);
+    colorPicker2.setColorValue(settings.color2);
 
   }
 

@@ -10,6 +10,7 @@ final int INTERVAL = 1000;
 int lastSend;
 
 ArrayList lightGroups = new ArrayList();
+ArrayList presets = new ArrayList();
 
 LightGroup groupVerticalPoles;
 LightGroup groupHorizontalPoles;
@@ -27,6 +28,9 @@ String[] patterns = new String[127];
 String[] mappings = new String[6];
 
 ListBox presetList;
+Textfield presetNamer;
+
+boolean sympathizeEvents = false;
 
 void setup() {
   
@@ -64,11 +68,19 @@ void setup() {
   groupBoxes = new LightGroup("Boxes", 12);
   groupDMX = new LightGroup("DMX", 13);
 
-//  presetList = controlP5.addListBox("presets")
-//                        .setPosition(lightGroups.size() * LIGHT_GROUP_WIDTH, PADDING);
+  int x = lightGroups.size() * LIGHT_GROUP_WIDTH + PADDING;
 
-  println(controlP5.getAll());
+  
+  presetNamer = controlP5.addTextfield("preset-namer")
+                         .setPosition(x, PADDING + 15)
+                         .setLabel("Save preset.")
+                         .setSize(LIGHT_GROUP_WIDTH, 20);
+                       // .actAsPulldownMenu(false);
 
+  presetList = controlP5.addListBox("preset-list")
+                        .setPosition(x, PADDING + 70)
+                        .setSize(LIGHT_GROUP_WIDTH, 100)
+                        .setItemHeight(20);
 }
 
 void draw() {
@@ -77,15 +89,44 @@ void draw() {
 
 }
 
-
-boolean sympathizeEvents = false;
-
 void controlEvent(ControlEvent theEvent) {
 
   expressSympathy(theEvent);
-  if (checkLightControllers(theEvent)) return;
 
-  // todo preset box
+  if (checkLightControllers(theEvent)) 
+    return;
+
+  if (theEvent.isFrom(presetNamer)) {
+    savePreset(theEvent.getStringValue());
+    return;
+  }
+
+  if (theEvent.isFrom(presetList)) {
+    applyPreset((int)theEvent.value());
+  }
+
+}
+
+void applyPreset(int presetIndex) {
+  LightGroupSettings[] preset = (LightGroupSettings[])presets.get(index);
+  for (int i = 0; i < lightGroups.size(); i++) {
+    LightGroup l = (LightGroup)lightGroups.get(i);
+    l.applySettings(preset[i]);
+  }
+}
+
+void savePreset(String presetName) {
+
+  LightGroupSettings[] preset = new LightGroupSettings[lightGroups.size()];
+
+  for (int i = 0; i < lightGroups.size(); i++) {
+    LightGroup l = (LightGroup)lightGroups.get(i);
+    preset[i] = l.getSettings();
+  }
+
+
+  presets.add(preset);
+  presetList.addItem(presetName, presets.size()-1);
 
 }
 
