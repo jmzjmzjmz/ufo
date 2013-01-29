@@ -26,4 +26,10 @@ class LightGroupSettings {
 
   }
 
+  // public int[] serialize() {
+
+  //   int[] data = new int[2];
+
+  // }
+
 }

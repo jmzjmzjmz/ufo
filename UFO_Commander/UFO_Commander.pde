@@ -108,7 +108,7 @@ void controlEvent(ControlEvent theEvent) {
 }
 
 void applyPreset(int presetIndex) {
-  LightGroupSettings[] preset = (LightGroupSettings[])presets.get(index);
+  LightGroupSettings[] preset = (LightGroupSettings[])presets.get(presetIndex);
   for (int i = 0; i < lightGroups.size(); i++) {
     LightGroup l = (LightGroup)lightGroups.get(i);
     l.applySettings(preset[i]);
@@ -123,7 +123,6 @@ void savePreset(String presetName) {
     LightGroup l = (LightGroup)lightGroups.get(i);
     preset[i] = l.getSettings();
   }
-
 
   presets.add(preset);
   presetList.addItem(presetName, presets.size()-1);

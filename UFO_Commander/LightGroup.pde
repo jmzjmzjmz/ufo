@@ -121,12 +121,13 @@ class LightGroup {
 
   public void applySettings(LightGroupSettings settings) {
 
-    println(settings);
-
     rateSlider.setValue(settings.rate);
     brightnessSlider.setValue(settings.brightness);
-    mappingList.setValue(settings.mapping);
-    patternList.setValue(settings.pattern);
+
+    //h8 u cp5
+    mappingList.activate(mappings[settings.mapping] + address);
+    patternList.activate(patterns[settings.pattern] + address);
+
     colorPicker1.setColorValue(settings.color1);
     colorPicker2.setColorValue(settings.color2);
 
