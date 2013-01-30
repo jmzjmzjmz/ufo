@@ -19,6 +19,8 @@ class LightGroup {
   public final RadioButton mappingList;
   public final Slider rateSlider;
   public final Slider brightnessSlider;
+  public final Bang bang;
+
 
   // Just the order in which we created this group
   protected final int index;
@@ -31,14 +33,24 @@ class LightGroup {
 
     // Build interface
 
+    int SEND_MESSAGE_HEIGHT = 30;
     int x = index * LIGHT_GROUP_WIDTH + PADDING;
     int y = PADDING;
 
-    controlP5.addTextlabel("label"+address)
-             .setText(title)
-             .setPosition(x - 4, y);
+    bang = controlP5.addBang("bang-"+address)
+             .setPosition(x, y)
+             .setSize(LIGHT_GROUP_WIDTH-PADDING, SEND_MESSAGE_HEIGHT)
+             .setTriggerEvent(Bang.RELEASE)
+             .setLabel(title);
 
-    y += PADDING;
+    y += SEND_MESSAGE_HEIGHT + PADDING*1.5;
+
+
+    // controlP5.addTextlabel("label-"+address)
+    //          .setText(title)
+    //          .setPosition(x - 4, y);
+
+    // y += PADDING;
     
     colorPicker1 = controlP5.addColorPicker("picker1-" + address)
                             .setPosition(x, y)
@@ -149,6 +161,15 @@ class LightGroup {
 
   public void sendMessage() {
 
+    // Unfortunately, mappings go in the pattern slot
+    // We must send two "messages"
+    sendPatternMessage(pattern);
+    sendPatternMessage(mapping);
+
+  }
+
+  private void sendPatternMessage(int pattern) {
+
     byte[] serialData = new byte[14];
     color color1 = colorPicker1.getColorValue();
     color color2 = colorPicker2.getColorValue();
@@ -181,6 +202,5 @@ class LightGroup {
     }
 
   }
-
 
 }

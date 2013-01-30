@@ -1,6 +1,5 @@
-import java.util.LinkedList;
-
 final int MESSAGE_SIZE = 14;
+
 int WHICH = 19;
 
 LinkedList toSend = new LinkedList();

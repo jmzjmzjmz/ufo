@@ -1,34 +1,41 @@
 import processing.core.*; 
 import processing.data.*; 
-import processing.event.*; 
 import processing.opengl.*; 
 
 import processing.serial.*; 
+import java.util.LinkedList; 
 import oscP5.*; 
 import netP5.*; 
 import controlP5.*; 
-import java.util.LinkedList; 
 
 import controlP5.*; 
 import themidibus.*; 
 import promidi.*; 
 
-import java.util.HashMap; 
-import java.util.ArrayList; 
-import java.io.BufferedReader; 
-import java.io.PrintWriter; 
-import java.io.InputStream; 
-import java.io.OutputStream; 
-import java.io.IOException; 
+import java.applet.*; 
+import java.awt.Dimension; 
+import java.awt.Frame; 
+import java.awt.event.MouseEvent; 
+import java.awt.event.KeyEvent; 
+import java.awt.event.FocusEvent; 
+import java.awt.Image; 
+import java.io.*; 
+import java.net.*; 
+import java.text.*; 
+import java.util.*; 
+import java.util.zip.*; 
+import java.util.regex.*; 
 
 public class LEDTEST_OSC_MULTI extends PApplet {
 
  
+
+
+
+
 Serial port; 
 
-
-
-boolean DEBUG = false;
+boolean DEBUG = true;
 
 int redVal1 = 0, greenVal1 = 0, blueVal1 = 0, redVal2 = 0, greenVal2 = 0, blueVal2 = 0;
 
@@ -58,6 +65,7 @@ public void setup() {
   size(400, 400);
   background(0);
   println(Serial.list());
+
   port = new Serial(this, "/dev/tty.usbserial-A501E3DJ", 9600); 
 
   controlP5 = new ControlP5(this);
@@ -182,7 +190,7 @@ public void radio(int theId) {
 public void oscEvent(OscMessage theOscMessage) {
 
   String message = theOscMessage.addrPattern();
-  println(message);
+ 
   //  
   //  if(message.indexOf("z") == message.length() - 1){
   //   return; 
@@ -191,6 +199,7 @@ public void oscEvent(OscMessage theOscMessage) {
   /* print the address pattern and the typetag of the received OscMessage */
 
   if (DEBUG) {
+    println(message);
     println("### received an osc message.");
     println("### addrpattern\t"+theOscMessage.addrPattern());
     println(theOscMessage.get(0).floatValue());
@@ -621,7 +630,6 @@ public void oscEvent(OscMessage theOscMessage) {
 }
 
 public void clearPattern() { 
-    
   for (int i = 1; i <= 9; i++) {
     for (int j = 1; j <= 2; j++) {  
       String addr = "/1/multitoggle1/"+j+"/"+i;
@@ -630,8 +638,7 @@ public void clearPattern() {
       oscP5.send(clearPattern, myRemoteLocation);
     }
   }
-  
-}
+  }
 
 //OSC helper functions
 public void OSCpattern(int patternNum) {
@@ -691,10 +698,8 @@ public void swapColors() {
   OSCcolors(redVal2, greenVal2, blueVal2, redVal1, greenVal1, blueVal1); 
   headbands[headbandSelect].send();
 }
-
-
-
 final int MESSAGE_SIZE = 14;
+
 int WHICH = 19;
 
 LinkedList toSend = new LinkedList();
@@ -767,7 +772,7 @@ class Headband {
     serialData[12] = (byte)dim;
     serialData[13] = 128;
 
-//    println(serialData);
+  //  println(serialData);
 
     for (int i = 0; i<serialData.length;i++) {
      toSend.offer(serialData[i]); 

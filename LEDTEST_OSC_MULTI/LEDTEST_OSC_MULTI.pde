@@ -1,7 +1,9 @@
 import processing.serial.*; 
-Serial port; 
+import java.util.LinkedList;
 import oscP5.*;
 import netP5.*;
+
+Serial port; 
 
 boolean DEBUG = true;
 
@@ -666,4 +668,3 @@ void swapColors() {
   OSCcolors(redVal2, greenVal2, blueVal2, redVal1, greenVal1, blueVal1); 
   headbands[headbandSelect].send();
 }
-

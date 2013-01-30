@@ -1,17 +1,19 @@
 import controlP5.*;
 import processing.serial.*; 
 import java.util.LinkedList;
+import java.util.LinkedList;
+
 
 final String PRESET_FILE = "presets.txt";
 final String SERIAL_PORT = "/dev/tty.usbserial-A501E3DJ";
-final int BAUD_RATE = 9600;
+final int INITIAL_PATTERN = 80;
 
+final int BAUD_RATE = 9600;
 final int MESSAGE_SIZE = 14;
 final int TIMING_ADDR = 129;
 final int OFF_PATTERN = 68;
-final int INITIAL_PATTERN = 80;
 final int DELIMETER = 128;
-final int INTERVAL = 1000;
+final int INTERVAL = 100;
 
 int lastHeartbeat;
 
@@ -43,7 +45,7 @@ LinkedList messageQueue = new LinkedList();
 
 void setup() {
   
-  size(1440, 631);
+  size(1440, 731);
 
   patterns[80] = "pulseOnce";
   patterns[79] = "colorWipeMeterGradient";
@@ -77,7 +79,7 @@ void setup() {
   String[] serialPorts = Serial.list();
 
   for (int i = 0; i < serialPorts.length; i++) {
-    if (serialPorts[i] == SERIAL_PORT) {
+    if (serialPorts[i].equals(SERIAL_PORT)) {
       port = new Serial(this, SERIAL_PORT, BAUD_RATE);  
     }
   }
@@ -88,24 +90,24 @@ void setup() {
     println("Did not find a serial port!");
   }
 
-  groupVerticalPoles = new LightGroup("Vertical Poles", 10);
-  groupHorizontalPoles = new LightGroup("Horizontal Poles", 11);
-  groupBoxes = new LightGroup("Boxes", 12);
-  groupDMX = new LightGroup("DMX", 13);
+  groupVerticalPoles = new LightGroup("Vertical Poles", 7);
+  groupHorizontalPoles = new LightGroup("Horizontal Poles", 0);
+  groupBoxes = new LightGroup("Boxes", 14);
+  groupDMX = new LightGroup("DMX", 18);
 
   int x = lightGroups.size() * LIGHT_GROUP_WIDTH + PADDING;
   
   presetNamer = controlP5.addTextfield("preset-namer")
-                         .setPosition(x, PADDING + 15)
+                         .setPosition(x, PADDING)
                          .setLabel("Save preset.")
                          .setSize(LIGHT_GROUP_WIDTH, 20);
 
   presetList = controlP5.addListBox("preset-list")
                         .setPosition(x, PADDING + 70)
-                        .setSize(LIGHT_GROUP_WIDTH, 100)
+                        .setSize(LIGHT_GROUP_WIDTH, 600)
                         .setItemHeight(20)
                         .actAsPulldownMenu(false);
-
+  
   loadPresets();
 
 }
@@ -121,10 +123,17 @@ void draw() {
 
 }
 
+void sendAllMessages() {
+  for (int i = 0; i < lightGroups.size(); i++) {
+    LightGroup l = (LightGroup)lightGroups.get(i);
+    l.sendMessage();
+  }
+}
+
 void emptyMessageQueue() {
 
   while (messageQueue.peek() != null) {
-    port.write(((Integer)messageQueue.poll()).intValue());
+    port.write(((Byte)messageQueue.poll()).byteValue());
   }
 
 }
@@ -154,12 +163,11 @@ void controlEvent(ControlEvent theEvent) {
     applyPreset((int)theEvent.value());
   }
 
+
+
 }
 
-
 void expressSympathy(ControlEvent theEvent) {
-
-  // todo controllerGroups.
 
   if (keyPressed && !sympathizeEvents) {
     
@@ -169,11 +177,35 @@ void expressSympathy(ControlEvent theEvent) {
     name = name.substring(0, name.indexOf("-"));
 
     for (Object o : lightGroups) {
+
       LightGroup l = (LightGroup)o;
-      Controller c = controlP5.getController(name + "-" + l.address);
-      if (c != null) {
+      String addr = name + "-" + l.address;
+      Controller c = controlP5.getController(addr);
+      
+      // Controller groups are weird.
+      if (theEvent.isGroup() && theEvent.getGroup() instanceof ColorPicker) {
+        
+        if (name.equals("picker1")) {
+          l.setColor1((int)theEvent.value());
+        } else if (name.equals("picker2")) {
+          l.setColor2((int)theEvent.value());
+        }
+
+      } else if (theEvent.isGroup() && theEvent.getGroup() instanceof RadioButton) {
+
+        if (name.equals("patterns")) {
+          l.setPattern((int)theEvent.value());
+        } else if (name.equals("mappings")) { 
+          l.setMapping((int)theEvent.value());
+        }
+
+      } else if (c != null) {
+
         c.setValue(theEvent.value());
+
       }
+
+
     }
 
     sympathizeEvents = false;
@@ -190,6 +222,15 @@ boolean checkLightControllers(ControlEvent theEvent) {
   for (Object o : lightGroups) {
 
     LightGroup l = (LightGroup)o;
+
+    // h8 u cp5
+    // Would have liked to do listeners, but I could, because there
+    // are controller groups. Just did it all here to be consistent.
+
+    if (theEvent.isFrom(l.bang)) {
+      l.sendMessage();
+      return true;
+    }
 
     if (theEvent.isFrom(l.rateSlider)) {
       l.rate = (int)theEvent.value();
@@ -228,11 +269,16 @@ boolean checkLightControllers(ControlEvent theEvent) {
 }
 
 void applyPreset(int presetIndex) {
+  
   LightGroupSettings[] preset = (LightGroupSettings[])presets.get(presetIndex);
+  
   for (int i = 0; i < lightGroups.size(); i++) {
     LightGroup l = (LightGroup)lightGroups.get(i);
     l.applySettings(preset[i]);
   }
+
+  sendAllMessages();
+
 }
 
 void savePreset(String presetName) {
