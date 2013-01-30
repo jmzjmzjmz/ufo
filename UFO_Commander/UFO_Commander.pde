@@ -164,7 +164,6 @@ void controlEvent(ControlEvent theEvent) {
   }
 
 
-
 }
 
 void expressSympathy(ControlEvent theEvent) {
