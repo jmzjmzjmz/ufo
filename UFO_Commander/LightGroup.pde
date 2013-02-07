@@ -11,8 +11,9 @@ class LightGroup {
 
   // Would have liked to make these arrays, but controlP5's reflection makes that harder.
   // Also addListener didn't work for controlGroups :(
-  public color color1 = color(255), color2 = color(0);
-  
+  // DONT TOUCH
+  public color color1 = color(0), color2 = color(0);
+
   // Interface elements
   public final ColorPicker colorPicker1, colorPicker2;
   public final RadioButton patternList;
@@ -81,7 +82,6 @@ class LightGroup {
              .setValue(brightness);
 
     y += PADDING * 2;
-
     
     patternList = controlP5.addRadioButton("patterns-" + address)
                            .setPosition(x , y)
@@ -151,13 +151,14 @@ class LightGroup {
     patternList.activate(patterns[value] + address); // h8 u cp5
   }
 
-  public void setColor1(color value) {
-    colorPicker1.setColorValue(value);
+  public void setColor1(color c) {
+    colorPicker1.setColorValue(c);
   }
 
-  public void setColor2(color value) {
-    colorPicker2.setColorValue(value);
+  public void setColor2(color c) {
+    colorPicker2.setColorValue(c);
   }
+
 
   public void sendMessage() {
 

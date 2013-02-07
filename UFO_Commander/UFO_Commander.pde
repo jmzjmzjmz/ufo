@@ -1,4 +1,6 @@
 import controlP5.*;
+import oscP5.*;
+import netP5.*;
 import processing.serial.*; 
 import java.util.LinkedList;
 import java.util.LinkedList;
@@ -20,11 +22,13 @@ int lastHeartbeat;
 ArrayList lightGroups = new ArrayList();
 ArrayList presets = new ArrayList();
 
-LightGroup groupVerticalPoles;
+LightGroup groupAll;
 LightGroup groupHorizontalPoles;
+LightGroup groupVerticalPoles;
 LightGroup groupBoxes;
 LightGroup groupDMX;
-LightGroup groupAll;
+
+// ControlP5
 
 final int LIGHT_GROUP_WIDTH = 270;
 final int RADIO_SIZE = 20;
@@ -42,6 +46,21 @@ boolean sympathizeEvents = false;
 
 Serial port;
 LinkedList messageQueue = new LinkedList();
+
+// OSCP5
+
+OscP5 oscP5;
+NetAddress myRemoteLocation;
+NetAddress myCompLocation;
+
+String IPAD_ADDRESS = "192.168.1.7";
+int IPAD_PORT = 8000;
+int MY_PORT = 12001;
+
+// Map of which groups to address.
+// In order of the lightGroups array.
+// Object cuz oscP5.
+Object[] activeAddr = { 1.0, 0.0, 0.0, 0.0, 0.0 };
 
 void setup() {
   
@@ -77,21 +96,20 @@ void setup() {
   // Only instantiate port if we know for sure it exists.
   // Port won't be null if you give it a bunk address.
   String[] serialPorts = Serial.list();
-
   for (int i = 0; i < serialPorts.length; i++) {
     if (serialPorts[i].equals(SERIAL_PORT)) {
       port = new Serial(this, SERIAL_PORT, BAUD_RATE);  
     }
   }
-
   if (port != null) {
     println("Using serial port " + SERIAL_PORT);
   } else { 
     println("Did not find a serial port!");
   }
 
-  groupVerticalPoles = new LightGroup("Vertical Poles", 7);
+  groupAll = new LightGroup("All", 19);
   groupHorizontalPoles = new LightGroup("Horizontal Poles", 0);
+  groupVerticalPoles = new LightGroup("Vertical Poles", 7);
   groupBoxes = new LightGroup("Boxes", 14);
   groupDMX = new LightGroup("DMX", 18);
 
@@ -107,7 +125,13 @@ void setup() {
                         .setSize(LIGHT_GROUP_WIDTH, 600)
                         .setItemHeight(20)
                         .actAsPulldownMenu(false);
-  
+
+  oscP5 = new OscP5(this, MY_PORT);
+  myRemoteLocation = new NetAddress(IPAD_ADDRESS, IPAD_PORT);
+  myCompLocation = new NetAddress(oscP5.ip(), MY_PORT);
+
+
+
   loadPresets();
 
 }
@@ -164,7 +188,73 @@ void controlEvent(ControlEvent theEvent) {
   }
 
 
+
 }
+
+void oscEvent(OscMessage theOscMessage) {
+  
+  // println(theOscMessage);
+  // println(theOscMessage.addrPattern());
+  // println(theOscMessage.arguments());
+
+  if (theOscMessage.addrPattern().equals("/Presets/x")) {
+    
+    for (int i = 0; i < theOscMessage.arguments().length; i++) {
+      if (theOscMessage.arguments()[i].equals(1.0)) {
+  
+        applyPreset(i);
+
+      }
+    }
+
+  } else if (theOscMessage.addrPattern().equals("/Addr/x")) { 
+
+    activeAddr = theOscMessage.arguments();
+
+  } else if (theOscMessage.addrPattern().equals("/RedSlider1/x")) { 
+
+    for (int i = 0; i < activeAddr.length; i++) {
+      if (activeAddr[i].equals(1.0)) {
+
+        int v = (int)(theOscMessage.get(0).floatValue() * 255);
+        LightGroup l = (LightGroup)lightGroups.get(i);
+        l.setColor1(color(v, (int)green(l.color1), (int)blue(l.color1)));
+
+      }
+    }
+
+  } else if (theOscMessage.addrPattern().equals("/GreenSlider1/x")) { 
+
+    for (int i = 0; i < activeAddr.length; i++) {
+      if (activeAddr[i].equals(1.0)) {
+
+        int v = (int)(theOscMessage.get(0).floatValue() * 255);
+        LightGroup l = (LightGroup)lightGroups.get(i);
+
+        println((int)red(l.color1)+ " "+ v+ " "+ (int)blue(l.color1));
+
+        l.setColor1(color((int)red(l.color1), v, (int)blue(l.color1)));
+
+      }
+    }
+
+  } else if (theOscMessage.addrPattern().equals("/BlueSlider1/x")) { 
+
+    for (int i = 0; i < activeAddr.length; i++) {
+      if (activeAddr[i].equals(1.0)) {
+
+        int v = (int)(theOscMessage.get(0).floatValue() * 255);
+        LightGroup l = (LightGroup)lightGroups.get(i);
+        l.setColor1(color((int)red(l.color1), (int)green(l.color1), v));
+
+      }
+    }
+
+  }
+
+}
+
+
 
 void expressSympathy(ControlEvent theEvent) {
 
@@ -223,7 +313,7 @@ boolean checkLightControllers(ControlEvent theEvent) {
     LightGroup l = (LightGroup)o;
 
     // h8 u cp5
-    // Would have liked to do listeners, but I could, because there
+    // Would have liked to do all listeners, but I couldn't, because there
     // are controller groups. Just did it all here to be consistent.
 
     if (theEvent.isFrom(l.bang)) {
@@ -268,7 +358,7 @@ boolean checkLightControllers(ControlEvent theEvent) {
 }
 
 void applyPreset(int presetIndex) {
-  
+
   LightGroupSettings[] preset = (LightGroupSettings[])presets.get(presetIndex);
   
   for (int i = 0; i < lightGroups.size(); i++) {
@@ -318,6 +408,8 @@ void writePresets() {
   output.flush();
   output.close();
 
+  synchronizePresets();
+
 }
 
 void loadPresets() {
@@ -340,6 +432,28 @@ void loadPresets() {
     }
 
   } while (line != null);
+
+
+
+  // OscMessage message = new OscMessage("/RedSlider/x");
+  // message.add(0.5);
+  // oscP5.send(message, myRemoteLocation);
+  // println("This is happening.");
+
+  synchronizePresets();
+
+}
+
+void synchronizePresets() {
+
+  String[] s = new String[presets.size()];
+  for (int i = 0; i < s.length; i++) {
+    s[i] = presetList.getItem(i).getName();
+  }
+
+  OscMessage message = new OscMessage("/Presets/setLabels");
+  message.add(s);
+  oscP5.send(message, myRemoteLocation);
 
 }
 
