@@ -49,7 +49,7 @@ OscP5 oscP5;
 NetAddress myRemoteLocation;
 NetAddress myCompLocation;
 
-String iPadIP = "169.254.43.69";
+String iPadIP = "192.168.1.7";
 int iPadPort = 12005;
 int compPort = 12001;
 
@@ -66,7 +66,10 @@ public void setup() {
   background(0);
   println(Serial.list());
 
-  port = new Serial(this, "/dev/tty.usbserial-A501E3DJ", 9600); 
+  port = new Serial(this, 
+    // "/dev/tty.usbserial-A501E3DJ", 
+    Serial.list()[0],
+  9600); 
 
   controlP5 = new ControlP5(this);
 

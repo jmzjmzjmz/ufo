@@ -62,6 +62,8 @@ int MY_PORT = 12001;
 // Object cuz oscP5.
 Object[] activeAddr = { 1.0, 0.0, 0.0, 0.0, 0.0 };
 
+
+
 void setup() {
   
   size(1440, 731);
@@ -116,21 +118,21 @@ void setup() {
   int x = lightGroups.size() * LIGHT_GROUP_WIDTH + PADDING;
   
   presetNamer = controlP5.addTextfield("preset-namer")
-                         .setPosition(x, PADDING)
+                         .setPosition(PADDING, PADDING*2)
                          .setLabel("Save preset.")
-                         .setSize(LIGHT_GROUP_WIDTH, 20);
+                         .setSize(LIGHT_GROUP_WIDTH, 20)
+                         .moveTo("presets");
 
   presetList = controlP5.addListBox("preset-list")
-                        .setPosition(x, PADDING + 70)
+                        .setPosition(PADDING, PADDING*2 + 70)
                         .setSize(LIGHT_GROUP_WIDTH, 600)
                         .setItemHeight(20)
-                        .actAsPulldownMenu(false);
+                        .actAsPulldownMenu(false)
+                        .moveTo("presets");
 
   oscP5 = new OscP5(this, MY_PORT);
   myRemoteLocation = new NetAddress(IPAD_ADDRESS, IPAD_PORT);
   myCompLocation = new NetAddress(oscP5.ip(), MY_PORT);
-
-
 
   loadPresets();
 
@@ -193,9 +195,9 @@ void controlEvent(ControlEvent theEvent) {
 
 void oscEvent(OscMessage theOscMessage) {
   
-  // println(theOscMessage);
-  // println(theOscMessage.addrPattern());
-  // println(theOscMessage.arguments());
+  println(theOscMessage);
+  println(theOscMessage.addrPattern());
+  println(theOscMessage.arguments());
 
   if (theOscMessage.addrPattern().equals("/Presets/x")) {
     
@@ -218,7 +220,7 @@ void oscEvent(OscMessage theOscMessage) {
 
         int v = (int)(theOscMessage.get(0).floatValue() * 255);
         LightGroup l = (LightGroup)lightGroups.get(i);
-        l.setColor1(color(v, (int)green(l.color1), (int)blue(l.color1)));
+        l.setColor1(v, l.g1, l.b1);
 
       }
     }
@@ -230,10 +232,7 @@ void oscEvent(OscMessage theOscMessage) {
 
         int v = (int)(theOscMessage.get(0).floatValue() * 255);
         LightGroup l = (LightGroup)lightGroups.get(i);
-
-        println((int)red(l.color1)+ " "+ v+ " "+ (int)blue(l.color1));
-
-        l.setColor1(color((int)red(l.color1), v, (int)blue(l.color1)));
+        l.setColor1(l.r1, v, l.b1);
 
       }
     }
@@ -245,12 +244,74 @@ void oscEvent(OscMessage theOscMessage) {
 
         int v = (int)(theOscMessage.get(0).floatValue() * 255);
         LightGroup l = (LightGroup)lightGroups.get(i);
-        l.setColor1(color((int)red(l.color1), (int)green(l.color1), v));
+        l.setColor1(l.r1, l.g1, v);
+
+      }
+    }
+
+  } else if (theOscMessage.addrPattern().equals("/RedSlider2/x")) { 
+
+    for (int i = 0; i < activeAddr.length; i++) {
+      if (activeAddr[i].equals(1.0)) {
+
+        int v = (int)(theOscMessage.get(0).floatValue() * 255);
+        LightGroup l = (LightGroup)lightGroups.get(i);
+        // println(v + " " + l.g1 + " " + l.b1);
+        l.setColor2(v, l.g2, l.b2);
+
+      }
+    }
+
+  } else if (theOscMessage.addrPattern().equals("/GreenSlider2/x")) { 
+
+    for (int i = 0; i < activeAddr.length; i++) {
+      if (activeAddr[i].equals(1.0)) {
+
+        int v = (int)(theOscMessage.get(0).floatValue() * 255);
+        LightGroup l = (LightGroup)lightGroups.get(i);
+        l.setColor2(l.r2, v, l.b2);
+
+      }
+    }
+
+  } else if (theOscMessage.addrPattern().equals("/BlueSlider2/x")) { 
+
+    for (int i = 0; i < activeAddr.length; i++) {
+      if (activeAddr[i].equals(1.0)) {
+
+        int v = (int)(theOscMessage.get(0).floatValue() * 255);
+        LightGroup l = (LightGroup)lightGroups.get(i);
+        l.setColor2(l.r2, l.g2, v);
+
+      }
+    }
+
+  } else if (theOscMessage.addrPattern().equals("/RateSlider/x")) { 
+
+    for (int i = 0; i < activeAddr.length; i++) {
+      if (activeAddr[i].equals(1.0)) {
+
+        int v = (int)(theOscMessage.get(0).floatValue() * 127);
+        LightGroup l = (LightGroup)lightGroups.get(i);
+        l.setRate(v);
+
+      }
+    }
+
+  } else if (theOscMessage.addrPattern().equals("/BrightnessSlider/x")) { 
+
+    for (int i = 0; i < activeAddr.length; i++) {
+      if (activeAddr[i].equals(1.0)) {
+
+        int v = (int)(theOscMessage.get(0).floatValue() * 127);
+        LightGroup l = (LightGroup)lightGroups.get(i);
+        l.setBrightness(v);
 
       }
     }
 
   }
+
 
 }
 

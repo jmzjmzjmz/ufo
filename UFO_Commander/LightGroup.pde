@@ -14,6 +14,8 @@ class LightGroup {
   // DONT TOUCH
   public color color1 = color(0), color2 = color(0);
 
+  public int r1, r2, g1, g2, b1, b2;
+
   // Interface elements
   public final ColorPicker colorPicker1, colorPicker2;
   public final RadioButton patternList;
@@ -26,6 +28,8 @@ class LightGroup {
   // Just the order in which we created this group
   protected final int index;
 
+
+
   public LightGroup(String title, int address) {
 
     index = lightGroups.size();
@@ -36,7 +40,7 @@ class LightGroup {
 
     int SEND_MESSAGE_HEIGHT = 30;
     int x = index * LIGHT_GROUP_WIDTH + PADDING;
-    int y = PADDING;
+    int y = PADDING*2;
 
     bang = controlP5.addBang("bang-"+address)
              .setPosition(x, y)
@@ -151,12 +155,27 @@ class LightGroup {
     patternList.activate(patterns[value] + address); // h8 u cp5
   }
 
+  public void setColor1(int r, int g, int b) {
+    r1 = r;
+    g1 = g;
+    b1 = b;
+    colorPicker1.setColorValue(color(r1, g1, b1));
+  }
+
+  public void setColor2(int r, int g, int b) {
+    r2 = r;
+    g2 = g;
+    b2 = b;
+    colorPicker2.setColorValue(color(r2, g2, b2));
+  }
+
+
   public void setColor1(color c) {
-    colorPicker1.setColorValue(c);
+    setColor1((int)red(c), (int)blue(c), (int)green(c));
   }
 
   public void setColor2(color c) {
-    colorPicker2.setColorValue(c);
+    setColor2((int)red(c), (int)blue(c), (int)green(c));
   }
 
 
