@@ -169,15 +169,13 @@ class LightGroup {
     colorPicker2.setColorValue(color(r2, g2, b2));
   }
 
-
   public void setColor1(color c) {
-    setColor1((int)red(c), (int)blue(c), (int)green(c));
+    setColor1((int)red(c), (int)green(c), (int)blue(c));
   }
 
   public void setColor2(color c) {
-    setColor2((int)red(c), (int)blue(c), (int)green(c));
+    setColor2((int)red(c), (int)green(c), (int)blue(c));
   }
-
 
   public void sendMessage() {
 

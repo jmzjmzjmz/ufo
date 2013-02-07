@@ -62,7 +62,7 @@ int MY_PORT = 12001;
 // Object cuz oscP5.
 Object[] activeAddr = { 1.0, 0.0, 0.0, 0.0, 0.0 };
 
-
+int[] patternsToIndeces;
 
 void setup() {
   
@@ -135,6 +135,8 @@ void setup() {
   myCompLocation = new NetAddress(oscP5.ip(), MY_PORT);
 
   loadPresets();
+  synchronizePatterns();
+  synchronizeMappings();
 
 }
 
@@ -189,133 +191,7 @@ void controlEvent(ControlEvent theEvent) {
     applyPreset((int)theEvent.value());
   }
 
-
-
 }
-
-void oscEvent(OscMessage theOscMessage) {
-  
-  println(theOscMessage);
-  println(theOscMessage.addrPattern());
-  println(theOscMessage.arguments());
-
-  if (theOscMessage.addrPattern().equals("/Presets/x")) {
-    
-    for (int i = 0; i < theOscMessage.arguments().length; i++) {
-      if (theOscMessage.arguments()[i].equals(1.0)) {
-  
-        applyPreset(i);
-
-      }
-    }
-
-  } else if (theOscMessage.addrPattern().equals("/Addr/x")) { 
-
-    activeAddr = theOscMessage.arguments();
-
-  } else if (theOscMessage.addrPattern().equals("/RedSlider1/x")) { 
-
-    for (int i = 0; i < activeAddr.length; i++) {
-      if (activeAddr[i].equals(1.0)) {
-
-        int v = (int)(theOscMessage.get(0).floatValue() * 255);
-        LightGroup l = (LightGroup)lightGroups.get(i);
-        l.setColor1(v, l.g1, l.b1);
-
-      }
-    }
-
-  } else if (theOscMessage.addrPattern().equals("/GreenSlider1/x")) { 
-
-    for (int i = 0; i < activeAddr.length; i++) {
-      if (activeAddr[i].equals(1.0)) {
-
-        int v = (int)(theOscMessage.get(0).floatValue() * 255);
-        LightGroup l = (LightGroup)lightGroups.get(i);
-        l.setColor1(l.r1, v, l.b1);
-
-      }
-    }
-
-  } else if (theOscMessage.addrPattern().equals("/BlueSlider1/x")) { 
-
-    for (int i = 0; i < activeAddr.length; i++) {
-      if (activeAddr[i].equals(1.0)) {
-
-        int v = (int)(theOscMessage.get(0).floatValue() * 255);
-        LightGroup l = (LightGroup)lightGroups.get(i);
-        l.setColor1(l.r1, l.g1, v);
-
-      }
-    }
-
-  } else if (theOscMessage.addrPattern().equals("/RedSlider2/x")) { 
-
-    for (int i = 0; i < activeAddr.length; i++) {
-      if (activeAddr[i].equals(1.0)) {
-
-        int v = (int)(theOscMessage.get(0).floatValue() * 255);
-        LightGroup l = (LightGroup)lightGroups.get(i);
-        // println(v + " " + l.g1 + " " + l.b1);
-        l.setColor2(v, l.g2, l.b2);
-
-      }
-    }
-
-  } else if (theOscMessage.addrPattern().equals("/GreenSlider2/x")) { 
-
-    for (int i = 0; i < activeAddr.length; i++) {
-      if (activeAddr[i].equals(1.0)) {
-
-        int v = (int)(theOscMessage.get(0).floatValue() * 255);
-        LightGroup l = (LightGroup)lightGroups.get(i);
-        l.setColor2(l.r2, v, l.b2);
-
-      }
-    }
-
-  } else if (theOscMessage.addrPattern().equals("/BlueSlider2/x")) { 
-
-    for (int i = 0; i < activeAddr.length; i++) {
-      if (activeAddr[i].equals(1.0)) {
-
-        int v = (int)(theOscMessage.get(0).floatValue() * 255);
-        LightGroup l = (LightGroup)lightGroups.get(i);
-        l.setColor2(l.r2, l.g2, v);
-
-      }
-    }
-
-  } else if (theOscMessage.addrPattern().equals("/RateSlider/x")) { 
-
-    for (int i = 0; i < activeAddr.length; i++) {
-      if (activeAddr[i].equals(1.0)) {
-
-        int v = (int)(theOscMessage.get(0).floatValue() * 127);
-        LightGroup l = (LightGroup)lightGroups.get(i);
-        l.setRate(v);
-
-      }
-    }
-
-  } else if (theOscMessage.addrPattern().equals("/BrightnessSlider/x")) { 
-
-    for (int i = 0; i < activeAddr.length; i++) {
-      if (activeAddr[i].equals(1.0)) {
-
-        int v = (int)(theOscMessage.get(0).floatValue() * 127);
-        LightGroup l = (LightGroup)lightGroups.get(i);
-        l.setBrightness(v);
-
-      }
-    }
-
-  }
-
-
-}
-
-
 
 void expressSympathy(ControlEvent theEvent) {
 
@@ -427,6 +303,8 @@ void applyPreset(int presetIndex) {
     l.applySettings(preset[i]);
   }
 
+  
+
   sendAllMessages();
 
 }
@@ -513,6 +391,63 @@ void synchronizePresets() {
   }
 
   OscMessage message = new OscMessage("/Presets/setLabels");
+  message.add(s);
+  oscP5.send(message, myRemoteLocation);
+
+}
+
+void synchronizePatterns() {
+
+  // count non-null presets
+  int numPatterns = 0;
+  for (int i = 0; i < patterns.length; i++) {
+    if (patterns[i] != null) {
+      numPatterns++;
+    }
+  }
+
+  patternsToIndeces = new int[numPatterns];
+
+  // make arr
+  String[] s = new String[numPatterns];
+  int j = 0;
+  for (int i = 0; i < patterns.length; i++) {
+    if (patterns[i] != null) {
+      s[j] = patterns[i];
+      patternsToIndeces[j] = i;
+      j++;
+    }
+  }
+
+  // println(numPatterns);
+  // println(s);
+  OscMessage message = new OscMessage("/Patterns/setLabels");
+  message.add(s);
+  oscP5.send(message, myRemoteLocation);
+
+}
+
+void synchronizeMappings() {
+
+  // count non-null presets
+  int numMappings = 0;
+  for (int i = 0; i < mappings.length; i++) {
+    if (mappings[i] != null) {
+      numMappings++;
+    }
+  }
+
+  // make arr
+  String[] s = new String[numMappings];
+  int j = 0;
+  for (int i = 0; i < mappings.length; i++) {
+    if (mappings[i] != null) {
+      s[j] = mappings[i];
+      j++;
+    }
+  }
+
+  OscMessage message = new OscMessage("/Mappings/setLabels");
   message.add(s);
   oscP5.send(message, myRemoteLocation);
 
