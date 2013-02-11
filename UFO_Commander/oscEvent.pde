@@ -1,8 +1,6 @@
 void oscEvent(OscMessage theOscMessage) {
   
-  // println(theOscMessage);
-  // println(theOscMessage.addrPattern());
-  // println(theOscMessage.arguments());
+  println("[OSC] " + theOscMessage.addrPattern());
 
   if (theOscMessage.addrPattern().equals("/Presets/x")) {
     
@@ -24,6 +22,7 @@ void oscEvent(OscMessage theOscMessage) {
             
             LightGroup l = (LightGroup)lightGroups.get(j);
             l.setPattern(patternsToIndeces[i]);
+            l.sendMessage();
 
           }
         }
@@ -41,6 +40,7 @@ void oscEvent(OscMessage theOscMessage) {
             
             LightGroup l = (LightGroup)lightGroups.get(j);
             l.setMapping(i+1); // hack.
+            l.sendMessage();
 
           }
         }
@@ -60,6 +60,8 @@ void oscEvent(OscMessage theOscMessage) {
         int v = (int)(theOscMessage.get(0).floatValue() * 255);
         LightGroup l = (LightGroup)lightGroups.get(i);
         l.setColor1(v, l.g1, l.b1);
+        l.sendMessage();
+
 
       }
     }
@@ -72,6 +74,8 @@ void oscEvent(OscMessage theOscMessage) {
         int v = (int)(theOscMessage.get(0).floatValue() * 255);
         LightGroup l = (LightGroup)lightGroups.get(i);
         l.setColor1(l.r1, v, l.b1);
+        l.sendMessage();
+
 
       }
     }
@@ -84,6 +88,8 @@ void oscEvent(OscMessage theOscMessage) {
         int v = (int)(theOscMessage.get(0).floatValue() * 255);
         LightGroup l = (LightGroup)lightGroups.get(i);
         l.setColor1(l.r1, l.g1, v);
+        l.sendMessage();
+
 
       }
     }
@@ -95,8 +101,9 @@ void oscEvent(OscMessage theOscMessage) {
 
         int v = (int)(theOscMessage.get(0).floatValue() * 255);
         LightGroup l = (LightGroup)lightGroups.get(i);
-        // println(v + " " + l.g1 + " " + l.b1);
         l.setColor2(v, l.g2, l.b2);
+        l.sendMessage();
+
 
       }
     }
@@ -109,6 +116,8 @@ void oscEvent(OscMessage theOscMessage) {
         int v = (int)(theOscMessage.get(0).floatValue() * 255);
         LightGroup l = (LightGroup)lightGroups.get(i);
         l.setColor2(l.r2, v, l.b2);
+        l.sendMessage();
+
 
       }
     }
@@ -121,6 +130,8 @@ void oscEvent(OscMessage theOscMessage) {
         int v = (int)(theOscMessage.get(0).floatValue() * 255);
         LightGroup l = (LightGroup)lightGroups.get(i);
         l.setColor2(l.r2, l.g2, v);
+        l.sendMessage();
+
 
       }
     }
@@ -133,6 +144,7 @@ void oscEvent(OscMessage theOscMessage) {
         int v = (int)(theOscMessage.get(0).floatValue() * 127);
         LightGroup l = (LightGroup)lightGroups.get(i);
         l.setRate(v);
+        l.sendMessage();
 
       }
     }
@@ -145,6 +157,8 @@ void oscEvent(OscMessage theOscMessage) {
         int v = (int)(theOscMessage.get(0).floatValue() * 127);
         LightGroup l = (LightGroup)lightGroups.get(i);
         l.setBrightness(v);
+        l.sendMessage();
+        
 
       }
     }

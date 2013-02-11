@@ -53,7 +53,7 @@ OscP5 oscP5;
 NetAddress myRemoteLocation;
 NetAddress myCompLocation;
 
-String IPAD_ADDRESS = "192.168.1.7";
+String IPAD_ADDRESS = "192.168.1.9";
 int IPAD_PORT = 8000;
 int MY_PORT = 12001;
 
@@ -145,9 +145,11 @@ void draw() {
   background(0);
 
   if (port != null) {
-    emptyMessageQueue();
     heartbeat();
   }
+
+
+  emptyMessageQueue();
 
 }
 
@@ -161,7 +163,9 @@ void sendAllMessages() {
 void emptyMessageQueue() {
 
   while (messageQueue.peek() != null) {
-    port.write(((Byte)messageQueue.poll()).byteValue());
+    byte b = ((Byte)messageQueue.poll()).byteValue();
+    if (port != null) port.write(b);
+    println("[SERIAL] " + b);
   }
 
 }
@@ -302,8 +306,6 @@ void applyPreset(int presetIndex) {
     LightGroup l = (LightGroup)lightGroups.get(i);
     l.applySettings(preset[i]);
   }
-
-  
 
   sendAllMessages();
 

@@ -179,6 +179,8 @@ class LightGroup {
 
   public void sendMessage() {
 
+    println("HELLO");
+
     // Unfortunately, mappings go in the pattern slot
     // We must send two "messages"
     sendPatternMessage(pattern);
@@ -214,6 +216,7 @@ class LightGroup {
 
     serialData[12] = (byte)brightness;
     serialData[13] = (byte)DELIMETER;
+
 
     for (int i = 0; i < serialData.length; i++) {
       messageQueue.offer(serialData[i]);
