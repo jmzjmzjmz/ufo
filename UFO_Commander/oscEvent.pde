@@ -55,6 +55,24 @@ void oscEvent(OscMessage theOscMessage) {
     setActiveAddr(theOscMessage.arguments());
     
 
+  } else if (theOscMesssage.addrPattern().equals("/Stealth/x")) {
+
+    if (theOscMessage.arguments()[i].equals(1.0)) {
+    
+      stealth = true;
+    
+    } else { 
+      
+      stealth = false;
+
+      for (int j = 0; j < activeAddr.length; j++) {
+        if (activeAddr[j].equals(1.0)) {
+          l.sendMessage();
+        }
+      }
+
+    }
+
   } else if (theOscMessage.addrPattern().equals("/RedSlider1/x")) { 
 
     for (int i = 0; i < activeAddr.length; i++) {

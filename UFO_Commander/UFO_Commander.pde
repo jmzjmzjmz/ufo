@@ -145,12 +145,11 @@ void draw() {
  
   background(0);
 
-  if (port != null) {
-    heartbeat();
-  }
+  if (port != null) heartbeat();
 
-
-  emptyMessageQueue();
+  // checks for the existence of port itself
+  // still debugs if port isn't there
+  if (!stealth) emptyMessageQueue();
 
 }
 
