@@ -1,6 +1,6 @@
 void oscEvent(OscMessage theOscMessage) {
   
-  println("[OSC] " + theOscMessage.addrPattern());
+  if (DEBUG) println("[OSC] " + theOscMessage.addrPattern());
 
   if (theOscMessage.addrPattern().equals("/Presets/x")) {
     
@@ -8,6 +8,7 @@ void oscEvent(OscMessage theOscMessage) {
       if (theOscMessage.arguments()[i].equals(1.0)) {
   
         applyPreset(i);
+        sendFeedback();
 
       }
     }
@@ -50,7 +51,9 @@ void oscEvent(OscMessage theOscMessage) {
 
   } else if (theOscMessage.addrPattern().equals("/Addr/x")) { 
 
-    activeAddr = theOscMessage.arguments();
+
+    setActiveAddr(theOscMessage.arguments());
+    
 
   } else if (theOscMessage.addrPattern().equals("/RedSlider1/x")) { 
 
@@ -158,10 +161,81 @@ void oscEvent(OscMessage theOscMessage) {
         LightGroup l = (LightGroup)lightGroups.get(i);
         l.setBrightness(v);
         l.sendMessage();
-        
 
       }
     }
 
   }
+}
+
+void setActiveAddr(Object[] activeAddr) {
+  
+  this.activeAddr = activeAddr;
+  sendFeedback();
+
+}
+
+void sendFeedback() {
+
+  int feedbackIndex = 0;
+
+  for (int i = 0; i < activeAddr.length; i++) {
+    if (activeAddr[i].equals(1.0)) {
+      feedbackIndex = i;
+      break;
+    }
+  }
+
+  LightGroup l = (LightGroup)lightGroups.get(feedbackIndex);
+
+  oscMessage("/RedSlider1/x",   map(red(l.color1), 0, 255, 0, 1));
+  oscMessage("/GreenSlider1/x", map(green(l.color1), 0, 255, 0, 1));
+  oscMessage("/BlueSlider1/x",  map(blue(l.color1), 0, 255, 0, 1));
+
+  oscMessage("/RedSlider2/x",   map(red(l.color2), 0, 255, 0, 1));
+  oscMessage("/GreenSlider2/x", map(green(l.color2), 0, 255, 0, 1));
+  oscMessage("/BlueSlider2/x",  map(blue(l.color2), 0, 255, 0, 1));
+
+  oscMessage("/RateSlider/x",   map(l.rate, 0, 127, 0, 1));
+  oscMessage("/BrightnessSlider/x", map(l.brightness, 0, 127, 0, 1));
+
+  // Send pattern message.
+  
+  int patternIndex = 0;
+  for (int i = 0; i < patternsToIndeces.length; i++) {
+    if (patternsToIndeces[i] == l.pattern) {
+      patternIndex = i;
+    }
+  }
+
+  float[] patternMessage = new float[patternsToIndeces.length];
+  for (int i = 0; i < patternMessage.length; i++) {
+    if (i == patternIndex) {
+      patternMessage[i] = 1.0;
+    }
+  }
+
+  OscMessage message = new OscMessage("/Patterns/x");
+  message.add(patternMessage);
+  oscP5.send(message, myRemoteLocation);
+
+  // Send mapping message.
+
+  int mappingIndex = l.mapping - 1; // HACK
+  message = new OscMessage("/Mappings/x");
+  float[] mappingMessage = new float[mappings.length];
+  for (int i = 0; i < mappings.length; i++) {
+    if (i == mappingIndex) {
+      mappingMessage[i] = 1.0;
+    }
+  }
+  message.add(mappingMessage);
+  oscP5.send(message, myRemoteLocation);
+
+}
+
+void oscMessage(String addr, float value) {
+  OscMessage message = new OscMessage(addr);
+  message.add(value);
+  oscP5.send(message, myRemoteLocation);
 }

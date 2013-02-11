@@ -5,6 +5,7 @@ import processing.serial.*;
 import java.util.LinkedList;
 import java.util.LinkedList;
 
+final boolean DEBUG = false;
 
 final String PRESET_FILE = "presets.txt";
 final String SERIAL_PORT = "/dev/tty.usbserial-A501E3DJ";
@@ -165,7 +166,7 @@ void emptyMessageQueue() {
   while (messageQueue.peek() != null) {
     byte b = ((Byte)messageQueue.poll()).byteValue();
     if (port != null) port.write(b);
-    println("[SERIAL] " + b);
+    if (DEBUG) println("[SERIAL] " + b);
   }
 
 }
@@ -374,13 +375,6 @@ void loadPresets() {
 
   } while (line != null);
 
-
-
-  // OscMessage message = new OscMessage("/RedSlider/x");
-  // message.add(0.5);
-  // oscP5.send(message, myRemoteLocation);
-  // println("This is happening.");
-
   synchronizePresets();
 
 }
@@ -421,8 +415,6 @@ void synchronizePatterns() {
     }
   }
 
-  // println(numPatterns);
-  // println(s);
   OscMessage message = new OscMessage("/Patterns/setLabels");
   message.add(s);
   oscP5.send(message, myRemoteLocation);

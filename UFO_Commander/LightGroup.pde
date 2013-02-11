@@ -24,11 +24,8 @@ class LightGroup {
   public final Slider brightnessSlider;
   public final Bang bang;
 
-
   // Just the order in which we created this group
   protected final int index;
-
-
 
   public LightGroup(String title, int address) {
 
@@ -50,13 +47,6 @@ class LightGroup {
 
     y += SEND_MESSAGE_HEIGHT + PADDING*1.5;
 
-
-    // controlP5.addTextlabel("label-"+address)
-    //          .setText(title)
-    //          .setPosition(x - 4, y);
-
-    // y += PADDING;
-    
     colorPicker1 = controlP5.addColorPicker("picker1-" + address)
                             .setPosition(x, y)
                             .setColorValue(color1);
@@ -125,8 +115,7 @@ class LightGroup {
 
   public LightGroupSettings getSettings() {
 
-    return new LightGroupSettings(pattern, 
-      mapping, rate, brightness, color1, color2);
+    return new LightGroupSettings(pattern, mapping, rate, brightness, color1, color2);
 
   }
 
@@ -179,8 +168,6 @@ class LightGroup {
 
   public void sendMessage() {
 
-    println("HELLO");
-
     // Unfortunately, mappings go in the pattern slot
     // We must send two "messages"
     sendPatternMessage(pattern);
@@ -216,7 +203,6 @@ class LightGroup {
 
     serialData[12] = (byte)brightness;
     serialData[13] = (byte)DELIMETER;
-
 
     for (int i = 0; i < serialData.length; i++) {
       messageQueue.offer(serialData[i]);
