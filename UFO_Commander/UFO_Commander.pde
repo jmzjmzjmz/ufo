@@ -5,7 +5,7 @@ import processing.serial.*;
 import java.util.LinkedList;
 import java.util.LinkedList;
 
-final boolean DEBUG = false;
+final boolean DEBUG = true;
 
 final String PRESET_FILE = "presets.txt";
 final String SERIAL_PORT = "/dev/tty.usbserial-A501E3DJ";
@@ -19,6 +19,8 @@ final int DELIMETER = 128;
 final int INTERVAL = 100;
 
 int lastHeartbeat;
+
+boolean stealth = false;
 
 ArrayList lightGroups = new ArrayList();
 ArrayList presets = new ArrayList();
@@ -110,11 +112,20 @@ void setup() {
     println("Did not find a serial port!");
   }
 
+  // Think of this as push/pop/sympathizeEvents
+  // first run of controlEvent causes probs when not all 
+  // controllers have been created.
+  sympathizeEvents = true;
+
   groupAll = new LightGroup("All", 19);
   groupHorizontalPoles = new LightGroup("Horizontal Poles", 0);
   groupVerticalPoles = new LightGroup("Vertical Poles", 7);
   groupBoxes = new LightGroup("Boxes", 14);
   groupDMX = new LightGroup("DMX", 18);
+
+  sympathizeEvents = false;
+
+
 
   int x = lightGroups.size() * LIGHT_GROUP_WIDTH + PADDING;
   
@@ -182,9 +193,9 @@ void heartbeat() {
 
 void controlEvent(ControlEvent theEvent) {
 
-  expressSympathy(theEvent);
+  LightGroup l = checkLightControllers(theEvent);
 
-  checkLightControllers(theEvent);
+  if (keyPressed || l == groupAll) expressSympathy(theEvent);
 
   if (theEvent.isFrom(presetNamer)) {
     savePreset(theEvent.getStringValue());
@@ -199,7 +210,7 @@ void controlEvent(ControlEvent theEvent) {
 
 void expressSympathy(ControlEvent theEvent) {
 
-  if (keyPressed && !sympathizeEvents) {
+  if (!sympathizeEvents) {
     
     sympathizeEvents = true;
 
@@ -245,9 +256,9 @@ void expressSympathy(ControlEvent theEvent) {
 }
 
 /**
- * Returns true if the event was from one of the LightGroup's controllers.
+ * Returns Light group controller came from or null if none.
  */
-boolean checkLightControllers(ControlEvent theEvent) {
+LightGroup checkLightControllers(ControlEvent theEvent) {
 
   for (Object o : lightGroups) {
 
@@ -259,42 +270,42 @@ boolean checkLightControllers(ControlEvent theEvent) {
 
     if (theEvent.isFrom(l.bang)) {
       l.sendMessage();
-      return true;
+      return l;
     }
 
     if (theEvent.isFrom(l.rateSlider)) {
       l.rate = (int)theEvent.value();
-      return true;
+      return l;
     }
 
     if (theEvent.isFrom(l.brightnessSlider)) {
       l.brightness = (int)theEvent.value();
-      return true;
+      return l;
     }
 
     if (theEvent.isFrom(l.patternList)) {
       l.pattern = (int)theEvent.value();
-      return true;
+      return l;
     }
 
     if (theEvent.isFrom(l.mappingList)) {
       l.mapping = (int)theEvent.value();
-      return true;
+      return l;
     }
 
     if (theEvent.isFrom(l.colorPicker1)) {
       l.color1 = (color)theEvent.value();
-      return true;
+      return l;
     }
 
     if (theEvent.isFrom(l.colorPicker2)) {
       l.color2 = (color)theEvent.value();
-      return true;
+      return l;
     }
 
   }
 
-  return false;
+  return null;
 
 }
 

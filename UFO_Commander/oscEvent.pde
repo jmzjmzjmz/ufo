@@ -1,5 +1,6 @@
 void oscEvent(OscMessage theOscMessage) {
-  
+
+
   if (DEBUG) println("[OSC] " + theOscMessage.addrPattern());
 
   if (theOscMessage.addrPattern().equals("/Presets/x")) {
@@ -55,9 +56,9 @@ void oscEvent(OscMessage theOscMessage) {
     setActiveAddr(theOscMessage.arguments());
     
 
-  } else if (theOscMesssage.addrPattern().equals("/Stealth/x")) {
+  } else if (theOscMessage.addrPattern().equals("/Stealth/x")) {
 
-    if (theOscMessage.arguments()[i].equals(1.0)) {
+    if (theOscMessage.arguments()[0].equals(1.0)) {
     
       stealth = true;
     
@@ -67,6 +68,7 @@ void oscEvent(OscMessage theOscMessage) {
 
       for (int j = 0; j < activeAddr.length; j++) {
         if (activeAddr[j].equals(1.0)) {
+          LightGroup l = (LightGroup)lightGroups.get(j);
           l.sendMessage();
         }
       }
