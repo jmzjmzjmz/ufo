@@ -5,7 +5,7 @@ import processing.serial.*;
 import java.util.LinkedList;
 import java.util.LinkedList;
 
-final boolean DEBUG = true;
+final boolean DEBUG = false;
 
 final String PRESET_FILE = "presets.txt";
 final String SERIAL_PORT = "/dev/tty.usbserial-A501E3DJ";
@@ -69,7 +69,7 @@ int[] patternsToIndeces;
 
 void setup() {
   
-  size(1440, 731);
+  size(1370, 675);
 
   patterns[80] = "pulseOnce";
   patterns[79] = "colorWipeMeterGradient";
