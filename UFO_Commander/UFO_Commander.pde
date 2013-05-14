@@ -9,11 +9,11 @@ import java.util.regex.Pattern;
 
 
 final boolean DEBUG = true; // osc
-final boolean DEBUG_SERIAL = false;
+final boolean DEBUG_SERIAL = true;
 
 
 final String PRESET_FILE = "presets.txt";
-final String SERIAL_PORT = "/dev/tty.usbmodem1411";
+final String SERIAL_PORT = "/dev/tty.usbserial-A501E2IQ";
 final int INITIAL_PATTERN = 80;
 
 final int BAUD_RATE = 9600;
@@ -132,7 +132,7 @@ void setup() {
   // controllers have been created.
   sympathizeEvents = true;
 
-  groupAll = new LightGroup("All", 0);
+  groupAll = new LightGroup("All", 0) ;
   // groupHorizontalPoles = new LightGroup("Horizontal Poles", 0);
   // groupVerticalPoles = new LightGroup("Vertical Poles", 7);
   groupPoles = new LightGroup("Poles", 1);

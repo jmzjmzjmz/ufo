@@ -10,12 +10,11 @@ class LiveReader implements OscReader {
     Matcher mappings = Pattern.compile("/mapping/(\\d+)").matcher(p);
     Matcher address = Pattern.compile("/address/(\\d+)").matcher(p);
     
-    if (presets.find()) {
+    if (presets.find() && theOscMessage.get(0).intValue() == 1) {
     
-      println();
       applyPreset(parseInt(presets.group(1)));
 
-    } else if (patterns.find()) {
+    } else if (patterns.find() && theOscMessage.get(0).intValue() == 1) {
       
       for (int j = 0; j < activeAddr.length; j++) {
         if (activeAddr[j].equals(1.0)) {
@@ -27,7 +26,7 @@ class LiveReader implements OscReader {
         }
       }
 
-    } else if (mappings.find()) {
+    } else if (mappings.find() && theOscMessage.get(0).intValue() == 1) {
       
       for (int j = 0; j < activeAddr.length; j++) {
         if (activeAddr[j].equals(1.0)) {
@@ -39,7 +38,7 @@ class LiveReader implements OscReader {
         }
       }
 
-    } else if (address.find()) { 
+    } else if (address.find() && theOscMessage.get(0).intValue() == 1) { 
 
       int a = parseInt(address.group(1));
       for (int i = 0; i < activeAddr.length; i++) {
