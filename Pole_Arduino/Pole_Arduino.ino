@@ -25,7 +25,7 @@ boolean light = false;
 #define mySETADDRESS 7
 #define globalADDR 19
 
-LPD8806 strip = LPD8806(74);
+LPD8806 strip = LPD8806(64);
 
 // RTC_DS1307 RTC;
 
@@ -121,10 +121,10 @@ void setup() {
 
 void read() {
   
-  while (Serial1.available()) {
+  while (Serial.available()) {
 
 
-    char c = (char)Serial1.read();
+    char c = (char)Serial.read();
     // Serial.println(c, DEC);
     inputString += c;
     if (c == -128) {

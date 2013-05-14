@@ -2,13 +2,16 @@ import controlP5.*;
 import oscP5.*;
 import netP5.*;
 import processing.serial.*; 
+
 import java.util.LinkedList;
-import java.util.LinkedList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 final boolean DEBUG = false;
 
 final String PRESET_FILE = "presets.txt";
-final String SERIAL_PORT = "/dev/tty.usbserial-A501E3DJ";
+final String SERIAL_PORT = "/dev/tty.usbmodem1411";
 final int INITIAL_PATTERN = 80;
 
 final int BAUD_RATE = 9600;
@@ -26,10 +29,11 @@ ArrayList lightGroups = new ArrayList();
 ArrayList presets = new ArrayList();
 
 LightGroup groupAll;
-LightGroup groupHorizontalPoles;
-LightGroup groupVerticalPoles;
+// LightGroup groupHorizontalPoles;
+// LightGroup groupVerticalPoles;
 LightGroup groupBoxes;
-LightGroup groupDMX;
+// LightGroup groupDMX;
+LightGroup groupPoles;
 
 // ControlP5
 
@@ -63,13 +67,14 @@ int MY_PORT = 12001;
 // Map of which groups to address.
 // In order of the lightGroups array.
 // Object cuz oscP5.
-Object[] activeAddr = { 1.0, 0.0, 0.0, 0.0, 0.0 };
+// Object[] activeAddr = { 1.0, 0.0, 0.0, 0.0, 0.0 };
+Object[] activeAddr = { 1.0, 0.0, 0.0 };
 
 int[] patternsToIndeces;
 
 void setup() {
   
-  size(1370, 675);
+  size(830, 675);
 
   patterns[80] = "pulseOnce";
   patterns[79] = "colorWipeMeterGradient";
@@ -101,6 +106,7 @@ void setup() {
   // Only instantiate port if we know for sure it exists.
   // Port won't be null if you give it a bunk address.
   String[] serialPorts = Serial.list();
+  println (serialPorts);
   for (int i = 0; i < serialPorts.length; i++) {
     if (serialPorts[i].equals(SERIAL_PORT)) {
       port = new Serial(this, SERIAL_PORT, BAUD_RATE);  
@@ -117,11 +123,11 @@ void setup() {
   // controllers have been created.
   sympathizeEvents = true;
 
-  groupAll = new LightGroup("All", 19);
-  groupHorizontalPoles = new LightGroup("Horizontal Poles", 0);
-  groupVerticalPoles = new LightGroup("Vertical Poles", 7);
-  groupBoxes = new LightGroup("Boxes", 14);
-  groupDMX = new LightGroup("DMX", 18);
+  groupAll = new LightGroup("All", 0);
+  // groupHorizontalPoles = new LightGroup("Horizontal Poles", 0);
+  // groupVerticalPoles = new LightGroup("Vertical Poles", 7);
+  groupPoles = new LightGroup("Poles", 1);
+  groupBoxes = new LightGroup("Boxes", 2);
 
   sympathizeEvents = false;
 

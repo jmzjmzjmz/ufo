@@ -6,10 +6,24 @@
 <VARIABLE name="light=0" send="0" osc_target="0" osc_trigger="1" osc_message="/Presets/light" midi_target="-1" midi_trigger="1" midi_message="0x90,0x90,0,0" midi_scale="0,16383" kbmouse_target="-1" kbmouse_trigger="1" kbmouse_message="0,0,0" kbmouse_scale="0,1,0,1"/>
 <SCRIPT name="setLabels(OSC_ARGS)" script="setattribute(Presets,'labels',OSC_ARGS);" trigger_script="" trigger_type="2" trigger="1" osc_message="/Presets/setLabels" midi_message="0x90,0x90,0,0" midi_target="-1" flag="1"/>
 </WINDOW>
-<WINDOW class="Switches" text="Patterns" x="347" y="0" width="677" height="269" id="6" state="1" group="0" font="tahoma,10,0" send="1" osc_target="-2" midi_target="-2" kbmouse_target="-2" capture="1" color="865343,1596013" column="6" label="0" multicolor="0" multilabel="1" paint="1" radio="1" row="3">
+<WINDOW class="Switches" text="Patterns" x="347" y="0" width="677" height="269" id="6" state="1" group="0" font="tahoma,10,0" send="1" osc_target="-2" midi_target="-2" kbmouse_target="-2" capture="1" color="2122383360,7077888" column="6" label="0" multicolor="1" multilabel="1" paint="1" radio="1" row="3">
 <PARAM name="x=" value="0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000" send="17" osc_target="0" osc_trigger="1" osc_message="/Patterns/x" midi_target="-1" midi_trigger="1" midi_message="0x90,0x90,0,0" midi_scale="0,16383" osc_scale="0.000000,1.000000" kbmouse_target="-1" kbmouse_trigger="1" kbmouse_message="0,0,0" kbmouse_scale="0,1,0,1"/>
 <VARIABLE name="light=0" send="0" osc_target="0" osc_trigger="1" osc_message="/Patterns/light" midi_target="-1" midi_trigger="1" midi_message="0x90,0x90,0,0" midi_scale="0,16383" kbmouse_target="-1" kbmouse_trigger="1" kbmouse_message="0,0,0" kbmouse_scale="0,1,0,1"/>
-<SCRIPT name="setLabels(OSC_ARGS)" script="setattribute(Patterns,'labels',OSC_ARGS);" trigger_script="" trigger_type="2" trigger="1" osc_message="/Patterns/setLabels" midi_message="0x90,0x90,0,0" midi_target="-1" flag="1"/>
+<SCRIPT name="setLabels(OSC_ARGS)" script="decl i;
+decl myColors;
+
+setattribute(Patterns,'labels',OSC_ARGS);
+
+for(i=0;i < sizeof(Patterns.x);i++){
+//dmx values colored differently
+if(i == 0 || i == 3 || i == 4 || i == 5 || i == 6 || i == 8 || i == 12 || i == 17){ 
+myColors[i] = RGB(10,0,5);
+}
+else{
+myColors[i] = RGB(100,0,100);
+}
+}
+setattribute(Patterns,'colors',myColors);" trigger_script="" trigger_type="2" trigger="1" osc_message="/Patterns/setLabels" midi_message="0x90,0x90,0,0" midi_target="-1" flag="1"/>
 </WINDOW>
 <WINDOW class="MultiSlider" text="GreenSlider1" x="0" y="60" width="340" height="60" id="8" state="1" group="0" font="tahoma,10,0" send="1" osc_target="-2" midi_target="-2" kbmouse_target="-2" bipolar="0" capture="1" color="1933110" gradient="1" grid="0" grid_steps="1" horizontal="1" label="0" multicolor="0" nbr="1" physic="0">
 <PARAM name="x=" value="0.000000" send="17" osc_target="0" osc_trigger="1" osc_message="/GreenSlider1/x" midi_target="-1" midi_trigger="1" midi_message="0x90,0x90,0,0" midi_scale="0,16383" osc_scale="0.000000,1.000000" kbmouse_target="-1" kbmouse_trigger="1" kbmouse_message="0,0,0" kbmouse_scale="0,1,0,1"/>
