@@ -10,37 +10,38 @@ class LiveReader implements OscReader {
     Matcher mappings = Pattern.compile("/mapping/(\\d+)").matcher(p);
     Matcher address = Pattern.compile("/address/(\\d+)").matcher(p);
     
-    if (presets.matches()) {
-  
-      applyPreset(parseInt(presets.group()));
+    if (presets.find()) {
+    
+      println();
+      applyPreset(parseInt(presets.group(1)));
 
-    } else if (patterns.matches()) {
+    } else if (patterns.find()) {
       
       for (int j = 0; j < activeAddr.length; j++) {
         if (activeAddr[j].equals(1.0)) {
           
           LightGroup l = (LightGroup)lightGroups.get(j);
-          l.setPattern(patternsToIndeces[parseInt(patterns.group())]);
+          l.setPattern(patternsToIndeces[parseInt(patterns.group(1))]);
           l.sendMessage();
 
         }
       }
 
-    } else if (mappings.matches()) {
+    } else if (mappings.find()) {
       
       for (int j = 0; j < activeAddr.length; j++) {
         if (activeAddr[j].equals(1.0)) {
           
           LightGroup l = (LightGroup)lightGroups.get(j);
-          l.setMapping(parseInt(mappings.group())+1); // hack.
+          l.setMapping(parseInt(mappings.group(1))+1); // hack.
           l.sendMessage();
 
         }
       }
 
-    } else if (address.matches()) { 
+    } else if (address.find()) { 
 
-      int a = parseInt(address.group());
+      int a = parseInt(address.group(1));
       for (int i = 0; i < activeAddr.length; i++) {
         if (a == i) {
           activeAddr[i] = 1.0;
@@ -150,6 +151,9 @@ class LiveReader implements OscReader {
         if (activeAddr[i].equals(1.0)) {
 
           int v = (int)(theOscMessage.get(0).floatValue() * 127);
+
+          println("brightness " + v);
+
           LightGroup l = (LightGroup)lightGroups.get(i);
           l.setBrightness(v);
           l.sendMessage();

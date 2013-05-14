@@ -8,7 +8,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-final boolean DEBUG = false;
+final boolean DEBUG = true; // osc
+final boolean DEBUG_SERIAL = false;
+
 
 final String PRESET_FILE = "presets.txt";
 final String SERIAL_PORT = "/dev/tty.usbmodem1411";
@@ -74,6 +76,13 @@ int[] patternsToIndeces;
 
 void setup() {
   
+  Matcher m = Pattern.compile("/preset/(\\d+)").matcher("/preset/23");
+
+  m.find();
+  println(m.group(1));
+
+
+
   size(830, 675);
 
   patterns[80] = "pulseOnce";
@@ -182,7 +191,7 @@ void emptyMessageQueue() {
   while (messageQueue.peek() != null) {
     byte b = ((Byte)messageQueue.poll()).byteValue();
     if (port != null) port.write(b);
-    if (DEBUG) println("[SERIAL] " + b);
+    if (DEBUG_SERIAL) println("[SERIAL] " + b);
   }
 
 }
